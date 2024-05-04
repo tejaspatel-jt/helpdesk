@@ -1,0 +1,25 @@
+{
+  "name": "helpdesk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "startOriginal": "nodemon backend/server",
+    "start_inspect": "NODE_OPTIONS='--inspect' nodemon backend/server",
+    "start2": "nodemon -r dotenv/config --no-warnings backend/src/index.js",
+    "start3": "nodemon -r dotenv/config --experimental-json-modules /backend/src/index",
+    "start4": "nodemon -r dotenv/config --experimental-json-modules backend/src/index.js",
+    "start": "npm run dev --prefix backend",
+    "client": "npm start --prefix frontend",
+    "devOriginal": "concurrently \"npm start\" \"npm run client\"",
+    "dev_colord": "concurrently -c \"bgGreen,bgCyan\" --prefix demomern  \"npm run start\" \"npm run client\"",
+    "dev": "concurrently -c \"bgGreen,bgCyan\" --prefix demomern  \"npm start\" \"npm run client\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.0"
+  }
+}
