@@ -1,4 +1,3 @@
-// ------------------------EXISTING WORKING CODE OF LOGIN PAGE-------------------------------
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ApiService from "../ApiUtils/Api";
@@ -131,7 +130,6 @@ const LoginPage = ({ handleLogin }) => {
                 Email:
               </FormField>
               {errors.email && <FormValidation>{errors.email}</FormValidation>}
-              {/* {errors.form && <FormValidation>{errors.email}</FormValidation>} */}
             </div>
             <div>
               <PasswordField
