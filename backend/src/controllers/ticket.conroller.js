@@ -64,7 +64,7 @@ const createTicket = asyncHandler(async (req, res) => {
 
 //Get user ticket
 const getTicket = async (req, res) => {
-  const { status, page, perPage } = req.body;
+  const { status, page, perPage } = req.query;
 
   let filter = {};
   filter.user = req.user._id;
@@ -106,7 +106,7 @@ const getTicket = async (req, res) => {
 
 //Get all ticket data
 const getAllTickets = asyncHandler(async (req, res) => {
-  const { status, username, department, page, perPage } = req.body;
+  const { status, username, department, page, perPage } = req.query;
 
   let filter = {};
   if (req.user.role != "master") {
