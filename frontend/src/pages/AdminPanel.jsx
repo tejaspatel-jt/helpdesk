@@ -17,6 +17,7 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject }) => {
   return (
     <div className="bg-white shadow-md rounded-md p-4 mb-4 ">
       <div className="flex justify-start items-center mb-2">
+        <h3>{ticket.number}</h3>
         <div className="flex items-center gap-2 max-w-[1000px]">
           {ticket.photo ? (
             <img
@@ -93,6 +94,7 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject }) => {
 const AdminTickets = ({ onLogout }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
   const { userDetails } = useContext(UserContext);
 
   const accessToken = localStorage.getItem("accessToken");
@@ -101,17 +103,48 @@ const AdminTickets = ({ onLogout }) => {
     ContentType: "application/json",
   };
 
+  const handleInfiniteScroll = async () => {
+    // console.log("scrollheight", document.documentElement.scrollHeight);
+    // console.log("innerHeight", window.innerHeight);
+    // console.log("scrollTop", document.documentElement.scrollTop);
+    try {
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >=
+        document.documentElement.scrollHeight
+      ) {
+        setPage((prevpage) => prevpage + 1);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchTickets();
   }, []);
 
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleInfiniteScroll);
+  //   return () => window.removeEventListener("scroll", handleInfiniteScroll);
+  // }, []);
+
   const fetchTickets = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:7000/user/ticket/get/all",
-        { headers }
+        "http://localhost:7700/user/ticket/get/all",
+        {
+          headers,
+          params: {
+            page: page,
+            perPage: 10,
+          },
+        }
       );
-      setTickets(response.data.data.tickets);
+      console.log("v_ tickets = ", response.data.data.tickets);
+      // console.log(typeof response.data.data.tickets);
+      // setTickets(response.data.data.tickets);
+      // setTickets((prev) => [...prev, ...response.data.data.tickets]);
+      setTickets((prev) => [...prev, ...response.data.data.tickets]);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tickets:", error);
@@ -120,10 +153,11 @@ const AdminTickets = ({ onLogout }) => {
   };
 
   const handleApprove = async (ticketId, setIsApproved) => {
+    alert("oh fuck bc");
     setIsApproved(true);
     try {
       const response = await axios.patch(
-        "http://localhost:7000/user/ticket/update/status",
+        "http://localhost:7700/user/ticket/update/status",
         {
           ticketId: ticketId,
           ticketStatus: `accepted_${userDetails.role}`,
@@ -146,7 +180,7 @@ const AdminTickets = ({ onLogout }) => {
     setIsRejected(true);
     try {
       const response = await axios.patch(
-        "http://localhost:7000/user/ticket/update/status",
+        "http://localhost:7700/user/ticket/update/status",
         {
           ticketId: ticketId,
           ticketStatus: `rejected_${userDetails.role}`,
