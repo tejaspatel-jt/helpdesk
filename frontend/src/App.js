@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import LoginPage from "./pages/Login";
-import Register from "./pages/Register";
 import ProtectedRoute from "./components/home/ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import MyTickets from "./pages/MyTickets";
@@ -18,33 +22,40 @@ function App() {
     setIsAuthenticated(false);
   };
   return (
-    // <LoaderProvider>
-    <Router>
-      <Routes>
-        <Route
-          exact
-          path="/"
-          element={<LoginPage handleLogin={handleLogin} />}
-        />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgotPassword" element={<ForgotPassword />} />
-        <Route path="/tickets" element={<MyTickets />} />
-        <Route path="/profile" element={<MyProfile />} />
-        <Route path="/adminpanel" element={<AdminPanel />} />
-        <Route
-          path="/home"
-          element={
-            // <Home />
-            <ProtectedRoute
-              children={<Home />}
-              isAuthenticated={isAuthenticated}
-              onLogout={handleLogout}
-            />
-          }
-        />
-      </Routes>
-    </Router>
-    // </LoaderProvider>
+    <>
+      <Router>
+        <Routes>
+          <Route
+            exact
+            path="/"
+            element={<LoginPage handleLogin={handleLogin} />}
+          />
+
+          <Route
+            path="/register"
+            element={<LoginPage handleLogin={handleLogin} />}
+          />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/tickets" element={<MyTickets />} />
+          <Route path="/profile" element={<MyProfile />} />
+          <Route
+            path="/adminpanel"
+            element={<AdminPanel onLogout={handleLogout} />}
+          />
+          <Route
+            path="/home"
+            element={
+              // <Home />
+              <ProtectedRoute
+                children={<Home />}
+                isAuthenticated={isAuthenticated}
+                onLogout={handleLogout}
+              />
+            }
+          />
+        </Routes>
+      </Router>
+    </>
   );
 }
 export default App;

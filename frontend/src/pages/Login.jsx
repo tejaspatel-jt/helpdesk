@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// ------------------------EXISTING WORKING CODE OF LOGIN PAGE-------------------------------
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ApiService from "../ApiUtils/Api";
 import { validateLoginFields } from "../Validation/Validation";
@@ -15,8 +16,9 @@ import LoginpageLayout from "../components/authentication/LoginpageLayout";
 import Loader from "../components/loader/Loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// test commit
+import { UserDetails } from "../components/CustomObjects/UserDetails";
+import { UserContext } from "../components/contexts/UserContextProvider";
+import jtlogo from "../images/jtlogo.png";
 
 const LoginPage = ({ handleLogin }) => {
   const [email, setEmail] = useState("");
@@ -24,11 +26,12 @@ const LoginPage = ({ handleLogin }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const [showPassword, setShowPassword] = useState(false);
-
   const apiService = new ApiService(setLoading);
+
+  const { setUserDetails } = useContext(UserContext);
+  const userDetail = new UserDetails("");
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -44,8 +47,8 @@ const LoginPage = ({ handleLogin }) => {
     window.addEventListener("resize", handleResize);
 
     // todo : Remove this static data
-    setEmail("kamleshsta@gmail.com");
-    setPassword("sdvadsv");
+    setEmail("user1@gmail.com");
+    setPassword("Test@1234");
     // todod : end
 
     // Cleanup event listener on unmount
@@ -64,11 +67,15 @@ const LoginPage = ({ handleLogin }) => {
 
     try {
       const response = await apiService.login(email, password);
+      userDetail.role = response.data.data.user.role;
+      userDetail.username = response.data.data.user.username;
+      setUserDetails(userDetail);
       if (response.status === 200) {
+        console.log(response);
         showToastMessage("Login successfully!");
         setTimeout(() => {
           handleLogin();
-          navigate("/home");
+          navigate("/home", { replace: true });
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });
@@ -93,6 +100,12 @@ const LoginPage = ({ handleLogin }) => {
           <div
             className=" flex bg-center mr-[1%] bg-cover min-h-screen w-full bg-white "
             style={{ backgroundImage: `url(${image})` }}
+          ></div>
+        )}
+        {!isDesktop && (
+          <div
+            className="absolute sm:px-[30%] py-[30%]  w-[40%] h-[30%] md:py[50%] bg-cover bg-center z-[-1]"
+            style={{ backgroundImage: `url(${jtlogo})`, opacity: 0.5 }}
           ></div>
         )}
         <FormLayout>
@@ -131,11 +144,11 @@ const LoginPage = ({ handleLogin }) => {
             </div>
           </FormBody>
 
-          <AuthenticationLinks
+          {/* <AuthenticationLinks
             message={"Don't have an account?"}
             pagename={"Sign up now!"}
             route={"/register"}
-          />
+          /> */}
 
           <AuthenticationLinks
             pagename={"Forgot Password ?"}

@@ -1,9 +1,100 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import Navbar from "../components/navbar/Navbar";
+import { UserContext } from "../components/contexts/UserContextProvider";
 
-const AdminPanel = () => {
+const AdminTicketCard = ({ ticket, handleApprove, handleReject }) => {
+  const [isApproved, setIsApproved] = useState(false);
+  const [isRejected, setIsRejected] = useState(false);
+  const { userDetails } = useContext(UserContext);
+
+  useEffect(() => {
+    setIsApproved(ticket.status === `accepted_${userDetails.role}`);
+    // setIsApproved(ticket.status.includes("accepted"));
+    setIsRejected(ticket.status === `rejected_${userDetails.role}`);
+    // setIsRejected(ticket.status.includes("rejected"));
+  }, [ticket.status]);
+  return (
+    <div className="bg-white shadow-md rounded-md p-4 mb-4 ">
+      <div className="flex justify-start items-center mb-2">
+        <div className="flex items-center gap-2 max-w-[1000px]">
+          {ticket.photo ? (
+            <img
+              className="border rounded-full h-10 w-10"
+              src={ticket.photo}
+              alt="photo"
+            />
+          ) : (
+            <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
+              <span className="text-xl font-semibold">
+                {ticket.title.charAt(0).toUpperCase()}
+                {ticket.title.indexOf(" ") !== -1
+                  ? ticket.title
+                      .charAt(ticket.title.indexOf(" ") + 1)
+                      .toUpperCase()
+                  : ""}
+              </span>
+            </div>
+          )}
+          <div>
+            <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
+              {ticket.title}
+            </h3>
+            <span className="font-thin text-xs">
+              {ticket.createdAt.substring(0, 10)}
+            </span>
+          </div>
+          <span
+            className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
+              ticket.status === "pending"
+                ? "text-yellow-500"
+                : ticket.status === `accepted_${userDetails.role}`
+                ? "text-green-500"
+                : "text-red-500"
+            }`}
+          >
+            {ticket.status}
+          </span>
+        </div>
+        <div className="min-w-28 text-center">
+          <span className="text-md font-medium text-gray-600">
+            {ticket.department.toUpperCase()}
+          </span>
+        </div>
+        <div className="mt-2 flex ml-auto min-w-[180px]">
+          <button
+            disabled={isApproved || isRejected}
+            className={` text-white px-3 py-1 ${
+              isApproved
+                ? "bg-gray-300 hover:bg-gray-300"
+                : "bg-green-500 hover:bg-green-600"
+            } rounded-md shadow-md mr-2  focus:outline-none focus:ring-2 focus:ring-green-500`}
+            onClick={() => handleApprove(ticket._id, setIsApproved)}
+          >
+            {isApproved ? "Approved" : "Approve"}
+          </button>
+          <button
+            disabled={isApproved || isRejected}
+            className={` text-white px-3 py-1 ${
+              isRejected
+                ? "bg-gray-300 hover:bg-gray-300"
+                : "bg-red-500 hover:bg-red-600"
+            } rounded-md shadow-md  focus:outline-none focus:ring-2 focus:ring-red-500`}
+            onClick={() => handleReject(ticket._id, setIsRejected)}
+          >
+            {isRejected ? "Rejected" : "Reject"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AdminTickets = ({ onLogout }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { userDetails } = useContext(UserContext);
+
   const accessToken = localStorage.getItem("accessToken");
   const headers = {
     Authorization: `Bearer ${accessToken}`,
@@ -11,19 +102,16 @@ const AdminPanel = () => {
   };
 
   useEffect(() => {
-    fetchTickets().then((val) => {
-      console.log("fetchTikcets called---", val);
-    });
+    fetchTickets();
   }, []);
 
   const fetchTickets = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:7700/user/ticket/get/all",
+        "http://localhost:7000/user/ticket/get/all",
         { headers }
       );
-      console.log(response.data.data);
-      setTickets(response.data.data);
+      setTickets(response.data.data.tickets);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tickets:", error);
@@ -31,19 +119,17 @@ const AdminPanel = () => {
     }
   };
 
-  const handleApprove = async (ticketId) => {
+  const handleApprove = async (ticketId, setIsApproved) => {
+    setIsApproved(true);
     try {
-      console.log("Ticket Id", ticketId);
       const response = await axios.patch(
-        "http://localhost:7700/user/ticket/update/status",
+        "http://localhost:7000/user/ticket/update/status",
         {
           ticketId: ticketId,
-          ticketStatus: "accepted_admin",
+          ticketStatus: `accepted_${userDetails.role}`,
         },
         { headers }
       );
-      console.log(response);
-
       if (response.status === 200) {
         fetchTickets();
         alert("Ticket approved successfully!");
@@ -56,13 +142,14 @@ const AdminPanel = () => {
     }
   };
 
-  const handleReject = async (ticketId) => {
+  const handleReject = async (ticketId, setIsRejected) => {
+    setIsRejected(true);
     try {
       const response = await axios.patch(
-        "http://localhost:7700/user/ticket/update/status",
+        "http://localhost:7000/user/ticket/update/status",
         {
           ticketId: ticketId,
-          ticketStatus: "rejected_admin",
+          ticketStatus: `rejected_${userDetails.role}`,
         },
         { headers }
       );
@@ -79,66 +166,28 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="mt-2 overflow-x-auto">
-      <h2 className="text-center text-2xl text-zinc-800">Tickets</h2>
-      <table className="w-full text-left text-zinc-800 border-collapse">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 border">Date</th>
-            <th className="px-4 py-2 border">Title</th>
-            <th className="px-4 py-2 border">Description</th>
-            <th className="px-4 py-2 border">Department</th>
-            <th className="px-4 py-2 border">Status</th>
-            <th className="px-4 py-2 border">Actions</th>
-            {/* {"role" == "admin" && <th className="px-4 py-2 border">Actions</th>}  */}
-          </tr>
-        </thead>
-        <tbody>
+    <>
+      <Navbar onLogout={onLogout} userRole={userDetails.role} />
+      <div className="container mx-auto p-4">
+        <div className="grid grid-cols-1 gap-4">
           {loading ? (
-            <tr>
-              <td colSpan="6" className="text-center py-4">
-                Loading...
-              </td>
-            </tr>
-          ) : Array.isArray(tickets) && tickets.length > 0 ? (
-            tickets.map((ticket) => (
-              <tr key={ticket._id}>
-                <td className="px-4 py-2 border">
-                  {ticket.createdAt.substring(0, 10)}
-                </td>
-                <td className="px-4 py-2 border">{ticket.title}</td>
-                <td className="px-4 py-2 border">{ticket.description}</td>
-                <td className="px-4 py-2 border">{ticket.department}</td>
-                <td className="px-4 py-2 border">{ticket.status}</td>
-                {/* {"role" == "admin" && (  */}
-                <td className="px-4 py-2 border">
-                  <button
-                    className="bg-green-500 text-white px-3 py-1 rounded-md shadow-md mr-2 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    onClick={() => handleApprove(ticket._id)}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-3 py-1 rounded-md shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                    onClick={() => handleReject(ticket._id)}
-                  >
-                    Reject
-                  </button>
-                </td>
-                {/*  )}  */}
-              </tr>
-            ))
+            <p className="text-center">Loading...</p>
+          ) : tickets.length === 0 ? (
+            <p className="text-center">No tickets found.</p>
           ) : (
-            <tr>
-              <td colSpan="6" className="text-center py-4">
-                No tickets found.
-              </td>
-            </tr>
+            tickets.map((ticket) => (
+              <AdminTicketCard
+                key={ticket._id}
+                ticket={ticket}
+                handleApprove={handleApprove}
+                handleReject={handleReject}
+              />
+            ))
           )}
-        </tbody>
-      </table>
-    </div>
+        </div>
+      </div>
+    </>
   );
 };
 
-export default AdminPanel;
+export default AdminTickets;

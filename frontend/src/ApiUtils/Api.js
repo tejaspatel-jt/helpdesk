@@ -1,6 +1,6 @@
 // api.js
 import BaseApi from "./BaseApi";
-
+import axios from "axios";
 import {
   USER_LOGIN_ENDPOINT,
   USER_VERIFY_REGISTER_ENDPOINT,
@@ -10,6 +10,8 @@ import {
   USER_CREATE_NEW_TICEKT_ENDPOINT,
   USER_FETCH_TICEKTS_ENDPOINT,
   USER_CURRENT_USER_DETAILS,
+  USER_UPDATE_PROFILE,
+  FETCH_ALL_USER_TICKETS,
 } from "./ApiEndpoints";
 
 export default class ApiService {
@@ -34,7 +36,7 @@ export default class ApiService {
     } catch (error) {
       this.setLoading(false);
       console.log(error);
-      throw new Error(error.response.data.message);
+      throw new Error(error.response.message);
     } finally {
       this.setLoading(false);
     }
@@ -126,7 +128,7 @@ export default class ApiService {
     }
   };
 
-  fetchTickets = async () => {
+  fetchUserTickets = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
@@ -155,6 +157,54 @@ export default class ApiService {
 
       const response = await BaseApi.get(USER_CURRENT_USER_DETAILS, {
         headers,
+      });
+      console.log(response.data.data);
+      return response;
+    } catch (error) {
+      this.setLoading(false);
+      console.error("Error fetching tickets:", error);
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  updateUserDetails = async (fullname, contactNo, dob) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const response = await BaseApi.patch(
+        USER_UPDATE_PROFILE,
+        {
+          fullname,
+          contactNo,
+          dob,
+        },
+        { headers }
+      );
+      console.log(response.data.data);
+      return response;
+    } catch (error) {
+      this.setLoading(false);
+      console.error("Error updating profile:", error);
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  fetchAllUserTickets = async (params) => {
+    try {
+      this.setLoading(true);
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const response = await BaseApi.get(FETCH_ALL_USER_TICKETS, {
+        headers,
+        params: params,
       });
       console.log(response.data.data);
       return response;

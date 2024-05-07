@@ -6,3 +6,5 @@ export const USER_VERIFY_OTP_ENDPOINT = "/user/password/save";
 export const USER_CREATE_NEW_TICEKT_ENDPOINT = "user/ticket/create";
 export const USER_FETCH_TICEKTS_ENDPOINT = "user/ticket/get";
 export const USER_CURRENT_USER_DETAILS = "user/current";
+export const USER_UPDATE_PROFILE = "/user/update/details";
+export const FETCH_ALL_USER_TICKETS = "/user/ticket/get/all";

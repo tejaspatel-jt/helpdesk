@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserContextProvider";
 
 const UserIconMenu = ({ onLogout }) => {
   const navigate = useNavigate();
+  const { userDetails } = useContext(UserContext);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -26,6 +29,7 @@ const UserIconMenu = ({ onLogout }) => {
         onClick={toggleMenu}
       >
         <FaUser className="w-6 h-6" />
+        <span className="ml-1">{userDetails.username}</span>
       </button>
 
       {isOpen && (
