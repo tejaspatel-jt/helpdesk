@@ -3,99 +3,18 @@ import axios from "axios";
 import Navbar from "../components/navbar/Navbar";
 import { UserContext } from "../components/contexts/UserContextProvider";
 
-const AdminTicketCard = ({ ticket, handleApprove, handleReject }) => {
+const AdminPanel = ({ onLogout }) => {
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
   const [isApproved, setIsApproved] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
   const { userDetails } = useContext(UserContext);
 
   useEffect(() => {
-    setIsApproved(ticket.status === `accepted_${userDetails.role}`);
-    // setIsApproved(ticket.status.includes("accepted"));
-    setIsRejected(ticket.status === `rejected_${userDetails.role}`);
-    // setIsRejected(ticket.status.includes("rejected"));
-  }, [ticket.status]);
-  return (
-    <div className="bg-white shadow-md rounded-md p-4 mb-4 ">
-      <div className="flex justify-start items-center mb-2">
-        <h3>{ticket.number}</h3>
-        <div className="flex items-center gap-2 max-w-[1000px]">
-          {ticket.photo ? (
-            <img
-              className="border rounded-full h-10 w-10"
-              src={ticket.photo}
-              alt="photo"
-            />
-          ) : (
-            <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
-              <span className="text-xl font-semibold">
-                {ticket.title.charAt(0).toUpperCase()}
-                {ticket.title.indexOf(" ") !== -1
-                  ? ticket.title
-                      .charAt(ticket.title.indexOf(" ") + 1)
-                      .toUpperCase()
-                  : ""}
-              </span>
-            </div>
-          )}
-          <div>
-            <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
-              {ticket.title}
-            </h3>
-            <span className="font-thin text-xs">
-              {ticket.createdAt.substring(0, 10)}
-            </span>
-          </div>
-          <span
-            className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
-              ticket.status === "pending"
-                ? "text-yellow-500"
-                : ticket.status === `accepted_${userDetails.role}`
-                ? "text-green-500"
-                : "text-red-500"
-            }`}
-          >
-            {ticket.status}
-          </span>
-        </div>
-        <div className="min-w-28 text-center">
-          <span className="text-md font-medium text-gray-600">
-            {ticket.department.toUpperCase()}
-          </span>
-        </div>
-        <div className="mt-2 flex ml-auto min-w-[180px]">
-          <button
-            disabled={isApproved || isRejected}
-            className={` text-white px-3 py-1 ${
-              isApproved
-                ? "bg-gray-300 hover:bg-gray-300"
-                : "bg-green-500 hover:bg-green-600"
-            } rounded-md shadow-md mr-2  focus:outline-none focus:ring-2 focus:ring-green-500`}
-            onClick={() => handleApprove(ticket._id, setIsApproved)}
-          >
-            {isApproved ? "Approved" : "Approve"}
-          </button>
-          <button
-            disabled={isApproved || isRejected}
-            className={` text-white px-3 py-1 ${
-              isRejected
-                ? "bg-gray-300 hover:bg-gray-300"
-                : "bg-red-500 hover:bg-red-600"
-            } rounded-md shadow-md  focus:outline-none focus:ring-2 focus:ring-red-500`}
-            onClick={() => handleReject(ticket._id, setIsRejected)}
-          >
-            {isRejected ? "Rejected" : "Reject"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AdminTickets = ({ onLogout }) => {
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const { userDetails } = useContext(UserContext);
+    setIsApproved(tickets.status === `accepted_${userDetails.role}`);
+    setIsRejected(tickets.status === `rejected_${userDetails.role}`);
+  }, [tickets.status]);
 
   const accessToken = localStorage.getItem("accessToken");
   const headers = {
@@ -134,10 +53,6 @@ const AdminTickets = ({ onLogout }) => {
         "http://localhost:7700/user/ticket/get/all",
         {
           headers,
-          params: {
-            page: page,
-            perPage: 10,
-          },
         }
       );
       console.log("v_ tickets = ", response.data.data.tickets);
@@ -210,12 +125,99 @@ const AdminTickets = ({ onLogout }) => {
             <p className="text-center">No tickets found.</p>
           ) : (
             tickets.map((ticket) => (
-              <AdminTicketCard
-                key={ticket._id}
-                ticket={ticket}
-                handleApprove={handleApprove}
-                handleReject={handleReject}
-              />
+              // <AdminTicketCard
+              //   key={ticket._id}
+              //   ticket={ticket}
+              //   handleApprove={handleApprove}
+              //   handleReject={handleReject}
+              // />
+              <div className="bg-white shadow-md rounded-md p-4 mb-4 ">
+                <div className="flex justify-start items-center mb-2">
+                  <h3>{ticket.number}</h3>
+                  <div className="flex items-center gap-2 max-w-[1000px]">
+                    {ticket.photo ? (
+                      <img
+                        className="border rounded-full h-10 w-10"
+                        src={ticket.photo}
+                        alt="photo"
+                      />
+                    ) : (
+                      <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
+                        <span className="text-xl font-semibold">
+                          {ticket.title.charAt(0).toUpperCase()}
+                          {ticket.title.indexOf(" ") !== -1
+                            ? ticket.title
+                                .charAt(ticket.title.indexOf(" ") + 1)
+                                .toUpperCase()
+                            : ""}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
+                        {ticket.title}
+                      </h3>
+                      <span className="font-thin text-xs">
+                        {ticket.createdAt.substring(0, 10)}
+                      </span>
+                    </div>
+                    <span
+                      className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
+                        ticket.status === "pending"
+                          ? "text-yellow-500"
+                          : ticket.status === `accepted_${userDetails.role}`
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {ticket.status}
+                    </span>
+                  </div>
+                  <div className="min-w-28 text-center">
+                    <span className="text-md font-medium text-gray-600">
+                      {ticket.department.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex ml-auto min-w-[180px]">
+                    <button
+                      disabled={
+                        ticket.status.startsWith("accepted") ||
+                        ticket.status.startsWith("rejected")
+                      }
+                      // disabled={isApproved || isRejected}
+                      className={` text-white px-3 py-1 ${
+                        ticket.status.startsWith("accepted")
+                          ? "bg-gray-300 hover:bg-gray-300"
+                          : "bg-green-500 hover:bg-green-600"
+                      } rounded-md shadow-md mr-2  focus:outline-none focus:ring-2 focus:ring-green-500`}
+                      // onClick={() => handleApprove(ticket._id, setIsApproved)}
+                      onClick={() => handleApprove(ticket._id)}
+                    >
+                      {ticket.status.startsWith("accepted")
+                        ? "Approved"
+                        : "Approve"}
+                    </button>
+                    <button
+                      disabled={
+                        ticket.status.startsWith("accepted") ||
+                        ticket.status.startsWith("rejected")
+                      }
+                      // disabled={isApproved || isRejected}
+                      className={` text-white px-3 py-1 ${
+                        ticket.status.startsWith("rejected")
+                          ? "bg-gray-300 hover:bg-gray-300"
+                          : "bg-red-500 hover:bg-red-600"
+                      } rounded-md shadow-md  focus:outline-none focus:ring-2 focus:ring-red-500`}
+                      // onClick={() => handleReject(ticket._id, setIsRejected)}
+                      onClick={() => handleReject(ticket._id)}
+                    >
+                      {ticket.status.startsWith("rejected")
+                        ? "Rejected"
+                        : "Reject"}
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))
           )}
         </div>
@@ -224,4 +226,4 @@ const AdminTickets = ({ onLogout }) => {
   );
 };
 
-export default AdminTickets;
+export default AdminPanel;
