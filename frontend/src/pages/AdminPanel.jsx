@@ -3,7 +3,7 @@ import axios from "axios";
 import Navbar from "../components/navbar/Navbar";
 import { UserContext } from "../components/contexts/UserContextProvider";
 
-const AdminTickets = ({ onLogout }) => {
+const AdminPanel = ({ onLogout }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -53,10 +53,6 @@ const AdminTickets = ({ onLogout }) => {
         "http://localhost:7700/user/ticket/get/all",
         {
           headers,
-          params: {
-            page: page,
-            perPage: 10,
-          },
         }
       );
       console.log("v_ tickets = ", response.data.data.tickets);
@@ -184,26 +180,40 @@ const AdminTickets = ({ onLogout }) => {
                   </div>
                   <div className="mt-2 flex ml-auto min-w-[180px]">
                     <button
-                      disabled={isApproved || isRejected}
+                      disabled={
+                        ticket.status.startsWith("accepted") ||
+                        ticket.status.startsWith("rejected")
+                      }
+                      // disabled={isApproved || isRejected}
                       className={` text-white px-3 py-1 ${
-                        isApproved
+                        ticket.status.startsWith("accepted")
                           ? "bg-gray-300 hover:bg-gray-300"
                           : "bg-green-500 hover:bg-green-600"
                       } rounded-md shadow-md mr-2  focus:outline-none focus:ring-2 focus:ring-green-500`}
-                      onClick={() => handleApprove(ticket._id, setIsApproved)}
+                      // onClick={() => handleApprove(ticket._id, setIsApproved)}
+                      onClick={() => handleApprove(ticket._id)}
                     >
-                      {isApproved ? "Approved" : "Approve"}
+                      {ticket.status.startsWith("accepted")
+                        ? "Approved"
+                        : "Approve"}
                     </button>
                     <button
-                      disabled={isApproved || isRejected}
+                      disabled={
+                        ticket.status.startsWith("accepted") ||
+                        ticket.status.startsWith("rejected")
+                      }
+                      // disabled={isApproved || isRejected}
                       className={` text-white px-3 py-1 ${
-                        isRejected
+                        ticket.status.startsWith("rejected")
                           ? "bg-gray-300 hover:bg-gray-300"
                           : "bg-red-500 hover:bg-red-600"
                       } rounded-md shadow-md  focus:outline-none focus:ring-2 focus:ring-red-500`}
-                      onClick={() => handleReject(ticket._id, setIsRejected)}
+                      // onClick={() => handleReject(ticket._id, setIsRejected)}
+                      onClick={() => handleReject(ticket._id)}
                     >
-                      {isRejected ? "Rejected" : "Reject"}
+                      {ticket.status.startsWith("rejected")
+                        ? "Rejected"
+                        : "Reject"}
                     </button>
                   </div>
                 </div>
@@ -216,4 +226,4 @@ const AdminTickets = ({ onLogout }) => {
   );
 };
 
-export default AdminTickets;
+export default AdminPanel;
