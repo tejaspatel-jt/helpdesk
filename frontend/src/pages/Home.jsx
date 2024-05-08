@@ -131,9 +131,10 @@ function Home({ onLogout }) {
                       <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
                         {ticket.title}
                       </h3>
-                      <span className="font-thin text-xs">
+                      <span className="font-semibold text-xs">
                         {ticket.createdAt.substring(0, 10)}
                       </span>
+                      <p>{ticket.description}</p>
                     </div>
                     <span
                       className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
@@ -218,7 +219,9 @@ function Home({ onLogout }) {
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
                     >
-                      <option value="other">Select Department</option>
+                      <option disabled value="">
+                        Select Department
+                      </option>
                       <option value="is">is</option>
                       <option value="hr">hr</option>
                       <option value="admin">admin</option>

@@ -1,4 +1,3 @@
-// ------------------------EXISTING WORKING CODE OF LOGIN PAGE-------------------------------
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ApiService from "../ApiUtils/Api";
@@ -81,8 +80,18 @@ const LoginPage = ({ handleLogin }) => {
         setErrors({ form: "Invalid credentials" });
       }
     } catch (err) {
-      console.log(err);
-      setErrors({ form: err.message });
+      if (!err.response) {
+        setErrors({ form: err.message });
+      } else {
+        console.log(err.response);
+        if (err.response.status === 401) {
+          setErrors({ password: err.response.data.message });
+        } else if (err.response.status === 404) {
+          setErrors({ email: err.response.data.message });
+        } else {
+          console.log(err.message);
+        }
+      }
     }
   };
 
