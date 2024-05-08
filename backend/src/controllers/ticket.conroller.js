@@ -74,7 +74,8 @@ const getTicket = async (req, res) => {
   }
 
   const currentPage = parseInt(page) || 1;
-  const ticket = await Ticket.find(filter).populate({path:"user",select:"username avatar"})
+  const ticket = await Ticket.find(filter)
+    .populate({ path: "user", select: "username avatar" })
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
@@ -115,7 +116,7 @@ const getAllTickets = asyncHandler(async (req, res) => {
       $in: ["accepted_master", "rejected_department", "accepted_department"],
     };
   }
-  
+
   if (department) {
     filter.department = department;
   }
@@ -125,12 +126,13 @@ const getAllTickets = asyncHandler(async (req, res) => {
   }
 
   if (username) {
-    let user = await User.findOne({username})
+    let user = await User.findOne({ username });
     filter.user = user._id;
   }
 
   const currentPage = parseInt(page) || 1;
-  const ticket = await Ticket.find(filter).populate({path:"user",select:"username avatar"})
+  const ticket = await Ticket.find(filter)
+    .populate({ path: "user", select: "username avatar" })
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
@@ -163,7 +165,7 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
 //Update ticket status
 const updateTicketStatus = asyncHandler(async (req, res) => {
-  const { ticketId, ticketStatus, comment } = req.body;
+  const { ticketId, ticketStatus, comment } = req.query;
   if (
     ![
       "rejected_master",
