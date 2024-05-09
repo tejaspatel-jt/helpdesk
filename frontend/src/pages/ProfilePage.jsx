@@ -10,7 +10,7 @@ import ApiService from "../ApiUtils/Api";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
-    photo: "",
+    avatar: null,
     username: "",
     email: "",
     contactNo: "",
@@ -21,6 +21,26 @@ const MyProfile = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const apiService = new ApiService(setLoading);
+  const [changePhoto, setChangePhoto] = useState(false);
+
+  const handleClick = () => {
+    document.getElementById("profilePictureInput").click();
+    // userDetails.avatar = null;
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setChangePhoto(true);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setUserDetails({ ...userDetails, avatar: reader.result });
+        //
+        userDetails.avatar = "";
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Function to fetch user details
   const fetchUserDetails = async () => {
@@ -39,21 +59,23 @@ const MyProfile = () => {
     });
   }, []);
 
+  const formData = new FormData();
+  formData.append("fullname", userDetails.fullname);
+  formData.append("contactNo", userDetails.contactNo);
+  formData.append("dob", formatDate(userDetails.dob));
+  //if (changePhoto && userDetails == "")
+  if (changePhoto) formData.append("avatar", userDetails.avatar);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log();
 
     try {
       // Update user details
-      const response = await apiService.updateUserDetails(
-        userDetails.fullname,
-        userDetails.contactNo,
-        formatDate(userDetails.dob)
-      );
+      const response = await apiService.updateUserDetails(formData);
       if (response.status === 200) {
         // Successfully updated user details
 
         setIsDialogOpen(false);
+        alert("the profile updated successfully");
         fetchUserDetails(); // Reload profile details
       } else {
         alert("Failed to update profile. Please try again.");
@@ -103,10 +125,10 @@ const MyProfile = () => {
           {/* { User photo } */}
           <div className=" justify-start mb-8">
             <img
-              //   src={userDetails.photo}
-              src={
-                "https://media.istockphoto.com/id/469986766/photo/close-up-portrait-of-child-looking-up.jpg?s=170667a&w=0&k=20&c=7s9KHlN5E-ZfndTEJN70th0f5pnaOl47vta85mK7A5I="
-              }
+              src={userDetails.avatar}
+              // src={
+              //   "https://media.istockphoto.com/id/469986766/photo/close-up-portrait-of-child-looking-up.jpg?s=170667a&w=0&k=20&c=7s9KHlN5E-ZfndTEJN70th0f5pnaOl47vta85mK7A5I="
+              // }
               alt="User Profile"
               className="w-32 h-32 rounded-full object-cover"
             />
@@ -116,7 +138,10 @@ const MyProfile = () => {
             <button
               className="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
               // className="btn  text-white p-3  font-bold shadow-md bg-blue-500 hover:bg-blue-600 focus:outline-none "
-              onClick={() => setIsDialogOpen(true)}
+              onClick={() => {
+                setIsDialogOpen(true);
+                // userDetails.avatar = "";
+              }}
             >
               ✎ Edit Profile
             </button>
@@ -157,8 +182,37 @@ const MyProfile = () => {
               <h2 className="text-2xl font-semibold text-center  text-zinc-800">
                 Edit My Profile
               </h2>
-              <CloseButton onclick={() => setIsDialogOpen(false)} />
+              <CloseButton
+                onclick={() => {
+                  setIsDialogOpen(false);
+                  fetchUserDetails();
+                }}
+              />
             </div>
+
+            <div className="justify-start mb-8 relative ml-[125px]">
+              <img
+                src={userDetails.avatar}
+                alt="User Profile"
+                className="w-32 h-32 rounded-full object-cover z-10 outline-black"
+              />
+              <div className="h-8 w-8 absolute top-0 left-0 mt-[90px] ml-[90px]  border border-black rounded-full bg-white p-1">
+                <img
+                  src="https://cdn-icons-png.freepik.com/256/6933/6933103.png?ga=GA1.1.1614053947.1713869690&semt=ais_hybrid"
+                  alt=""
+                  className="h-5 w-5 pl-[0.1rem]"
+                  onClick={handleClick}
+                />
+                <input
+                  id="profilePictureInput"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="name" className={FormFields.label}>

@@ -1,11 +1,13 @@
 import { set } from "mongoose";
 import { User } from "../models/user.model.js";
+import fs from "fs";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {
   deleteOldFileInCloudinary,
   uploadOnCloudinary,
+  uploadOnCloudinaryWithBase64,
 } from "../utils/cloudinary.js";
 import { generateOTP, sendOTPByEmail } from "../utils/otp.js";
 
@@ -141,7 +143,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
-    throw new ApiError(400, "Invalid Password");
+    throw new ApiError(401, "Invalid Password");
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -280,7 +282,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
   if (!userExists) {
     throw new ApiError(404, "user does not exist.");
   }
-  if (!["employee", "hr", "is","admin"].includes(updateRole.toLowerCase())) {
+  if (!["employee", "hr", "is", "admin"].includes(updateRole.toLowerCase())) {
     throw new ApiError(
       400,
       "'updateRole' must be either 'employee' or 'HR' or 'IS'"
@@ -298,8 +300,9 @@ const updateUserRole = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "User role is updated successfully"));
 });
 
+//Update user details
 const updateUserDetails = asyncHandler(async (req, res) => {
-  const { fullname, contactNo, dob } = req.body;
+  const { fullname, contactNo, dob, avatar } = req.body;
   const avatarLocalPath = req.files?.avatar?.[0]?.path;
 
   let user = await User.findByIdAndUpdate(
@@ -307,10 +310,9 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     { $set: { fullname, contactNo, dob } },
     { new: true }
   ).select("-password -otp");
-
-  if (avatarLocalPath) {
+  let uplodedAvatar;
+  if (avatar || avatarLocalPath) {
     const oldAvatar = req.user?.avatar;
-
     if (oldAvatar) {
       try {
         const isOldImageDelete = await deleteOldFileInCloudinary(oldAvatar);
@@ -322,17 +324,33 @@ const updateUserDetails = asyncHandler(async (req, res) => {
         );
       }
     }
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if (avatar) {
+      // Decode base64 string
+      const base64Data = avatar.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+
+      // Generate a unique filename for the image (you can use any logic to create a filename)
+      var fileName = `avatar_${Date.now()}.png`;
+
+      // Save the image to the server
+      fs.writeFileSync(`./public/temp/${fileName}`, buffer, "base64");
+      uplodedAvatar = await uploadOnCloudinaryWithBase64(fileName);
+    } else {
+      uplodedAvatar = await uploadOnCloudinary(avatarLocalPath);
+    }
     user = await User.findByIdAndUpdate(
       req.user._id,
-      { $set: { avatar: avatar?.secure_url } },
+      { $set: { avatar: uplodedAvatar?.secure_url } },
       { new: true }
     ).select("-password -otp -verified");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, user, "User details updated successfully"));
+  return res.status(200).json({
+    success: true,
+    message: "User details updated successfully",
+    user,
+  });
 });
 
 export {
