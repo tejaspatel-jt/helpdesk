@@ -5,6 +5,7 @@ import validations from "../styles/validations.module.css";
 import FormFields from "../components/form/FormFields.module.css";
 import CloseButton from "../components/button/CloseButton";
 import { UserContext } from "../components/contexts/UserContextProvider";
+import { Link, useNavigate } from "react-router-dom";
 
 function Home({ onLogout }) {
   const [showForm, setShowForm] = useState(false);
@@ -15,7 +16,7 @@ function Home({ onLogout }) {
   const [loading, setLoading] = useState(false);
   const [tickets, setTickets] = useState([]);
   const apiService = new ApiService(setLoading);
-
+  const navigate = useNavigate();
   const { userDetails } = useContext(UserContext);
 
   const fetchTickets = async () => {
@@ -88,6 +89,10 @@ function Home({ onLogout }) {
     }
   };
 
+  const handleTicketClick = (ticketData) => {
+    navigate("/ticketDetailsPage", { state: { ticketDetail: ticketData } });
+  };
+
   return (
     <>
       <Navbar onLogout={onLogout} userRole={userDetails.role} />
@@ -108,6 +113,7 @@ function Home({ onLogout }) {
             tickets.map((ticket) => (
               <div className="bg-white shadow-md rounded-md p-4 mb-4 ">
                 <div className="flex justify-start items-center mb-2">
+                  <h3 className="pr-1">{ticket.number}</h3>
                   <div className="flex items-center gap-2 max-w-[1000px]">
                     {ticket.avatar ? (
                       <img
@@ -128,9 +134,15 @@ function Home({ onLogout }) {
                       </div>
                     )}
                     <div>
-                      <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
+                      <h3
+                        onClick={() => {
+                          handleTicketClick(ticket);
+                        }}
+                        className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate hover:underline"
+                      >
                         {ticket.title}
                       </h3>
+
                       <span className="font-semibold text-xs">
                         {ticket.createdAt.substring(0, 10)}
                       </span>

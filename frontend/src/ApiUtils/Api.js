@@ -26,7 +26,7 @@ export default class ApiService {
         email,
         password,
       });
-      console.log(response);
+
       const accessToken = response.data.data.accessToken;
       console.log("Access Token:", accessToken);
       localStorage.setItem("accessToken", accessToken);
@@ -36,7 +36,7 @@ export default class ApiService {
     } catch (error) {
       this.setLoading(false);
       console.log(error);
-      throw new Error(error.response.message);
+      throw error;
     } finally {
       this.setLoading(false);
     }
@@ -138,7 +138,7 @@ export default class ApiService {
       const response = await BaseApi.get(USER_FETCH_TICEKTS_ENDPOINT, {
         headers,
       });
-      console.log(response.data.data);
+      console.log(response);
       return response;
     } catch (error) {
       this.setLoading(false);

@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import LoginPage from "./pages/Login";
 import ProtectedRoute from "./components/home/ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
-import MyTickets from "./pages/MyTickets";
 import MyProfile from "./pages/ProfilePage";
-import AdminPanel from "./pages/AdminPanel";
+import RaisedTickets from "./pages/RaisedTickets";
+import TicketDetailsPage from "./pages/TicketDetailsPage";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -36,11 +31,15 @@ function App() {
             element={<LoginPage handleLogin={handleLogin} />}
           />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/tickets" element={<MyTickets />} />
           <Route path="/profile" element={<MyProfile />} />
           <Route
-            path="/adminpanel"
-            element={<AdminPanel onLogout={handleLogout} />}
+            path="/raisedtickets"
+            element={<RaisedTickets onLogout={handleLogout} />}
+          />
+          <Route path="/ticketDetailsPage" element={<TicketDetailsPage />} />
+          <Route
+            path="/ticketDetailsPage:ticket_id"
+            element={<TicketDetailsPage />}
           />
           <Route
             path="/home"
