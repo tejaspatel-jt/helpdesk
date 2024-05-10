@@ -1,4 +1,3 @@
-// -------------------NEW CODE WITH ALL USER DETAILS DISPLAYING-----------------
 import React, { useState, useEffect } from "react";
 import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
 import { Link } from "react-router-dom";

@@ -11,13 +11,13 @@ import FormValidation from "../components/form/FormValidation";
 import image from "../images/1111.jpeg";
 import PasswordField from "../components/form/PasswordField";
 import AuthenticationLinks from "../components/form/AuthenticationLinks";
-import LoginpageLayout from "../components/authentication/LoginpageLayout";
 import Loader from "../components/loader/Loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserDetails } from "../components/CustomObjects/UserDetails";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import jtlogo from "../images/jtlogo.png";
+import pageslayout from "../styles/pageslayout.module.css";
 
 const LoginPage = ({ handleLogin }) => {
   const [email, setEmail] = useState("");
@@ -104,7 +104,7 @@ const LoginPage = ({ handleLogin }) => {
   return (
     <>
       {loading && <Loader />}
-      <LoginpageLayout>
+      <div className={pageslayout.loginpageLayout}>
         {isDesktop && (
           <div
             className=" flex bg-center mr-[1%] bg-cover min-h-screen w-full bg-white "
@@ -166,7 +166,7 @@ const LoginPage = ({ handleLogin }) => {
 
           <ToastContainer closeOnClick />
         </FormLayout>
-      </LoginpageLayout>
+      </div>
     </>
   );
 };

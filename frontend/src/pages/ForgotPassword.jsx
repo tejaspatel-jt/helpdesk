@@ -9,10 +9,10 @@ import AuthenticationLinks from "../components/form/AuthenticationLinks";
 import { validateEmail } from "../Validation/Validation";
 import ApiService from "../ApiUtils/Api";
 import { changePasswordWithOTP } from "../ApiUtils/Api";
-import Layout from "../components/authentication/Layout";
 import Loader from "../components/loader/Loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import pageslayout from "../styles/pageslayout.module.css";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -101,7 +101,7 @@ const ForgotPassword = () => {
   return (
     <>
       {loading && <Loader />}
-      <Layout>
+      <div className={pageslayout.forgotpasswordLayout}>
         <FormLayout>
           {!otpSent && (
             <FormBody handleSubmit={handleForgotPassword}>
@@ -168,7 +168,8 @@ const ForgotPassword = () => {
           route={"/"}
         />
         <ToastContainer />
-      </Layout>
+        {/* </Layout> */}
+      </div>
     </>
   );
 };
