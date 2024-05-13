@@ -93,6 +93,12 @@ function Home({ onLogout }) {
     navigate("/ticketDetailsPage", { state: { ticketDetail: ticketData } });
   };
 
+  const [attachments, setAttachments] = useState([]);
+  const handleFileInputChange = (event) => {
+    const files = event.target.files;
+    setAttachments(files);
+  };
+
   return (
     <>
       <Navbar onLogout={onLogout} userRole={userDetails.role} />
@@ -242,6 +248,24 @@ function Home({ onLogout }) {
                   {errors.department && (
                     <p className={validations.required}>{errors.department}</p>
                   )}
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="attachments"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Attachments
+                    </label>
+                    <input
+                      type="file"
+                      id="attachments"
+                      name="attachments"
+                      className="file-input file-input-bordered file-input-sm w-full max-w-xs"
+                      onChange={handleFileInputChange}
+                      multiple
+                    />
+                  </div>
+
                   <div className="flex justify-end">
                     <button
                       type="submit"
