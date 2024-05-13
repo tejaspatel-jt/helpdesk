@@ -4,17 +4,17 @@ import { UserContext } from "../components/contexts/UserContextProvider";
 import Navbar from "../components/navbar/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 
-const AdminTicketCard = ({ ticket, handleApprove, handleReject }) => {
+const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
   const [isApproved, setIsApproved] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
   const navigate = useNavigate();
-  const { userDetails } = useContext(UserContext);
 
   useEffect(() => {
-    setIsApproved(ticket.status === `accepted_${userDetails.role}`);
+    setIsApproved(ticket.status === `accepted_${userRole}`);
     // setIsApproved(ticket.status.includes("accepted"));
-    setIsRejected(ticket.status === `rejected_${userDetails.role}`);
+    setIsRejected(ticket.status === `rejected_${userRole}`);
     // setIsRejected(ticket.status.includes("rejected"));
+    console.log("this is user role------", userRole);
   }, [ticket.status]);
 
   const handleTicketClick = (ticketData) => {
@@ -44,7 +44,7 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject }) => {
             className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
               ticket.status === "pending"
                 ? "text-yellow-500"
-                : ticket.status === `accepted_${userDetails.role}`
+                : ticket.status === `accepted_${userRole}`
                 ? "text-green-500"
                 : "text-red-500"
             }`}
@@ -117,6 +117,10 @@ const AdminTickets = ({ onlogout }) => {
   useEffect(() => {
     fetchTickets().then((val) => {
       console.log("Fetched Tickets --- ", val);
+      console.log(
+        "this is user role in admin tickets file-----",
+        userDetails.role
+      );
     });
   }, [page]);
 
@@ -210,6 +214,7 @@ const AdminTickets = ({ onlogout }) => {
                 ticket={ticket}
                 handleApprove={handleApprove}
                 handleReject={handleReject}
+                userRole={userDetails.role}
               />
             ))
           )}
