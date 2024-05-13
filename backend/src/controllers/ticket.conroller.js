@@ -43,7 +43,7 @@ const createTicket = asyncHandler(async (req, res) => {
   }
   const existingTicketCount = await Ticket.countDocuments();
   const user = await User.findById(req.user._id);
-  const ticket = await Ticket.create({
+  let ticket = await Ticket.create({
     number: existingTicketCount + 1,
     title,
     description,
@@ -51,6 +51,21 @@ const createTicket = asyncHandler(async (req, res) => {
     department,
     user: user._id,
   });
+  // Initialize statusFlow if it's undefined
+  if (!ticket.statusFlow) {
+    ticket.statusFlow = {};
+  }
+
+  ticket.statusFlow.fromUser = {
+    updatedBy: req.user._id,
+  };
+  await ticket.save();
+
+  ticket = await Ticket.findOne({ number: existingTicketCount + 1 }).populate({
+    path: "statusFlow.fromUser.updatedBy",
+    model: "User",
+  });
+
   res
     .status(201)
     .json(
@@ -75,7 +90,18 @@ const getTicket = async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate({ path: "user", select: "username avatar" })
+    .populate({
+      path: "statusFlow.fromUser.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromMaster.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromDepartment.updatedBy",
+      model: "User",
+    })
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
@@ -132,7 +158,18 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate({ path: "user", select: "username avatar" })
+    .populate({
+      path: "statusFlow.fromUser.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromMaster.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromDepartment.updatedBy",
+      model: "User",
+    })
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
@@ -181,12 +218,32 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide ticket status and id.");
   }
 
-  const ticket = await Ticket.findById(ticketId);
+  let ticket = await Ticket.findById(ticketId);
   if (!ticket) {
     throw new ApiError(404, "Ticket not found.");
   }
 
   ticket.status = ticketStatus;
+
+  // Initialize statusFlow if it's undefined
+  if (!ticket.statusFlow) {
+    ticket.statusFlow = {};
+  }
+
+  // Update the statusFlow based on the ticket status
+  if (["rejected_master", "accepted_master"].includes(ticketStatus)) {
+    ticket.statusFlow.fromMaster = {
+      updatedAt: new Date(),
+      updatedBy: req.user._id,
+      status: ticketStatus.split("_")[0],
+    };
+  } else {
+    ticket.statusFlow.fromDepartment = {
+      updatedAt: new Date(),
+      updatedBy: req.user._id,
+      status: ticketStatus.split("_")[0],
+    };
+  }
 
   if (comment) {
     ticket.comments.push({
@@ -194,8 +251,21 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
       postedBy: req.user.username,
     });
   }
-  await ticket.save();
 
+  await ticket.save();
+  ticket = await Ticket.findById(ticketId)
+    .populate({
+      path: "statusFlow.fromUser.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromMaster.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromDepartment.updatedBy",
+      model: "User",
+    });
   return res
     .status(200)
     .json(
