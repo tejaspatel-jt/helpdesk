@@ -64,7 +64,7 @@ const createTicket = asyncHandler(async (req, res) => {
 
 //Get user ticket
 const getTicket = async (req, res) => {
-  const { status, page, perPage } = req.query;
+  const { status, page, perPage } = req.body;
 
   let filter = {};
   filter.user = req.user._id;
@@ -102,12 +102,12 @@ const getTicket = async (req, res) => {
   }
   return res
     .status(200)
-    .json(new ApiResponse(200, ticket, "All tickets fetched successfully"));
+    .json(new ticketResponse(200, ticket, "All tickets fetched successfully"));
 };
 
 //Get all ticket data
 const getAllTickets = asyncHandler(async (req, res) => {
-  const { status, username, department, page, perPage } = req.query;
+  const { status, username, department, page, perPage } = req.body;
 
   let filter = {};
   if (req.user.role != "master") {
@@ -160,12 +160,12 @@ const getAllTickets = asyncHandler(async (req, res) => {
   }
   return res
     .status(200)
-    .json(new ApiResponse(200, ticket, "All tickets fetched successfully"));
+    .json(new ticketResponse(200, ticket, "All tickets fetched successfully"));
 });
 
 //Update ticket status
 const updateTicketStatus = asyncHandler(async (req, res) => {
-  const { ticketId, ticketStatus, comment } = req.query;
+  const { ticketId, ticketStatus, comment } = req.body;
   if (
     ![
       "rejected_master",
@@ -173,7 +173,7 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
       "pending",
       "rejected_department",
       "accepted_department",
-    ].includes(ticketStatus.toLowerCase())
+    ].includes(ticketStatus)
   ) {
     throw new ApiError(400, "Ticket status is not valid.");
   }

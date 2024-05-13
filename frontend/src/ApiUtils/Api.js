@@ -168,20 +168,19 @@ export default class ApiService {
     }
   };
 
-  updateUserDetails = async (fullname, contactNo, dob) => {
+  // updateUserDetails = async (fullname, contactNo, dob,avatar) => {
+  updateUserDetails = async (formData) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
+        ContentType: "multipart/form-data",
       };
 
       const response = await BaseApi.patch(
         USER_UPDATE_PROFILE,
-        {
-          fullname,
-          contactNo,
-          dob,
-        },
+
+        formData,
         { headers }
       );
       console.log(response.data.data);
