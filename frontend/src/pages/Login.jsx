@@ -45,10 +45,8 @@ const LoginPage = ({ handleLogin }) => {
   useEffect(() => {
     window.addEventListener("resize", handleResize);
 
-    // todo : Remove this static data
-    setEmail("user1@gmail.com");
+    setEmail("master@gmail.com");
     setPassword("Test@1234");
-    // todod : end
 
     // Cleanup event listener on unmount
     return () => {
@@ -73,8 +71,9 @@ const LoginPage = ({ handleLogin }) => {
         console.log(response);
         showToastMessage("Login successfully!");
         setTimeout(() => {
-          handleLogin();
-          navigate("/home", { replace: true });
+          const accessToken = response.data.data.accessToken;
+          handleLogin(accessToken);
+          navigate("/home");
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });

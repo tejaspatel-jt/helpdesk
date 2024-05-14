@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import LoginPage from "./pages/Login";
 import ProtectedRoute from "./components/home/ProtectedRoute";
@@ -10,10 +15,21 @@ import TicketDetailsPage from "./pages/TicketDetailsPage";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const handleLogin = () => {
+
+  useEffect(() => {
+    // Check for existing access token on app load
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = (accessToken) => {
+    localStorage.setItem("accessToken", accessToken);
     setIsAuthenticated(true);
   };
   const handleLogout = () => {
+    localStorage.removeItem("accessToken");
     setIsAuthenticated(false);
   };
   return (
@@ -31,6 +47,7 @@ function App() {
             element={<LoginPage handleLogin={handleLogin} />}
           />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
+
           <Route path="/profile" element={<MyProfile />} />
           <Route
             path="/raisedtickets"

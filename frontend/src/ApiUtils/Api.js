@@ -29,8 +29,6 @@ export default class ApiService {
 
       const accessToken = response.data.data.accessToken;
       console.log("Access Token:", accessToken);
-      localStorage.setItem("accessToken", accessToken);
-      // localStorage.setItem("refreshToken", refreshToken);
 
       return response;
     } catch (error) {
@@ -103,12 +101,12 @@ export default class ApiService {
     }
   };
 
-  createNewTicket = async (title, description, department) => {
+  createNewTicket = async (title, description, department, attachments) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
-        ContentType: "application/json",
+        ContentType: "multipart/form-data",
       };
 
       const response = await BaseApi.post(
@@ -117,6 +115,7 @@ export default class ApiService {
           title,
           description,
           department,
+          attachments,
         },
         { headers }
       );
@@ -195,17 +194,17 @@ export default class ApiService {
 
   fetchAllUserTickets = async (params) => {
     try {
-      this.setLoading(true);
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
+        ContentType: "application/json",
       };
 
       const response = await BaseApi.get(FETCH_ALL_USER_TICKETS, {
         headers,
         params: params,
       });
-      console.log(response.data.data);
+      console.log("this is response ----", response);
       return response;
     } catch (error) {
       this.setLoading(false);
