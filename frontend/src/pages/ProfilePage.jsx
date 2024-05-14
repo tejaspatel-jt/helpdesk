@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import CloseButton from "../components/button/CloseButton";
 import FormFields from "../components/form/FormFields.module.css";
 import Card from "../components/card/Card";
-import PageTitle from "../components/title/PageTitle";
 import ApiService from "../ApiUtils/Api";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
@@ -118,7 +117,9 @@ const MyProfile = () => {
         </div>
       </nav>
       <div className="container mx-auto p-8">
-        <PageTitle>My Profile</PageTitle>
+        <h2 className="text-center font-semibold py-3 text-3xl text-zinc-800">
+          My Profile
+        </h2>
 
         <div className="flex justify-between">
           {/* { User photo } */}
