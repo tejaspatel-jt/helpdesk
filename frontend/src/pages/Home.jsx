@@ -67,12 +67,14 @@ function Home({ onLogout }) {
       return;
     }
 
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("department", department);
+    if (files) formData.append("attachment", attachments);
+
     try {
-      const response = await apiService.createNewTicket(
-        title,
-        description,
-        department
-      );
+      const response = await apiService.createNewTicket(formData);
       if (response.status === 201) {
         console.log(response);
         alert("Ticket submitted successfully!");
@@ -93,10 +95,18 @@ function Home({ onLogout }) {
     navigate("/ticketDetailsPage", { state: { ticketDetail: ticketData } });
   };
 
+  const [files, setFiles] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const handleFileInputChange = (event) => {
-    const files = event.target.files;
-    setAttachments(files);
+    const file = event.target.files[0];
+    if (file) {
+      setFiles(true);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAttachments(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -259,6 +269,7 @@ function Home({ onLogout }) {
                     <input
                       type="file"
                       id="attachments"
+                      accept=".jpg, .jpeg, .png, .pdf"
                       name="attachments"
                       className="file-input file-input-bordered file-input-sm w-full max-w-xs"
                       onChange={handleFileInputChange}
