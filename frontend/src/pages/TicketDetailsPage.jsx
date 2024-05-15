@@ -4,7 +4,6 @@ import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
 import { FaCheck, FaArrowRightLong } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineCreate } from "react-icons/md";
-import Stepper from "../components/stepper/Stepper";
 
 // import { ArrowLeftIcon, CheckIcon, XIcon } from "@heroicons/react/outline";
 
