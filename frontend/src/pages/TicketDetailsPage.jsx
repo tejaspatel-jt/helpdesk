@@ -1,105 +1,124 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
-import Navbar from "../components/navbar/Navbar";
-// import { useRoute } from "@react-navigation/native";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
+import { FaCheck, FaArrowRightLong } from "react-icons/fa6";
+import { IoMdClose } from "react-icons/io";
+import { MdOutlineCreate } from "react-icons/md";
+import Stepper from "../components/stepper/Stepper";
+
+// import { ArrowLeftIcon, CheckIcon, XIcon } from "@heroicons/react/outline";
 
 const TicketDetailsPage = ({ onLogout }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+
   const location = useLocation();
   const loading = false;
   const ticketDetail = location.state.ticketDetail;
+  const navigate = useNavigate(); // Access navigate function for redirection
 
+  const goBack = () => {
+    navigate(-1); // Redirect to previous page
+  };
+
+  const statusIcons = {
+    pending: <MdOutlineCreate className="w-6 h-6 text-gray-300" />,
+    accepted_master: <FaCheck className="w-6 h-6 text-green-500" />,
+    rejected_master: <IoMdClose className="w-6 h-6 text-red-500" />,
+    accepted_department: <FaCheck className="w-6 h-6 text-green-500" />,
+    rejected_department: <IoMdClose className="w-6 h-6 text-red-500" />,
+  };
+  // Define status labels
+  const statusLabels = {
+    pending: "Pending",
+    accepted_master: "Accepted by Master",
+    rejected_master: "Rejected by Master",
+    accepted_department: "Accepted by Department",
+    rejected_department: "Rejected by Department",
+  };
   return (
     <>
-      {/* <div>{JSON.stringify(ticketDetail)}</div>  */}
-      {/* <thead>
-        <tr>
+      <nav className="bg-gray-800 h-16">
+        <div className="flex h-full  max-w-7xl mx-auto px-4 sm:px-5 lg:px-8">
+          <button
+            onClick={goBack}
+            className="text-white hover:text-gray-300 flex items-center"
+          >
+            <ArrowLeftIcon className="w-6 h-6 mr-1" />
+            Go Back
+          </button>
+        </div>
+      </nav>
 
-          <th>Number</th>
-          <th>Title</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>User ID</th>
-          <th>Username</th>
-          <th>Department</th>
-          <th>Created At</th>
-          <th>Updated At</th>
-        </tr>
-      </thead>
-      <tbody> */}
-      {/* <tr>
-         
-          <td>{ticketDetail.number}</td>
-          <td>{ticketDetail.title}</td>
-          <td>{ticketDetail.description}</td>
-          <td>{ticketDetail.status}</td>
-          <td>{ticketDetail.user._id}</td>
-          <td>{ticketDetail.user.username}</td>
-          <td>{ticketDetail.department}</td>
-          <td>{ticketDetail.createdAt}</td>
-          <td>{ticketDetail.updatedAt}</td>
-        </tr>
-      </tbody> */}
-
-      <Navbar onLogout={onLogout} />
-
-      <div className="container mx-auto p-4">
-        <div className="grid grid-cols-1 gap-4">
-          {loading ? (
-            <p className="text-center">Loading...</p>
-          ) : ticketDetail.length === 0 ? (
-            <p className="text-center">No tickets found.</p>
+      {/* <----------------------First version of the page ----------------> */}
+      <div className="bg-white rounded-lg  p-8">
+        <div className="flex items-center p-1 mb-4">
+          {ticketDetail.user.avatar ? (
+            <img
+              src={ticketDetail.user.avatar}
+              alt="User Avatar"
+              className="w-10 h-10 rounded-full border-2 border-gray-200 mr-2"
+            />
           ) : (
-            <div className="bg-white shadow-md rounded-md p-4 mb-4 ">
-              <div className="flex justify-start items-center mb-2">
-                <h3 className="pr-1">{ticketDetail.number}</h3>
-                <div className="flex items-center gap-2 max-w-[1000px]">
-                  {ticketDetail.avatar ? (
-                    <img
-                      className="border rounded-full h-10 w-10"
-                      src={ticketDetail.avatar}
-                      alt="photo"
-                    />
-                  ) : (
-                    <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
-                      <span className="text-xl font-semibold">
-                        {ticketDetail.title.charAt(0).toUpperCase()}
-                        {ticketDetail.title.indexOf(" ") !== -1
-                          ? ticketDetail.title
-                              .charAt(ticketDetail.title.indexOf(" ") + 1)
-                              .toUpperCase()
-                          : ""}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
-                      {ticketDetail.title}
-                    </h3>
-                    <span className="font-semibold text-xs">
-                      {ticketDetail.createdAt.substring(0, 10)}
-                    </span>
-                    <p>{ticketDetail.description}</p>
-                  </div>
-                  <span
-                    className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
-                      ticketDetail.status === "pending"
-                        ? "text-yellow-500"
-                        : ticketDetail.status === `accepted_master`
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {ticketDetail.status}
-                  </span>
-                </div>
-                <div className="min-w-28 text-center">
-                  <span className="text-md font-medium text-gray-600">
-                    {ticketDetail.department.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <div className="w-10 h-10 bg-gray-300 rounded-full mr-2"></div>
           )}
+          <div>
+            <h1 className="text-2xl font-semibold">{ticketDetail.title}</h1>
+            <p className="text-base text-gray-500">
+              {ticketDetail.user.username}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center border border-gray-500 p-5 rounded-md justify-center mb-4 space-x-8">
+          {Object.keys(statusLabels).map((statusKey, index) => {
+            if (
+              ticketDetail.status === "accepted_department" ||
+              ticketDetail.status === "rejected_department" ||
+              ((ticketDetail.status === "accepted_master" ||
+                ticketDetail.status === "rejected_master") &&
+                index === 0) ||
+              index === Object.keys(statusLabels).indexOf(ticketDetail.status)
+            ) {
+              return (
+                <React.Fragment key={statusKey}>
+                  {index > 0 && <FaArrowRightLong className="text-gray-500" />}
+                  <div className="flex items-center">
+                    <div className="relative">
+                      {ticketDetail.status === statusKey ? (
+                        <FaCheck className="w-6 h-6 text-green-500 animate-pulse" />
+                      ) : (
+                        <MdOutlineCreate className="w-6 h-6 text-gray-300 animate-pulse" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      {statusLabels[statusKey]}
+                    </div>
+                  </div>
+                </React.Fragment>
+              );
+            }
+            return null;
+          })}
+        </div>
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-2">Details:</h2>
+          <ul className="divide-y divide-gray-200">
+            <li className="py-2">
+              <span className="font-semibold">Title:</span> {ticketDetail.title}
+            </li>
+            <li className="py-2">
+              <span className="font-semibold">Description:</span>{" "}
+              {ticketDetail.description}
+            </li>
+            <li className="py-2">
+              <span className="font-semibold">Department:</span>{" "}
+              {ticketDetail.department}
+            </li>
+            <li className="py-2">
+              <span className="font-semibold">Created Date:</span>{" "}
+              {new Date(ticketDetail.createdAt).toLocaleString()}
+            </li>
+          </ul>
         </div>
       </div>
     </>
