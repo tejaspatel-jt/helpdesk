@@ -73,13 +73,6 @@ const ticketSchema = new Schema(
     },
     status: {
       type: String,
-      enum: [
-        "rejected_master",
-        "accepted_master",
-        "pending",
-        "rejected_department",
-        "accepted_department",
-      ],
       default: "pending",
       trim: true,
     },

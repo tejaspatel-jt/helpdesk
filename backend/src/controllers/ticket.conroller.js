@@ -45,7 +45,7 @@ const createTicket = asyncHandler(async (req, res) => {
       throw new ApiError(500, "Failed to upload one or more files.");
     }
   }
-  
+
   if (attachment && attachment.length > 0) {
     try {
       // Extracting file type from base64 data
@@ -85,6 +85,7 @@ const createTicket = asyncHandler(async (req, res) => {
     department,
     user: user._id,
   });
+
   // Initialize statusFlow if it's undefined
   if (!ticket.statusFlow) {
     ticket.statusFlow = {};
@@ -171,9 +172,10 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   let filter = {};
   if (req.user.role != "master") {
-    filter.department = req.user.role;
+    const userRole = req.user.role;
+    filter.department = userRole;
     filter.status = {
-      $in: ["accepted_master", "rejected_department", "accepted_department"],
+      $in: ["accepted_master", `accepted_${userRole}`, `rejected_${userRole}`],
     };
   }
 
@@ -237,17 +239,7 @@ const getAllTickets = asyncHandler(async (req, res) => {
 //Update ticket status
 const updateTicketStatus = asyncHandler(async (req, res) => {
   const { ticketId, ticketStatus, comment } = req.body;
-  if (
-    ![
-      "rejected_master",
-      "accepted_master",
-      "pending",
-      "rejected_department",
-      "accepted_department",
-    ].includes(ticketStatus)
-  ) {
-    throw new ApiError(400, "Ticket status is not valid.");
-  }
+
   if (!(ticketId || ticketStatus)) {
     throw new ApiError(400, "Please provide ticket status and id.");
   }
@@ -256,8 +248,8 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
   if (!ticket) {
     throw new ApiError(404, "Ticket not found.");
   }
-
-  ticket.status = ticketStatus;
+  const status = `${ticketStatus}_${req.user.role}`;
+  ticket.status = status;
 
   // Initialize statusFlow if it's undefined
   if (!ticket.statusFlow) {
@@ -265,7 +257,7 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
   }
 
   // Update the statusFlow based on the ticket status
-  if (["rejected_master", "accepted_master"].includes(ticketStatus)) {
+  if (["rejected_master", "accepted_master"].includes(status)) {
     ticket.statusFlow.fromMaster = {
       updatedAt: new Date(),
       updatedBy: req.user._id,
