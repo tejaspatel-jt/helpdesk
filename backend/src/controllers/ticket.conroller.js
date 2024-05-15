@@ -6,11 +6,13 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import {
   deleteOldFileInCloudinary,
   uploadOnCloudinary,
+  uploadOnCloudinaryWithBase64,
 } from "../utils/cloudinary.js";
+import fs from "fs";
 
 //Create new ticket
 const createTicket = asyncHandler(async (req, res) => {
-  const { description, title, department } = req.body;
+  const { description, title, department, attachment } = req.body;
   if (!(description || title || department)) {
     throw new ApiError(400, "Please provide title & description both.");
   }
@@ -41,6 +43,36 @@ const createTicket = asyncHandler(async (req, res) => {
       throw new ApiError(500, "Failed to upload one or more files.");
     }
   }
+  
+  if (attachment && attachment.length > 0) {
+    try {
+      // Extracting file type from base64 data
+      const matches = attachment.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        throw new Error("Invalid file format");
+      }
+
+      const fileType = matches[1].split("/")[1]; // Extracting file extension
+      const base64Data = matches[2];
+      const buffer = Buffer.from(base64Data, "base64");
+
+      // Generating a unique file name
+      var fileName = `attachment_${Date.now()}.${fileType}`;
+
+      // Writing file to disk
+      fs.writeFileSync(`./public/temp/${fileName}`, buffer, "base64");
+
+      // Uploading to Cloudinary
+      let fileUrl = await uploadOnCloudinaryWithBase64(fileName);
+      attachmentUrl.push(fileUrl.secure_url);
+    } catch (error) {
+      for (const url of attachmentUrl) {
+        await deleteOldFileInCloudinary(url);
+      }
+      throw new ApiError(500, "Failed to upload one or more files.");
+    }
+  }
+
   const existingTicketCount = await Ticket.countDocuments();
   const user = await User.findById(req.user._id);
   let ticket = await Ticket.create({
@@ -79,7 +111,7 @@ const createTicket = asyncHandler(async (req, res) => {
 
 //Get user ticket
 const getTicket = async (req, res) => {
-  const { status, page, perPage } = req.body;
+  const { status, page, perPage } = req.query;
 
   let filter = {};
   filter.user = req.user._id;
@@ -133,7 +165,7 @@ const getTicket = async (req, res) => {
 
 //Get all ticket data
 const getAllTickets = asyncHandler(async (req, res) => {
-  const { status, username, department, page, perPage } = req.body;
+  const { status, username, department, page, perPage } = req.query;
 
   let filter = {};
   if (req.user.role != "master") {

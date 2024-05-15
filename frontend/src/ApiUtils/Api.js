@@ -101,29 +101,26 @@ export default class ApiService {
     }
   };
 
-  createNewTicket = async (title, description, department, attachments) => {
+  createNewTicket = async (formData) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
-        ContentType: "multipart/form-data",
+        ContentType: "application/json",
       };
 
       const response = await BaseApi.post(
         USER_CREATE_NEW_TICEKT_ENDPOINT,
-        {
-          title,
-          description,
-          department,
-          attachments,
-        },
+
+        formData,
         { headers }
       );
       return response;
     } catch (error) {
-      throw new Error(
-        `An error occurred in Creating a Ticket: ${error.response.data.message}`
-      );
+      this.setLoading(false);
+      console.error("Error while creating ticket:", error);
+    } finally {
+      this.setLoading(false);
     }
   };
 

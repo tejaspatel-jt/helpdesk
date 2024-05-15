@@ -117,7 +117,7 @@ const verifyUser = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Registerd successfully"));
+    .json(new ApiResponse(200, {}, "Registered successfully"));
 });
 
 //Login user
@@ -248,7 +248,7 @@ const verifyOTPForForgotPassword = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Passwrd is updated successfully."));
+    .json(new ApiResponse(200, {}, "Password is updated successfully."));
 });
 
 //Secured routes
