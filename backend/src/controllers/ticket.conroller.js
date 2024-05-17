@@ -12,8 +12,6 @@ import fs from "fs";
 
 // test commit & push post collaborator access from harsh
 
-// test commit & push post collaborator access from harsh
-
 //Create new ticket
 const createTicket = asyncHandler(async (req, res) => {
   const { description, title, department, attachment } = req.body;
@@ -47,7 +45,6 @@ const createTicket = asyncHandler(async (req, res) => {
       throw new ApiError(500, "Failed to upload one or more files.");
     }
   }
-
 
   if (attachment && attachment.length > 0) {
     try {
@@ -88,7 +85,6 @@ const createTicket = asyncHandler(async (req, res) => {
     department,
     user: user._id,
   });
-
 
   // Initialize statusFlow if it's undefined
   if (!ticket.statusFlow) {
@@ -188,10 +184,7 @@ const getAllTickets = asyncHandler(async (req, res) => {
   if (req.user.role != "master") {
     const userRole = req.user.role;
     filter.department = userRole;
-    const userRole = req.user.role;
-    filter.department = userRole;
     filter.status = {
-      $in: ["accepted_master", `accepted_${userRole}`, `rejected_${userRole}`],
       $in: ["accepted_master", `accepted_${userRole}`, `rejected_${userRole}`],
     };
   }
@@ -257,7 +250,6 @@ const getAllTickets = asyncHandler(async (req, res) => {
 const updateTicketStatus = asyncHandler(async (req, res) => {
   const { ticketId, ticketStatus, comment } = req.body;
 
-
   if (!(ticketId || ticketStatus)) {
     throw new ApiError(400, "Please provide ticket status and id.");
   }
@@ -281,54 +273,53 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
   // Update the statusFlow based on the ticket status
   if (["rejected_master", "accepted_master"].includes(status)) {
-    if (["rejected_master", "accepted_master"].includes(status)) {
-      ticket.statusFlow.fromMaster = {
-        updatedBy: req.user._id,
-        updatedAt: new Date(),
-        status: status,
-      };
-    } else {
-      ticket.statusFlow.fromDepartment = {
-        updatedBy: req.user._id,
-        updatedAt: new Date(),
-        status: status,
-      };
-    }
+    ticket.statusFlow.fromMaster = {
+      updatedBy: req.user._id,
+      updatedAt: new Date(),
+      status: status,
+    };
+  } else {
+    ticket.statusFlow.fromDepartment = {
+      updatedBy: req.user._id,
+      updatedAt: new Date(),
+      status: status,
+    };
+  }
 
-    if (["accepted_master"].includes(status)) {
-      const department = await User.find({ role: ticket.department });
-      ticket.statusFlow.fromDepartment = {
-        status: `pending_${ticket.department}`,
-        updatedBy: department[0]._id,
-      };
-    }
+  if (["accepted_master"].includes(status)) {
+    const department = await User.find({ role: ticket.department });
+    ticket.statusFlow.fromDepartment = {
+      status: `pending_${ticket.department}`,
+      updatedBy: department[0]._id,
+    };
+  }
 
-    if (comment) {
-      ticket.comments.push({
-        text: comment,
-        postedBy: req.user.username,
-      });
-    }
+  if (comment) {
+    ticket.comments.push({
+      text: comment,
+      postedBy: req.user.username,
+    });
+  }
 
-    await ticket.save();
-    ticket = await Ticket.findById(ticketId)
-      .populate({
-        path: "statusFlow.fromUser.updatedBy",
-        model: "User",
-      })
-      .populate({
-        path: "statusFlow.fromMaster.updatedBy",
-        model: "User",
-      })
-      .populate({
-        path: "statusFlow.fromDepartment.updatedBy",
-        model: "User",
-      });
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, ticket, "Ticket status is updated successfully")
-      );
-  });
+  await ticket.save();
+  ticket = await Ticket.findById(ticketId)
+    .populate({
+      path: "statusFlow.fromUser.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromMaster.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromDepartment.updatedBy",
+      model: "User",
+    });
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, ticket, "Ticket status is updated successfully")
+    );
+});
 
 export { createTicket, getTicket, getAllTickets, updateTicketStatus };
