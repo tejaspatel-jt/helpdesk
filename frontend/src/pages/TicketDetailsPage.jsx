@@ -52,12 +52,12 @@ const TicketDetailsPage = ({ onLogout }) => {
                   " "
                 ) !== -1
                   ? ticketDetail.statusFlow.fromUser.updatedBy.username
-                      .charAt(
-                        ticketDetail.statusFlow.fromUser.updatedBy.username.indexOf(
-                          " "
-                        ) + 1
-                      )
-                      .toUpperCase()
+                    .charAt(
+                      ticketDetail.statusFlow.fromUser.updatedBy.username.indexOf(
+                        " "
+                      ) + 1
+                    )
+                    .toUpperCase()
                   : ""}
               </span>
             </div>
