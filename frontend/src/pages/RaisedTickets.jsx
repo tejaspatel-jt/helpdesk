@@ -4,12 +4,17 @@ import { UserContext } from "../components/contexts/UserContextProvider";
 import Navbar from "../components/navbar/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import ApiService from "../ApiUtils/Api";
+import {
+  ErrorToastMessage,
+  SuccessToastMessage,
+} from "../common/commonMehtods";
+import { ToastContainer } from "react-toastify";
 
 const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
   const [isApproved, setIsApproved] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
   const navigate = useNavigate();
-  // const apiService = new ApiService(setLoading);
+
   useEffect(() => {
     setIsApproved(ticket.status === `accepted_${userRole}`);
     // setIsApproved(ticket.status.includes("accepted"));
@@ -22,18 +27,36 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-md p-4 mb-4">
+    <div
+      className="cursor-pointer bg-white shadow-md rounded-md p-4 mb-4"
+      onClick={() => {
+        handleTicketClick(ticket);
+      }}
+    >
       <div className="flex justify-start items-center mb-2">
-        <h3>{ticket.number}</h3>
+        <h3 className="pr-1">{ticket.number}</h3>
         <div className="flex items-center gap-2 max-w-[1000px]">
-          <img className="border rounded-full h-10 w-10" src={""} alt="photo" />
+          {ticket.avatar ? (
+            <img
+              className="border rounded-full h-10 w-10"
+              src={ticket.avatar}
+              alt="photo"
+            />
+          ) : (
+            <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
+              <span className="text-xl font-semibold">
+                {ticket.title.charAt(0).toUpperCase()}
+                {ticket.title.indexOf(" ") !== -1
+                  ? ticket.title
+                      .charAt(ticket.title.indexOf(" ") + 1)
+                      .toUpperCase()
+                  : ""}
+              </span>
+            </div>
+          )}
+
           <div>
-            <h3
-              onClick={() => {
-                handleTicketClick(ticket);
-              }}
-              className="cursor-pointer text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate hover:underline"
-            >
+            <h3 className="cursor-pointer text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate ">
               {ticket.title}
             </h3>
             <span className="font-thin text-xs">
@@ -42,9 +65,9 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
           </div>
           <span
             className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
-              ticket.status === "pending"
+              ticket.status === "raised"
                 ? "text-yellow-500"
-                : ticket.status === `accepted_${userRole}`
+                : ticket.status.includes("accepted")
                 ? "text-green-500"
                 : "text-red-500"
             }`}
@@ -57,10 +80,10 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
             {ticket.department.toUpperCase()}
           </span>
         </div>
-        <div className="mt-2 flex ml-auto min-w-[180px]">
+        <div className="mt-2 flex ml-auto min-w-[180px] ">
           <button
             disabled={isApproved || isRejected}
-            className={` text-white px-3 py-1 ${
+            className={` text-white px-3 py-1  ${
               isApproved
                 ? "bg-gray-300 hover:bg-gray-300"
                 : "bg-green-500 hover:bg-green-600"
@@ -90,29 +113,15 @@ const AdminTickets = ({ onlogout }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [noMoreTickets, setNoMoreTickets] = useState(false);
   const { userDetails } = useContext(UserContext);
+  const apiService = new ApiService(setLoading);
 
   const accessToken = localStorage.getItem("accessToken");
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     ContentType: "application/json",
   };
-
-  // const handleInfiniteScroll = async () => {
-  //   // console.log("scrollheight", document.documentElement.scrollHeight);
-  //   // console.log("innerHeight", window.innerHeight);
-  //   // console.log("scrollTop", document.documentElement.scrollTop);
-  //   try {
-  //     if (
-  //       window.innerHeight + document.documentElement.scrollTop + 1 >=
-  //       document.documentElement.scrollHeight
-  //     ) {
-  //       setPage((prevpage) => prevpage + 1);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   useEffect(() => {
     fetchTickets().then((val) => {
@@ -122,6 +131,7 @@ const AdminTickets = ({ onlogout }) => {
 
   useEffect(() => {
     const handleInfiniteScroll = async (e) => {
+      console.log("v_ UE handleInfiniteScroll ---- ");
       // console.log("scrollheight", document.documentElement.scrollHeight);
       // console.log("innerHeight", window.innerHeight);
       // console.log("scrollTop", document.documentElement.scrollTop);
@@ -130,6 +140,7 @@ const AdminTickets = ({ onlogout }) => {
         e.target.documentElement.scrollTop + window.innerHeight;
       try {
         if (currentHeight + 1 >= scrollHeight) {
+          console.log("v_ UE handleInfiniteScroll IF ---- ");
           setPage((prevpage) => prevpage + 1);
         }
       } catch (error) {
@@ -138,25 +149,36 @@ const AdminTickets = ({ onlogout }) => {
     };
     window.addEventListener("scroll", handleInfiniteScroll);
     return () => window.removeEventListener("scroll", handleInfiniteScroll);
-  }, [page]);
+  }, []);
 
   const fetchTickets = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:7700/user/ticket/get/all",
-        { headers, params: { page: page, perPage: 10 } }
-      );
+      const response = await apiService.fetchAllUserTicketsPerPage({
+        page,
+        perPage: 10,
+      });
+      const newTickets = response.data.data.tickets;
+      const filteredTickets = newTickets.filter((ticket) => {
+        const status = ticket.status;
+        if (userDetails.role === "master") {
+          return (
+            status === "raised" ||
+            status === "accepted_master" ||
+            status === "rejected_master"
+          );
+        }
+        return true;
+      });
 
-      console.log("v_ before Tickets ---- ", page, response.data.data.tickets);
-      console.log("v_ before Tickets count ---- ", tickets.length);
-      setTickets((prev) => [...prev, ...response.data.data.tickets]);
+      if (filteredTickets.length === 0 && page === 1) {
+        setNoMoreTickets(true);
+      }
+      if (page === 1) {
+        setTickets(filteredTickets);
+      } else {
+        setTickets((prevTickets) => [...prevTickets, ...filteredTickets]);
+      }
       setLoading(false);
-
-      setTimeout(() => {
-        console.log("v_ after Tickets ---- ", page, response.data.data.tickets);
-        console.log("v_ after Tickets count ---- ", tickets.length);
-        console.log("v_ after Tickets ---- ", tickets);
-      }, 5000);
     } catch (error) {
       console.error("Error fetching tickets:", error);
       setLoading(false);
@@ -170,12 +192,11 @@ const AdminTickets = ({ onlogout }) => {
         "http://localhost:7700/user/ticket/update/status",
         {
           ticketId: ticketId,
-          ticketStatus: `accepted_${userDetails.role}`,
+          ticketStatus: "accepted",
         },
         { headers }
       );
       if (response.status === 200) {
-        // fetchTickets();
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
             ticket._id === ticketId
@@ -183,9 +204,9 @@ const AdminTickets = ({ onlogout }) => {
               : ticket
           )
         );
-        alert("Ticket approved successfully!");
+        SuccessToastMessage("Ticket approved successfully!");
       } else {
-        alert("Failed to approve ticket. Please try again.");
+        ErrorToastMessage("Failed to approve ticket. Please try again.");
       }
     } catch (error) {
       console.error("Error approving ticket:", error);
@@ -200,12 +221,11 @@ const AdminTickets = ({ onlogout }) => {
         "http://localhost:7700/user/ticket/update/status",
         {
           ticketId: ticketId,
-          ticketStatus: `rejected_${userDetails.role}`,
+          ticketStatus: "rejected",
         },
         { headers }
       );
       if (response.status === 200) {
-        // fetchTickets();
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
             ticket._id === ticketId
@@ -213,9 +233,9 @@ const AdminTickets = ({ onlogout }) => {
               : ticket
           )
         );
-        alert("Ticket rejected successfully!");
+        SuccessToastMessage("Ticket rejected successfully!");
       } else {
-        alert("Failed to reject ticket. Please try again.");
+        ErrorToastMessage("Failed to reject ticket. Please try again.");
       }
     } catch (error) {
       console.error("Error rejecting ticket:", error);
@@ -228,7 +248,7 @@ const AdminTickets = ({ onlogout }) => {
       <Navbar onLogout={onlogout} userRole={userDetails.role} />
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 gap-4">
-          {loading ? (
+          {/* {loading ? (
             <p className="text-center">Loading...</p>
           ) : tickets.length === 0 ? (
             <p className="text-center">No tickets found.</p>
@@ -242,16 +262,29 @@ const AdminTickets = ({ onlogout }) => {
                 userRole={userDetails.role}
               />
             ))
-          )}
+          )} */}
+          {tickets.map((ticket) => (
+            <AdminTicketCard
+              key={ticket._id}
+              ticket={ticket}
+              handleApprove={handleApprove}
+              handleReject={handleReject}
+              userRole={userDetails.role}
+            />
+          ))}
         </div>
+        {loading && (
+          <div className="text-center py-4">
+            <p>Loading...</p>
+          </div>
+        )}
+        {!loading && noMoreTickets && (
+          <div className="text-center py-4">
+            <p>No tickets found.</p>
+          </div>
+        )}
       </div>
-      {/* <h1>Hello</h1>
-      {tickets.map((val) => (
-        <>
-          <div>{val.title}</div>
-          <div>{val.description}</div>
-        </>
-      ))} */}
+      <ToastContainer />
     </>
   );
 };

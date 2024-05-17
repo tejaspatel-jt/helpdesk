@@ -1,0 +1,15 @@
+export const TicketStatus = {
+  RAISED: "raised",
+  ACCEPTED_MASTER: "accepted_master",
+  PENDING_MASTER: "pending_master",
+  REJECTED_MASTER: "rejected_master",
+  ACCEPTED_HR: "accepted_hr",
+  PENDING_HR: "pending_hr",
+  ACCEPTED_IS: "accepted_is",
+  REJECTED_HR: "rejected_hr",
+  PENDING_IS: "pending_is",
+  REJECTED_IS: "rejected_is",
+  ACCEPTED_ADMIN: "accepted_admin",
+  PENDING_ADMIN: "pending_admin",
+  REJECTED_ADMIN: "rejected_admin",
+};

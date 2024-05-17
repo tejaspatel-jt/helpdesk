@@ -8,3 +8,4 @@ export const USER_FETCH_TICEKTS_ENDPOINT = "/user/ticket/get";
 export const USER_CURRENT_USER_DETAILS = "/user/current";
 export const USER_UPDATE_PROFILE = "/user/update/details";
 export const FETCH_ALL_USER_TICKETS = "/user/ticket/get/all";
+export const USER_TICKET_APPROVE_REJECT = "/user/ticket/update/status";

@@ -6,7 +6,7 @@ function CloseButton({ onclick }) {
       <button
         onClick={onclick}
         type="button"
-        className="btn mr-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+        className="btn py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
       >
         <GrClose />
       </button>

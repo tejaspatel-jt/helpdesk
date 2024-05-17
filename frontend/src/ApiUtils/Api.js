@@ -12,6 +12,7 @@ import {
   USER_CURRENT_USER_DETAILS,
   USER_UPDATE_PROFILE,
   FETCH_ALL_USER_TICKETS,
+  USER_TICKET_APPROVE_REJECT,
 } from "./ApiEndpoints";
 
 export default class ApiService {
@@ -189,7 +190,7 @@ export default class ApiService {
     }
   };
 
-  fetchAllUserTickets = async (params) => {
+  fetchAllUserTicketsPerPage = async (params) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
@@ -201,7 +202,48 @@ export default class ApiService {
         headers,
         params: params,
       });
-      console.log("this is response ----", response);
+      console.log("fetch all user tickets called ----", response);
+      return response;
+    } catch (error) {
+      this.setLoading(false);
+      console.error("Error fetching tickets:", error);
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  fetchAllUserTickets = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        ContentType: "application/json",
+      };
+
+      const response = await BaseApi.get(FETCH_ALL_USER_TICKETS, {
+        headers,
+      });
+      return response;
+    } catch (error) {
+      this.setLoading(false);
+      console.error("Error fetching tickets:", error);
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  handleApproveOrReject = async (ticketId, ticketStatus) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        ContentType: "application/json",
+      };
+      const response = await BaseApi.patch(
+        USER_TICKET_APPROVE_REJECT,
+        { ticketId: ticketId, ticketStatus: ticketStatus },
+        { headers }
+      );
       return response;
     } catch (error) {
       this.setLoading(false);

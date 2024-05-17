@@ -5,6 +5,11 @@ import CloseButton from "../components/button/CloseButton";
 import FormFields from "../components/form/FormFields.module.css";
 import Card from "../components/card/Card";
 import ApiService from "../ApiUtils/Api";
+import {
+  ErrorToastMessage,
+  SuccessToastMessage,
+} from "../common/commonMehtods";
+import { ToastContainer } from "react-toastify";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
@@ -63,9 +68,9 @@ const MyProfile = () => {
   formData.append("dob", formatDate(userDetails.dob));
   //if (changePhoto && userDetails == "")
   if (changePhoto) formData.append("avatar", userDetails.avatar);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       // Update user details
       const response = await apiService.updateUserDetails(formData);
@@ -73,10 +78,10 @@ const MyProfile = () => {
         // Successfully updated user details
 
         setIsDialogOpen(false);
-        alert("the profile updated successfully");
+        SuccessToastMessage(" Profile updated successfully");
         fetchUserDetails(); // Reload profile details
       } else {
-        alert("Failed to update profile. Please try again.");
+        ErrorToastMessage("Failed to update profile. Please try again.");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -150,28 +155,29 @@ const MyProfile = () => {
 
         <div className="space-y-4">
           <div className="flex items-center">
-            <label className="w-1/4">Name:</label>
+            <label className="w-1/4 font-semibold">Name:</label>
             <p>{userDetails.username}</p>
           </div>
           <div className="flex items-center">
-            <label className="w-1/4">Full Name:</label>
+            <label className="w-1/4 font-semibold">Full Name:</label>
             <p>{userDetails.fullname}</p>
           </div>
           <div className="flex items-center">
-            <label className="w-1/4">Email:</label>
+            <label className="w-1/4 font-semibold">Email:</label>
             <p>{userDetails.email}</p>
           </div>
           <div className="flex items-center">
-            <label className="w-1/4">Contact Number:</label>
+            <label className="w-1/4 font-semibold">Contact Number:</label>
             <p>{userDetails.contactNo}</p>
           </div>
           <div className="flex items-center">
-            <label className="w-1/4">Date of Birth:</label>
+            <label className="w-1/4 font-semibold">Date of Birth:</label>
 
-            {userDetails.dob && <p>{userDetails.dob.substring(0, 10)} </p>}
+            {/* {userDetails.dob && <p>{userDetails.dob.substring(0, 10)} </p>} */}
+            <p>{new Date(userDetails.dob).toLocaleString()} </p>
           </div>
           <div className="flex items-center">
-            <label className="w-1/4">Role:</label>
+            <label className="w-1/4 font-semibold">Role:</label>
             <p>{userDetails.role}</p>
           </div>
         </div>
@@ -194,13 +200,13 @@ const MyProfile = () => {
               <img
                 src={userDetails.avatar}
                 alt="User Profile"
-                className="w-32 h-32 rounded-full object-cover z-10 outline-black"
+                className="w-24 h-24 rounded-full object-cover z-10 ring-2 outline-black"
               />
               <div className="h-8 w-8 absolute top-0 left-0 mt-[90px] ml-[90px]  border border-black rounded-full bg-white p-1">
                 <img
                   src="https://cdn-icons-png.freepik.com/256/6933/6933103.png?ga=GA1.1.1614053947.1713869690&semt=ais_hybrid"
                   alt=""
-                  className="h-5 w-5 pl-[0.1rem]"
+                  className="cursor-pointer h-5 w-5 pl-[0.1rem]"
                   onClick={handleClick}
                 />
                 <input
@@ -305,6 +311,7 @@ const MyProfile = () => {
           </Card>
         )}
       </div>
+      <ToastContainer />
     </>
   );
 };

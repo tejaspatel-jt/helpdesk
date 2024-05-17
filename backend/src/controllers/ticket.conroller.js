@@ -10,6 +10,8 @@ import {
 } from "../utils/cloudinary.js";
 import fs from "fs";
 
+// test commit & push post collaborator access from harsh
+
 //Create new ticket
 const createTicket = asyncHandler(async (req, res) => {
   const { description, title, department, attachment } = req.body;
@@ -43,7 +45,7 @@ const createTicket = asyncHandler(async (req, res) => {
       throw new ApiError(500, "Failed to upload one or more files.");
     }
   }
-  
+
   if (attachment && attachment.length > 0) {
     try {
       // Extracting file type from base64 data
@@ -83,6 +85,7 @@ const createTicket = asyncHandler(async (req, res) => {
     department,
     user: user._id,
   });
+
   // Initialize statusFlow if it's undefined
   if (!ticket.statusFlow) {
     ticket.statusFlow = {};
@@ -91,12 +94,22 @@ const createTicket = asyncHandler(async (req, res) => {
   ticket.statusFlow.fromUser = {
     updatedBy: req.user._id,
   };
+  const master = await User.find({ role: "master" });
+  ticket.statusFlow.fromMaster = {
+    updatedBy: master[0]._id,
+  };
+
   await ticket.save();
 
-  ticket = await Ticket.findOne({ number: existingTicketCount + 1 }).populate({
-    path: "statusFlow.fromUser.updatedBy",
-    model: "User",
-  });
+  ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
+    .populate({
+      path: "statusFlow.fromUser.updatedBy",
+      model: "User",
+    })
+    .populate({
+      path: "statusFlow.fromMaster.updatedBy",
+      model: "User",
+    });
 
   res
     .status(201)
@@ -169,9 +182,10 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   let filter = {};
   if (req.user.role != "master") {
-    filter.department = req.user.role;
+    const userRole = req.user.role;
+    filter.department = userRole;
     filter.status = {
-      $in: ["accepted_master", "rejected_department", "accepted_department"],
+      $in: ["accepted_master", `accepted_${userRole}`, `rejected_${userRole}`],
     };
   }
 
@@ -235,17 +249,7 @@ const getAllTickets = asyncHandler(async (req, res) => {
 //Update ticket status
 const updateTicketStatus = asyncHandler(async (req, res) => {
   const { ticketId, ticketStatus, comment } = req.body;
-  if (
-    ![
-      "rejected_master",
-      "accepted_master",
-      "pending",
-      "rejected_department",
-      "accepted_department",
-    ].includes(ticketStatus)
-  ) {
-    throw new ApiError(400, "Ticket status is not valid.");
-  }
+
   if (!(ticketId || ticketStatus)) {
     throw new ApiError(400, "Please provide ticket status and id.");
   }
@@ -255,7 +259,12 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Ticket not found.");
   }
 
-  ticket.status = ticketStatus;
+  if (!["accepted", "rejected"].includes(ticketStatus)) {
+    throw new ApiError(400, "Invalid ticket status.");
+  }
+
+  const status = `${ticketStatus}_${req.user.role}`;
+  ticket.status = status;
 
   // Initialize statusFlow if it's undefined
   if (!ticket.statusFlow) {
@@ -263,17 +272,25 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
   }
 
   // Update the statusFlow based on the ticket status
-  if (["rejected_master", "accepted_master"].includes(ticketStatus)) {
+  if (["rejected_master", "accepted_master"].includes(status)) {
     ticket.statusFlow.fromMaster = {
-      updatedAt: new Date(),
       updatedBy: req.user._id,
-      status: ticketStatus.split("_")[0],
+      updatedAt: new Date(),
+      status: status,
     };
   } else {
     ticket.statusFlow.fromDepartment = {
-      updatedAt: new Date(),
       updatedBy: req.user._id,
-      status: ticketStatus.split("_")[0],
+      updatedAt: new Date(),
+      status: status,
+    };
+  }
+
+  if (["accepted_master"].includes(status)) {
+    const department = await User.find({ role: ticket.department });
+    ticket.statusFlow.fromDepartment = {
+      status: `pending_${ticket.department}`,
+      updatedBy: department[0]._id,
     };
   }
 

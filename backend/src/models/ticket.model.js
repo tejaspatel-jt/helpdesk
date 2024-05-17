@@ -21,6 +21,10 @@ const statusFlowSchema = new Schema({
       type: Date,
       default: new Date(),
     },
+    status: {
+      type: String,
+      default: "raised",
+    },
     updatedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -36,8 +40,7 @@ const statusFlowSchema = new Schema({
     },
     status: {
       type: String,
-      default: "pending",
-      enum: ["accepted", "rejected", "pending"],
+      default: "pending_master",
     },
   },
   fromDepartment: {
@@ -50,8 +53,7 @@ const statusFlowSchema = new Schema({
     },
     status: {
       type: String,
-      default: "pending",
-      enum: ["accepted", "rejected", "pending"],
+      // default: "pending",
     },
   },
 });
@@ -73,14 +75,7 @@ const ticketSchema = new Schema(
     },
     status: {
       type: String,
-      enum: [
-        "rejected_master",
-        "accepted_master",
-        "pending",
-        "rejected_department",
-        "accepted_department",
-      ],
-      default: "pending",
+      default: "raised",
       trim: true,
     },
     user: {

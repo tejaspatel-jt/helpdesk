@@ -18,6 +18,7 @@ import { UserDetails } from "../components/CustomObjects/UserDetails";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import jtlogo from "../images/jtlogo.png";
 import pageslayout from "../styles/pageslayout.module.css";
+import { SuccessToastMessage } from "../common/commonMehtods";
 
 const LoginPage = ({ handleLogin }) => {
   const [email, setEmail] = useState("");
@@ -69,7 +70,8 @@ const LoginPage = ({ handleLogin }) => {
       setUserDetails(userDetail);
       if (response.status === 200) {
         console.log(response);
-        showToastMessage("Login successfully!");
+        SuccessToastMessage("Login successfully!");
+
         setTimeout(() => {
           const accessToken = response.data.data.accessToken;
           handleLogin(accessToken);
@@ -94,11 +96,11 @@ const LoginPage = ({ handleLogin }) => {
     }
   };
 
-  const showToastMessage = (message) => {
-    toast.success(message, {
-      position: "top-right",
-    });
-  };
+  // const showToastMessage = (message) => {
+  //   toast.success(message, {
+  //     position: "top-right",
+  //   });
+  // };
 
   return (
     <>

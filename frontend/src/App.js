@@ -21,6 +21,8 @@ function App() {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false); // Ensure user is not authenticated if token is missing
     }
   }, []);
 
@@ -32,6 +34,7 @@ function App() {
     localStorage.removeItem("accessToken");
     setIsAuthenticated(false);
   };
+
   return (
     <>
       <Router>
@@ -49,22 +52,20 @@ function App() {
           <Route path="/forgotPassword" element={<ForgotPassword />} />
 
           <Route path="/profile" element={<MyProfile />} />
-          <Route
-            path="/raisedtickets"
-            element={<RaisedTickets onLogout={handleLogout} />}
-          />
+          <Route path="/raisedtickets" element={<RaisedTickets />} />
           <Route path="/ticketDetailsPage" element={<TicketDetailsPage />} />
-          <Route
-            path="/ticketDetailsPage:ticket_id"
-            element={<TicketDetailsPage />}
-          />
+
           <Route
             path="/home"
             element={
+              // <ProtectedRoute isAuthenticated={isAuthenticated}>
+              //   <Home onLogout={handleLogout} />
+              // </ProtectedRoute>
               // <Home />
               <ProtectedRoute
                 children={<Home />}
                 isAuthenticated={isAuthenticated}
+                setIsAuthenticated={setIsAuthenticated}
                 onLogout={handleLogout}
               />
             }
