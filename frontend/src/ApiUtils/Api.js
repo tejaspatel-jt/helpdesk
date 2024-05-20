@@ -212,38 +212,16 @@ export default class ApiService {
     }
   };
 
-  fetchAllUserTickets = async () => {
+  handleApproveOrReject = async (body) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
         ContentType: "application/json",
       };
-
-      const response = await BaseApi.get(FETCH_ALL_USER_TICKETS, {
+      const response = await BaseApi.patch(USER_TICKET_APPROVE_REJECT, body, {
         headers,
       });
-      return response;
-    } catch (error) {
-      this.setLoading(false);
-      console.error("Error fetching tickets:", error);
-    } finally {
-      this.setLoading(false);
-    }
-  };
-
-  handleApproveOrReject = async (ticketId, ticketStatus) => {
-    try {
-      const accessToken = localStorage.getItem("accessToken");
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        ContentType: "application/json",
-      };
-      const response = await BaseApi.patch(
-        USER_TICKET_APPROVE_REJECT,
-        { ticketId: ticketId, ticketStatus: ticketStatus },
-        { headers }
-      );
       return response;
     } catch (error) {
       this.setLoading(false);

@@ -19,8 +19,9 @@ import { UserContext } from "../components/contexts/UserContextProvider";
 import jtlogo from "../images/jtlogo.png";
 import pageslayout from "../styles/pageslayout.module.css";
 import { SuccessToastMessage } from "../common/commonMehtods";
+import { useAuth } from "../components/contexts/AuthContextProvider";
 
-const LoginPage = ({ handleLogin }) => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -32,6 +33,8 @@ const LoginPage = ({ handleLogin }) => {
 
   const { setUserDetails } = useContext(UserContext);
   const userDetail = new UserDetails("");
+
+  const { login } = useAuth();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -74,7 +77,8 @@ const LoginPage = ({ handleLogin }) => {
 
         setTimeout(() => {
           const accessToken = response.data.data.accessToken;
-          handleLogin(accessToken);
+
+          login(accessToken);
           navigate("/home");
         }, 1000);
       } else {

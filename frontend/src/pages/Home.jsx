@@ -12,9 +12,9 @@ import {
 } from "../common/commonMehtods";
 import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
+import { validateEditProfileFields } from "../Validation/Validation";
 
-function Home({ onLogout }) {
-
+function Home() {
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({});
   const [title, setTitle] = useState("");
@@ -48,27 +48,13 @@ function Home({ onLogout }) {
     });
   }, []);
 
-  const validateFields = (title, description, department) => {
-    const validationErrors = {};
-
-    if (!title) {
-      validationErrors.title = "Title is required.";
-    }
-
-    if (!description) {
-      validationErrors.description = "Description is required.";
-    }
-
-    if (!department) {
-      validationErrors.department = "Department is required.";
-    }
-
-    return validationErrors;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateFields(title, description, department);
+    const validationErrors = validateEditProfileFields(
+      title,
+      description,
+      department
+    );
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -119,7 +105,7 @@ function Home({ onLogout }) {
 
   return (
     <>
-      <Navbar onLogout={onLogout} userRole={userDetails.role} />
+      <Navbar userRole={userDetails.role} />
       <button
         className="btn fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
         onClick={() => setShowForm(true)}

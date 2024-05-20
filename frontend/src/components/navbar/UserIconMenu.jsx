@@ -2,22 +2,25 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
+import { useAuth } from "../contexts/AuthContextProvider";
 
-const UserIconMenu = ({ onLogout }) => {
+const UserIconMenu = () => {
   const navigate = useNavigate();
   const { userDetails } = useContext(UserContext);
-
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
+
+  const { logout } = useAuth();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
   const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
+    // if (onLogout) {
+    //   onLogout();
+    // }
+    logout();
     navigate("/", { replace: true });
   };
 

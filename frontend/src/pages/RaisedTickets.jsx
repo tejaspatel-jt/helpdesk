@@ -9,6 +9,7 @@ import {
   SuccessToastMessage,
 } from "../common/commonMehtods";
 import { ToastContainer } from "react-toastify";
+import { TicketStatus } from "../common/common.config";
 
 const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
   const [isApproved, setIsApproved] = useState(false);
@@ -27,12 +28,7 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
   };
 
   return (
-    <div
-      className="cursor-pointer bg-white shadow-md rounded-md p-4 mb-4"
-      onClick={() => {
-        handleTicketClick(ticket);
-      }}
-    >
+    <div className="cursor-pointer bg-white shadow-md rounded-md p-4 mb-4">
       <div className="flex justify-start items-center mb-2">
         <h3 className="pr-1">{ticket.number}</h3>
         <div className="flex items-center gap-2 max-w-[1000px]">
@@ -56,7 +52,12 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
           )}
 
           <div>
-            <h3 className="cursor-pointer text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate ">
+            <h3
+              onClick={() => {
+                handleTicketClick(ticket);
+              }}
+              className="cursor-pointer text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate "
+            >
               {ticket.title}
             </h3>
             <span className="font-thin text-xs">
@@ -109,7 +110,7 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
   );
 };
 
-const AdminTickets = ({ onlogout }) => {
+const AdminTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -152,6 +153,7 @@ const AdminTickets = ({ onlogout }) => {
   }, []);
 
   const fetchTickets = async () => {
+    setLoading(true);
     try {
       const response = await apiService.fetchAllUserTicketsPerPage({
         page,
@@ -186,17 +188,15 @@ const AdminTickets = ({ onlogout }) => {
   };
 
   const handleApprove = async (ticketId, setIsApproved) => {
-    setIsApproved(true);
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.ACCEPTED,
+    };
+
     try {
-      const response = await axios.patch(
-        "http://localhost:7700/user/ticket/update/status",
-        {
-          ticketId: ticketId,
-          ticketStatus: "accepted",
-        },
-        { headers }
-      );
+      const response = await apiService.handleApproveOrReject(body);
       if (response.status === 200) {
+        setIsApproved(true);
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
             ticket._id === ticketId
@@ -216,15 +216,12 @@ const AdminTickets = ({ onlogout }) => {
 
   const handleReject = async (ticketId, setIsRejected) => {
     setIsRejected(true);
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.ACCEPTED,
+    };
     try {
-      const response = await axios.patch(
-        "http://localhost:7700/user/ticket/update/status",
-        {
-          ticketId: ticketId,
-          ticketStatus: "rejected",
-        },
-        { headers }
-      );
+      const response = await apiService.handleApproveOrReject(body);
       if (response.status === 200) {
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
@@ -245,10 +242,10 @@ const AdminTickets = ({ onlogout }) => {
 
   return (
     <>
-      <Navbar onLogout={onlogout} userRole={userDetails.role} />
+      <Navbar userRole={userDetails.role} />
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 gap-4">
-          {/* {loading ? (
+          {loading ? (
             <p className="text-center">Loading...</p>
           ) : tickets.length === 0 ? (
             <p className="text-center">No tickets found.</p>
@@ -262,27 +259,8 @@ const AdminTickets = ({ onlogout }) => {
                 userRole={userDetails.role}
               />
             ))
-          )} */}
-          {tickets.map((ticket) => (
-            <AdminTicketCard
-              key={ticket._id}
-              ticket={ticket}
-              handleApprove={handleApprove}
-              handleReject={handleReject}
-              userRole={userDetails.role}
-            />
-          ))}
+          )}
         </div>
-        {loading && (
-          <div className="text-center py-4">
-            <p>Loading...</p>
-          </div>
-        )}
-        {!loading && noMoreTickets && (
-          <div className="text-center py-4">
-            <p>No tickets found.</p>
-          </div>
-        )}
       </div>
       <ToastContainer />
     </>

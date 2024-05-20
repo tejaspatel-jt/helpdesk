@@ -5,7 +5,7 @@ import UserIconMenu from "./UserIconMenu";
 import MenuButton from "./MenuButton";
 import MobileMenu from "./MobileMenu";
 
-const Navbar = ({ onLogout, userRole }) => {
+const Navbar = ({ userRole }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleNavbar = () => {
@@ -21,7 +21,7 @@ const Navbar = ({ onLogout, userRole }) => {
               <Logo />
               <NavLinks userRole={userRole} />
             </div>
-            <UserIconMenu onLogout={onLogout} />
+            <UserIconMenu />
             <MenuButton toggleNavbar={toggleNavbar} />
           </div>
         </div>
