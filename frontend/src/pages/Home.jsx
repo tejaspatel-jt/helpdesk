@@ -14,7 +14,6 @@ import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
 
 function Home({ onLogout }) {
-  // Test Commit
 
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({});
