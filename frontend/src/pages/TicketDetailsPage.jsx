@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
 import Stepper from "../components/stepper/Stepper";
-import { getSteps } from "../components/utils/dataProcessing";
+import { getSteps, getTicketDetails } from "../components/utils/dataProcessing";
 
 const TicketDetailsPage = ({ onLogout }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -17,6 +17,7 @@ const TicketDetailsPage = ({ onLogout }) => {
   };
 
   const steps = getSteps(ticketDetail);
+  const ticketData = getTicketDetails(ticketDetail);
 
   return (
     <>
@@ -35,38 +36,13 @@ const TicketDetailsPage = ({ onLogout }) => {
 
       {/* <----------------------First version of the page ----------------> */}
       <div className="bg-white rounded-lg  p-8">
-        <div className="flex items-center p-1 mb-4">
-          {ticketDetail.statusFlow.fromUser.updatedBy.avatar ? (
-            <img
-              src={ticketDetail.statusFlow.fromUser.updatedBy.avatar}
-              alt="User Avatar"
-              className="w-10 h-10 rounded-full border-2 border-gray-200 mr-2"
-            />
-          ) : (
-            <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
-              <span className="text-xl font-semibold">
-                {ticketDetail.statusFlow.fromUser.updatedBy.username
-                  .charAt(0)
-                  .toUpperCase()}
-                {ticketDetail.statusFlow.fromUser.updatedBy.username.indexOf(
-                  " "
-                ) !== -1
-                  ? ticketDetail.statusFlow.fromUser.updatedBy.username
-                    .charAt(
-                      ticketDetail.statusFlow.fromUser.updatedBy.username.indexOf(
-                        " "
-                      ) + 1
-                    )
-                    .toUpperCase()
-                  : ""}
-              </span>
-            </div>
-          )}
+        <div className="flex items-baseline p-1 mb-4">
+          <div className=" h-10 w-10 flex items-center  text-gray-700">
+            <span className="text-xl font-semibold">{ticketData.ticketNo}</span>
+          </div>
           <div className="ml-2">
             <h1 className="text-2xl  font-semibold">{ticketDetail.title}</h1>
-            <p className="text-base text-gray-500">
-              {ticketDetail.statusFlow.fromUser.updatedBy.username}
-            </p>
+            <p className="text-base text-gray-500">{ticketData.username}</p>
           </div>
         </div>
 

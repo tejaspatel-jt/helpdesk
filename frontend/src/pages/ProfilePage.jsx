@@ -113,10 +113,9 @@ const MyProfile = () => {
         <div className="flex h-full  max-w-7xl mx-auto px-4 sm:px-5 lg:px-8">
           <Link
             to="/home"
-            // className="flex items-center text-blue-500 hover:text-blue-700"
-            className="flex items-center text-xl text-white "
+            className="flex items-center text-xl text-white hover:text-gray-300 "
           >
-            <ArrowLeftIcon className="h-5 w-5 mr-1 " />
+            <ArrowLeftIcon className="h-5 w-5 mr-1  " />
             Go to Homepage
           </Link>
         </div>
@@ -131,9 +130,6 @@ const MyProfile = () => {
           <div className=" justify-start mb-8">
             <img
               src={userDetails.avatar}
-              // src={
-              //   "https://media.istockphoto.com/id/469986766/photo/close-up-portrait-of-child-looking-up.jpg?s=170667a&w=0&k=20&c=7s9KHlN5E-ZfndTEJN70th0f5pnaOl47vta85mK7A5I="
-              // }
               alt="User Profile"
               className="w-32 h-32 rounded-full object-cover"
             />
@@ -172,9 +168,7 @@ const MyProfile = () => {
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Date of Birth:</label>
-
-            {/* {userDetails.dob && <p>{userDetails.dob.substring(0, 10)} </p>} */}
-            <p>{new Date(userDetails.dob).toLocaleString()} </p>
+            <p>{new Date(userDetails.dob).toLocaleString().substring(0, 8)} </p>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Role:</label>

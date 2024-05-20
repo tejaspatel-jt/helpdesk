@@ -14,7 +14,6 @@ import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
 
 function Home({ onLogout }) {
-
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({});
   const [title, setTitle] = useState("");
@@ -136,7 +135,7 @@ function Home({ onLogout }) {
           ) : Array.isArray(tickets) && tickets.length > 0 ? (
             tickets.map((ticket) => (
               <div
-                className="bg-white border border-gray-100 shadow-md rounded-md p-4 mb-4 cursor-pointer"
+                className="bg-white border hover:bg-green-200 border-gray-100 shadow-md rounded-md p-4 mb-4 cursor-pointer"
                 onClick={() => {
                   handleTicketClick(ticket);
                 }}
@@ -151,7 +150,10 @@ function Home({ onLogout }) {
                         </h3>
 
                         <span className="font-semibold text-xs">
-                          {ticket.createdAt.substring(0, 10)}
+                          {/* {ticket.createdAt.substring(0, 10)} */}
+                          {new Date(ticket.createdAt)
+                            .toLocaleString()
+                            .substring(0, 9)}
                         </span>
                       </div>
                     </div>
@@ -199,7 +201,7 @@ function Home({ onLogout }) {
               <form onSubmit={handleSubmit}>
                 <div className="mb-0.5">
                   <label htmlFor="title" className={FormFields.label}>
-                    Title
+                    Title <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -215,7 +217,7 @@ function Home({ onLogout }) {
                 )}
                 <div className="mb-0.5 ">
                   <label htmlFor="description" className={FormFields.label}>
-                    Description
+                    Description <span className="text-red-600">*</span>
                   </label>
                   <textarea
                     id="description"
@@ -232,7 +234,7 @@ function Home({ onLogout }) {
                 )}
                 <div className="mb-0.5">
                   <label htmlFor="department" className={FormFields.label}>
-                    Department
+                    Department <span className="text-red-600">*</span>
                   </label>
                   <select
                     id="department"
@@ -259,7 +261,7 @@ function Home({ onLogout }) {
                     className={FormFields.label}
                     // className="block text-sm font-medium text-gray-700"
                   >
-                    Attachments
+                    Attachments &#40;Optional&#41;
                   </label>
                   <input
                     type="file"

@@ -28,7 +28,13 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
 
   return (
     <div
-      className="cursor-pointer bg-white shadow-md rounded-md p-4 mb-4"
+      className={`cursor-pointer border  bg-white shadow-md rounded-md p-4 mb-4 ${
+        ticket.status === "raised"
+          ? "shadow-[0_0_10px_0_#FFDF00] hover:bg-yellow-200"
+          : ticket.status.includes("accepted")
+          ? "shadow-[0_0_10px_0_#2e8b57] hover:bg-green-200"
+          : "shadow-[0_0_10px_0_#FF7878] hover:bg-red-200"
+      }`}
       onClick={() => {
         handleTicketClick(ticket);
       }}
@@ -36,19 +42,26 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
       <div className="flex justify-start items-center mb-2">
         <h3 className="pr-1">{ticket.number}</h3>
         <div className="flex items-center gap-2 max-w-[1000px]">
-          {ticket.avatar ? (
+          {ticket.statusFlow.fromUser.updatedBy.avatar ? (
             <img
               className="border rounded-full h-10 w-10"
-              src={ticket.avatar}
+              src={ticket.statusFlow.fromUser.updatedBy.avatar}
               alt="photo"
             />
           ) : (
             <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
               <span className="text-xl font-semibold">
-                {ticket.title.charAt(0).toUpperCase()}
-                {ticket.title.indexOf(" ") !== -1
-                  ? ticket.title
-                      .charAt(ticket.title.indexOf(" ") + 1)
+                {ticket.statusFlow.fromUser.updatedBy.username
+                  .charAt(0)
+                  .toUpperCase()}
+                {ticket.statusFlow.fromUser.updatedBy.username.indexOf(" ") !==
+                -1
+                  ? ticket.statusFlow.fromUser.updatedBy.username
+                      .charAt(
+                        ticket.statusFlow.fromUser.updatedBy.username.indexOf(
+                          " "
+                        ) + 1
+                      )
                       .toUpperCase()
                   : ""}
               </span>
@@ -59,8 +72,8 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
             <h3 className="cursor-pointer text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate ">
               {ticket.title}
             </h3>
-            <span className="font-thin text-xs">
-              {ticket.createdAt.substring(0, 10)}
+            <span className="font-semibold text-xs">
+              {new Date(ticket.createdAt).toLocaleString().substring(0, 9)}
             </span>
           </div>
           <span
@@ -84,22 +97,22 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
           <button
             disabled={isApproved || isRejected}
             className={` text-white px-3 py-1  ${
-              isApproved
+              isApproved || isRejected
                 ? "bg-gray-300 hover:bg-gray-300"
                 : "bg-green-500 hover:bg-green-600"
             } rounded-md shadow-md mr-2  focus:outline-none focus:ring-2 focus:ring-green-500`}
-            onClick={() => handleApprove(ticket._id, setIsApproved)}
+            onClick={(event) => handleApprove(ticket._id, setIsApproved, event)}
           >
             {isApproved ? "Approved" : "Approve"}
           </button>
           <button
             disabled={isApproved || isRejected}
             className={` text-white px-3 py-1 ${
-              isRejected
+              isRejected || isApproved
                 ? "bg-gray-300 hover:bg-gray-300"
                 : "bg-red-500 hover:bg-red-600"
             } rounded-md shadow-md  focus:outline-none focus:ring-2 focus:ring-red-500`}
-            onClick={() => handleReject(ticket._id, setIsRejected)}
+            onClick={(event) => handleReject(ticket._id, setIsRejected, event)}
           >
             {isRejected ? "Rejected" : "Reject"}
           </button>
@@ -185,7 +198,8 @@ const AdminTickets = ({ onlogout }) => {
     }
   };
 
-  const handleApprove = async (ticketId, setIsApproved) => {
+  const handleApprove = async (ticketId, setIsApproved, event) => {
+    event.stopPropagation();
     setIsApproved(true);
     try {
       const response = await axios.patch(
@@ -214,7 +228,8 @@ const AdminTickets = ({ onlogout }) => {
     }
   };
 
-  const handleReject = async (ticketId, setIsRejected) => {
+  const handleReject = async (ticketId, setIsRejected, event) => {
+    event.stopPropagation();
     setIsRejected(true);
     try {
       const response = await axios.patch(
