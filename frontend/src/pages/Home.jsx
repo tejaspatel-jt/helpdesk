@@ -13,6 +13,8 @@ import {
 import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
 import { validateEditProfileFields } from "../Validation/Validation";
+import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
+import { MyRoutes, Routes } from "../common/common.config";
 
 function Home() {
   const [showForm, setShowForm] = useState(false);
@@ -86,7 +88,7 @@ function Home() {
   };
 
   const handleTicketClick = (ticketData) => {
-    navigate("/ticketDetailsPage", { state: { ticketDetail: ticketData } });
+    navigate(MyRoutes.TICKET_DETAILS, { state: { ticketDetail: ticketData } });
   };
 
   const [files, setFiles] = useState(false);
@@ -121,50 +123,13 @@ function Home() {
             <p className="text-center">No tickets found.</p>
           ) : Array.isArray(tickets) && tickets.length > 0 ? (
             tickets.map((ticket) => (
-              <div
-                className="bg-white border hover:bg-green-200 border-gray-100 shadow-md rounded-md p-4 mb-4 cursor-pointer"
-                onClick={() => {
-                  handleTicketClick(ticket);
-                }}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="first-part flex items-center gap-3">
-                    <h3 className="ticket-number">{ticket.number}</h3>
-                    <div className="ticket-heading flex items-center gap-2 max-w-[1000px]">
-                      <div className="wrapper">
-                        <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
-                          {ticket.title}
-                        </h3>
-
-                        <span className="font-semibold text-xs">
-                          {/* {ticket.createdAt.substring(0, 10)} */}
-                          {new Date(ticket.createdAt)
-                            .toLocaleString()
-                            .substring(0, 9)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="second-part">
-                    <div className="ticket-status-and-details flex gap-3 items-center min-w-28 text-center">
-                      <span
-                        className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
-                          ticket.status === "raised"
-                            ? "text-yellow-500"
-                            : ticket.status.includes("accepted")
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {ticket.status}
-                      </span>
-                      <span className="text-md font-medium text-gray-600">
-                        {ticket.department.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <TicketDisplayCard
+                key={ticket._id}
+                ticket={ticket}
+                handleTicketClick={handleTicketClick}
+                userRole={userDetails.role}
+                screen={MyRoutes.HOME}
+              />
             ))
           ) : (
             <tr>
@@ -175,8 +140,6 @@ function Home() {
           )}
 
           {showForm && (
-            // <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
-            //   <div className="bg-white rounded-lg p-8 w-full max-w-md">
             <Card>
               <div className="flex justify-between items-center">
                 <h2 className=" text-2xl font-semibold text-center  text-zinc-800">
@@ -261,10 +224,10 @@ function Home() {
                   />
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end ">
                   <button
                     type="submit"
-                    className="btn px-4 py-2 mt-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    className="btn px-4 py-2 mt-5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                   >
                     Create
                   </button>
@@ -274,8 +237,6 @@ function Home() {
                 </div>
               </form>
             </Card>
-            /* </div> */
-            /* </div> */
           )}
         </div>
         <ToastContainer />

@@ -14,4 +14,25 @@ export const TicketStatus = {
   ACCEPTED_ADMIN: "accepted_admin",
   PENDING_ADMIN: "pending_admin",
   REJECTED_ADMIN: "rejected_admin",
+  APPROVE: "Approve",
+  APPROVED: "Approved",
+  REJECT: "Reject",
+  REJECTED: "Rejected",
+};
+
+export const UserRole = {
+  EMPLOYEE: "employee",
+  MASTER: "master",
+  HR: "hr",
+  ADMIN: "admin",
+  IS: "is",
+};
+
+export const MyRoutes = {
+  DEFAULT: "/",
+  HOME: "/home",
+  FORGOT_PASSWORD: "/forgotpassword",
+  PROFILE: "/profile",
+  RASIED_TICKETS: "/raisedtickets",
+  TICKET_DETAILS: "/ticketDetailsPage",
 };

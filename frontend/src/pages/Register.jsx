@@ -14,6 +14,7 @@ import Layout from "../components/authentication/Layout";
 import Loader from "../components/loader/Loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { MyRoutes } from "../common/common.config";
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -81,7 +82,7 @@ function Register() {
         setSuccess(true);
         setChangeSuccess(true);
         setTimeout(() => {
-          navigate("/");
+          navigate(MyRoutes.DEFAULT);
         }, 1000);
         showToastMessage("Registered Successfully ! ");
         setError("");
