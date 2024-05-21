@@ -20,6 +20,7 @@ import jtlogo from "../images/jtlogo.png";
 import pageslayout from "../styles/pageslayout.module.css";
 import { SuccessToastMessage } from "../common/commonMehtods";
 import { useAuth } from "../components/contexts/AuthContextProvider";
+import { MyRoutes } from "../common/common.config";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -79,7 +80,7 @@ const LoginPage = () => {
           const accessToken = response.data.data.accessToken;
 
           login(accessToken);
-          navigate("/mytickets");
+          navigate(MyRoutes.HOME);
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });
@@ -99,12 +100,6 @@ const LoginPage = () => {
       }
     }
   };
-
-  // const showToastMessage = (message) => {
-  //   toast.success(message, {
-  //     position: "top-right",
-  //   });
-  // };
 
   return (
     <>
