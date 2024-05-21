@@ -19,6 +19,13 @@ const TicketDetailsPage = ({ onLogout }) => {
   const steps = getSteps(ticketDetail);
   const ticketData = getTicketDetails(ticketDetail);
 
+  const handleApprove = () => {
+    alert("Ticket Approved Successfully");
+  };
+  const handleReject = () => {
+    alert("Ticket Rejected Successfully");
+  };
+
   return (
     <>
       {/* ------------------------------Navbar-------------------------------- */}
@@ -68,6 +75,21 @@ const TicketDetailsPage = ({ onLogout }) => {
               {new Date(ticketDetail.createdAt).toLocaleString()}
             </li>
           </ul>
+        </div>
+
+        <div className="mt-2 flex justify-center space-x-8">
+          <button
+            onClick={handleApprove}
+            className={` text-white px-3 py-1 w-[100px] bg-green-500 rounded-md shadow-md  focus:outline-none focus:ring-2 focus:ring-green-500`}
+          >
+            Approve
+          </button>
+          <button
+            onClick={handleReject}
+            className={` text-white px-3 py-1 w-[100px] rounded-md shadow-md  bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500`}
+          >
+            Reject
+          </button>
         </div>
       </div>
     </>

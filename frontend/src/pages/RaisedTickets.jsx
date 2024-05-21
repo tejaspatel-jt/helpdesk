@@ -29,13 +29,10 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
 
   return (
     <div
-      className={`cursor-pointer border  bg-white shadow-md rounded-md p-4 mb-4 ${
-        ticket.status === "raised"
-          ? "shadow-[0_0_10px_0_#FFDF00] hover:bg-yellow-200"
-          : ticket.status.includes("accepted")
-          ? "shadow-[0_0_10px_0_#2e8b57] hover:bg-green-200"
-          : "shadow-[0_0_10px_0_#FF7878] hover:bg-red-200"
-      }`}
+      onClick={() => {
+        handleTicketClick(ticket);
+      }}
+      className={`cursor-pointer border  bg-white shadow-md rounded-md p-4 mb-4 hover:bg-gray-200`}
     >
       <div className="flex justify-start items-center mb-2">
         <h3 className="pr-1">{ticket.number}</h3>
@@ -67,12 +64,7 @@ const AdminTicketCard = ({ ticket, handleApprove, handleReject, userRole }) => {
           )}
 
           <div>
-            <h3
-              onClick={() => {
-                handleTicketClick(ticket);
-              }}
-              className="cursor-pointer text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate "
-            >
+            <h3 className="cursor-pointer text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden whitespace-nowrap">
               {ticket.title}
             </h3>
             <span className="font-semibold text-xs">

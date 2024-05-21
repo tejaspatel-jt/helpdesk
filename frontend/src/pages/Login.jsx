@@ -79,7 +79,7 @@ const LoginPage = () => {
           const accessToken = response.data.data.accessToken;
 
           login(accessToken);
-          navigate("/home");
+          navigate("/mytickets");
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });

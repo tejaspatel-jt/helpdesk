@@ -85,6 +85,7 @@ const MyProfile = () => {
       }
     } catch (error) {
       console.error("Error updating profile:", error);
+      throw new Error("this is error", error.response.data.message);
       alert("An error occurred while updating the profile.");
     }
     // return response;
@@ -112,7 +113,7 @@ const MyProfile = () => {
       <nav className="bg-gray-800 h-16">
         <div className="flex h-full  max-w-7xl mx-auto px-4 sm:px-5 lg:px-8">
           <Link
-            to="/home"
+            to="/mytickets"
             className="flex items-center text-xl text-white hover:text-gray-300 "
           >
             <ArrowLeftIcon className="h-5 w-5 mr-1  " />
@@ -168,7 +169,9 @@ const MyProfile = () => {
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Date of Birth:</label>
-            <p>{new Date(userDetails.dob).toLocaleString().substring(0, 8)} </p>
+            <p>
+              {new Date(userDetails.dob).toLocaleString().substring(0, 10)}{" "}
+            </p>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Role:</label>
@@ -178,7 +181,7 @@ const MyProfile = () => {
 
         {isDialogOpen && (
           <Card>
-            <div className="flex justify-between ">
+            <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-center  text-zinc-800">
                 Edit My Profile
               </h2>
@@ -190,17 +193,17 @@ const MyProfile = () => {
               />
             </div>
 
-            <div className="justify-start mb-8 relative ml-[125px]">
+            <div className="mb-8 relative ml-[195px]">
               <img
                 src={userDetails.avatar}
                 alt="User Profile"
-                className="w-24 h-24 rounded-full object-cover z-10 ring-2 outline-black"
+                className="w-24 h-24 rounded-full object-cover z-10 border-2 border-gray-500 outline-black"
               />
-              <div className="h-8 w-8 absolute top-0 left-0 mt-[90px] ml-[90px]  border border-black rounded-full bg-white p-1">
+              <div className="h-8 w-8 absolute mr-[215px] bottom-0 right-0 border border-black rounded-full bg-white p-1 flex items-center justify-center">
                 <img
                   src="https://cdn-icons-png.freepik.com/256/6933/6933103.png?ga=GA1.1.1614053947.1713869690&semt=ais_hybrid"
                   alt=""
-                  className="cursor-pointer h-5 w-5 pl-[0.1rem]"
+                  className="cursor-pointer h-5 w-5"
                   onClick={handleClick}
                 />
                 <input

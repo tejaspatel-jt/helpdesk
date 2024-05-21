@@ -14,7 +14,7 @@ import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
 import { validateEditProfileFields } from "../Validation/Validation";
 
-function Home() {
+function MyTickets() {
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({});
   const [title, setTitle] = useState("");
@@ -81,7 +81,7 @@ function Home() {
     } catch (error) {
       ErrorToastMessage("Error creating ticket");
       console.error("Error submitting ticket:", error);
-      setErrors({ form: error.message });
+      setErrors({ form: error.response.data.message });
     }
   };
 
@@ -122,7 +122,7 @@ function Home() {
           ) : Array.isArray(tickets) && tickets.length > 0 ? (
             tickets.map((ticket) => (
               <div
-                className="bg-white border hover:bg-green-200 border-gray-100 shadow-md rounded-md p-4 mb-4 cursor-pointer"
+                className="bg-white border hover:bg-gray-200 border-gray-100 shadow-md rounded-md p-4 mb-4 cursor-pointer"
                 onClick={() => {
                   handleTicketClick(ticket);
                 }}
@@ -132,7 +132,7 @@ function Home() {
                     <h3 className="ticket-number">{ticket.number}</h3>
                     <div className="ticket-heading flex items-center gap-2 max-w-[1000px]">
                       <div className="wrapper">
-                        <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
+                        <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden whitespace-nowrap">
                           {ticket.title}
                         </h3>
 
@@ -158,7 +158,7 @@ function Home() {
                       >
                         {ticket.status}
                       </span>
-                      <span className="text-md font-medium text-gray-600">
+                      <span className="text-md font-medium w-[70px] text-gray-600">
                         {ticket.department.toUpperCase()}
                       </span>
                     </div>
@@ -260,6 +260,9 @@ function Home() {
                     multiple
                   />
                 </div>
+                {errors.form && (
+                  <p className={validations.required}>{errors.form}</p>
+                )}
 
                 <div className="flex justify-end">
                   <button
@@ -268,9 +271,6 @@ function Home() {
                   >
                     Create
                   </button>
-                  {errors.form && (
-                    <p className={validations.required}>{errors.form}</p>
-                  )}
                 </div>
               </form>
             </Card>
@@ -284,4 +284,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default MyTickets;
