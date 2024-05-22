@@ -8,8 +8,9 @@ import ApiService from "../ApiUtils/Api";
 import {
   ErrorToastMessage,
   SuccessToastMessage,
-} from "../common/commonMehtods";
+} from "../common/commonMethods";
 import { ToastContainer } from "react-toastify";
+import { FaPencilAlt } from "react-icons/fa";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
@@ -86,9 +87,7 @@ const MyProfile = () => {
     } catch (error) {
       console.error("Error updating profile:", error);
       throw new Error("this is error", error.response.data.message);
-      alert("An error occurred while updating the profile.");
     }
-    // return response;
   };
 
   function formatDate(inputDateString) {
@@ -132,7 +131,7 @@ const MyProfile = () => {
             <img
               src={userDetails.avatar}
               alt="User Profile"
-              className="w-32 h-32 rounded-full object-cover"
+              className="w-32 h-32 rounded-full object-cover border-2 border-gray-700"
             />
           </div>
           {/* { Edit button } */}
@@ -145,7 +144,8 @@ const MyProfile = () => {
                 // userDetails.avatar = "";
               }}
             >
-              ✎ Edit Profile
+              <FaPencilAlt />
+              Edit Profile
             </button>
           </div>
         </div>

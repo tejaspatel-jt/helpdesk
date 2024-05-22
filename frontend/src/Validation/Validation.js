@@ -43,7 +43,11 @@ export const validateLoginFields = (email, password) => {
   return validationErrors;
 };
 
-export const validateEditProfileFields = (title, description, department) => {
+export const validateCreateNewTicketFields = (
+  title,
+  description,
+  department
+) => {
   const validationErrors = {};
   if (!title) {
     validationErrors.title = "Title is required.";

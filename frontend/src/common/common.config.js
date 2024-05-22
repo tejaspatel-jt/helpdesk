@@ -30,7 +30,7 @@ export const UserRole = {
 
 export const MyRoutes = {
   DEFAULT: "/",
-  HOME: "/home",
+  MY_TICKETS: "/mytickets",
   FORGOT_PASSWORD: "/forgotpassword",
   PROFILE: "/profile",
   RASIED_TICKETS: "/raisedtickets",

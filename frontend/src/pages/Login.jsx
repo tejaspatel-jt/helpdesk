@@ -18,7 +18,7 @@ import { UserDetails } from "../components/CustomObjects/UserDetails";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import jtlogo from "../images/jtlogo.png";
 import pageslayout from "../styles/pageslayout.module.css";
-import { SuccessToastMessage } from "../common/commonMehtods";
+import { SuccessToastMessage } from "../common/commonMethods";
 import { useAuth } from "../components/contexts/AuthContextProvider";
 import { MyRoutes } from "../common/common.config";
 
@@ -80,7 +80,7 @@ const LoginPage = () => {
           const accessToken = response.data.data.accessToken;
 
           login(accessToken);
-          navigate(MyRoutes.HOME);
+          navigate(MyRoutes.MY_TICKETS);
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });

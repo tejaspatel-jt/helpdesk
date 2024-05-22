@@ -55,7 +55,7 @@ const UserIconMenu = () => {
         >
           <div className="py-1">
             <Link
-              to="/profile"
+              to={MyRoutes.PROFILE}
               className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
             >
               My Profile

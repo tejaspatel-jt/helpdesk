@@ -118,6 +118,7 @@ export default class ApiService {
       );
       return response;
     } catch (error) {
+      throw error;
       this.setLoading(false);
       console.error("Error while creating ticket:", error);
     } finally {

@@ -23,13 +23,9 @@ const TicketDisplayCard = ({
 
   return (
     <div
-      className={`cursor-pointer border bg-white shadow-md rounded-md p-4 mb-4 ${
-        ticket.status === "raised"
-          ? "shadow-[0_0_10px_0_#FFDF00] hover:bg-yellow-200"
-          : ticket.status.includes(TicketStatus.ACCEPTED)
-          ? "shadow-[0_0_10px_0_#2e8b57] hover:bg-green-200"
-          : "shadow-[0_0_10px_0_#FF7878] hover:bg-red-200"
-      }`}
+      className={
+        "cursor-pointer border bg-white shadow-md rounded-md p-4 mb-4 hover:bg-gray-200"
+      }
       onClick={() => {
         handleTicketClick(ticket);
       }}
@@ -39,14 +35,15 @@ const TicketDisplayCard = ({
           <h3 className="ticket-number">{ticket.number}</h3>
           <div className="ticket-heading flex items-center gap-2 max-w-[1000px]">
             {userRole != UserRole.EMPLOYEE &&
-            screen != MyRoutes.HOME &&
+            screen != MyRoutes.MY_TICKETS &&
             ticket.statusFlow?.fromUser?.updatedBy?.avatar ? (
               <img
                 className="border rounded-full h-10 w-10"
                 src={ticket.statusFlow.fromUser.updatedBy.avatar}
                 alt="photo"
               />
-            ) : userRole != UserRole.EMPLOYEE && screen != MyRoutes.HOME ? (
+            ) : userRole != UserRole.EMPLOYEE &&
+              screen != MyRoutes.MY_TICKETS ? (
               <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
                 <span className="text-xl font-semibold">
                   {ticket.statusFlow?.fromUser?.updatedBy?.username
@@ -95,7 +92,7 @@ const TicketDisplayCard = ({
               {ticket.department.toUpperCase()}
             </span>
           </div>
-          {userRole != UserRole.EMPLOYEE && screen != MyRoutes.HOME && (
+          {userRole != UserRole.EMPLOYEE && screen != MyRoutes.MY_TICKETS && (
             <div className="flex ml-auto min-w-[180px] ">
               <button
                 disabled={isApproved || isRejected}

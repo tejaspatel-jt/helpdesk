@@ -28,7 +28,7 @@ function App() {
               element={<ForgotPassword />}
             />
             <Route element={<ProtectedRoute />}>
-              <Route path={MyRoutes.HOME} element={<Home />} />
+              <Route path={MyRoutes.MY_TICKETS} element={<MyTickets />} />
               <Route path={MyRoutes.PROFILE} element={<MyProfile />} />
               <Route
                 path={MyRoutes.RASIED_TICKETS}
@@ -39,8 +39,8 @@ function App() {
                 element={<TicketDetailsPage />}
               />
               <Route
-                path={MyRoutes.HOME}
-                element={<Navigate to={MyRoutes.HOME} />}
+                path={MyRoutes.MY_TICKETS}
+                element={<Navigate to={MyRoutes.MY_TICKETS} />}
               />
             </Route>
           </Routes>

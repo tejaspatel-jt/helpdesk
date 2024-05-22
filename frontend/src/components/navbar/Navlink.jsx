@@ -42,6 +42,7 @@
 // -----------CURRENT WORKING CODE OF NAVLINK-------------
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { MyRoutes, UserRole } from "../../common/common.config";
 
 const NavLinks = ({ userRole }) => {
   const location = useLocation();
@@ -49,18 +50,20 @@ const NavLinks = ({ userRole }) => {
     <div className="hidden md:block">
       <div className="ml-10 flex items-baseline space-x-4">
         <NavLink
-          to="/mytickets"
+          to={MyRoutes.MY_TICKETS}
           className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
-            location.pathname === "/mytickets" ? "bg-gray-700 text-white" : ""
+            location.pathname === MyRoutes.MY_TICKETS
+              ? "bg-gray-700 text-white"
+              : ""
           }`}
         >
           My Tickets
         </NavLink>
-        {!(userRole === "employee") && (
+        {!(userRole === UserRole.EMPLOYEE) && (
           <NavLink
-            to="/raisedtickets"
+            to={MyRoutes.RASIED_TICKETS}
             className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
-              location.pathname === "/raisedtickets"
+              location.pathname === MyRoutes.RASIED_TICKETS
                 ? "bg-gray-700 text-white"
                 : ""
             }`}

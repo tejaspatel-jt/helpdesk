@@ -9,12 +9,15 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ErrorToastMessage,
   SuccessToastMessage,
-} from "../common/commonMehtods";
+} from "../common/commonMethods";
 import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
-import { validateEditProfileFields } from "../Validation/Validation";
+import {
+  validateCreateNewTicketFields,
+  validateEditProfileFields,
+} from "../Validation/Validation";
 import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
-import { MyRoutes, Routes } from "../common/common.config";
+import { MyRoutes } from "../common/common.config";
 
 function MyTickets() {
   const [showForm, setShowForm] = useState(false);
@@ -52,7 +55,7 @@ function MyTickets() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateEditProfileFields(
+    const validationErrors = validateCreateNewTicketFields(
       title,
       description,
       department
@@ -83,7 +86,19 @@ function MyTickets() {
     } catch (error) {
       ErrorToastMessage("Error creating ticket");
       console.error("Error submitting ticket:", error);
-      setErrors({ form: error.response.data.message });
+      if (!error.response) {
+        setErrors({ form: error.message });
+      } else {
+        if (error.response.status === 400) {
+          if (error.response.data.message.includes("Title")) {
+            setErrors({ title: error.response.data.message });
+          } else {
+            setErrors({ description: error.response.data.message });
+          }
+        } else {
+          console.log(error.message);
+        }
+      }
     }
   };
 
@@ -128,7 +143,7 @@ function MyTickets() {
                 ticket={ticket}
                 handleTicketClick={handleTicketClick}
                 userRole={userDetails.role}
-                screen={MyRoutes.HOME}
+                screen={MyRoutes.MY_TICKETS}
               />
             ))
           ) : (
@@ -148,8 +163,9 @@ function MyTickets() {
                 <CloseButton onclick={() => setShowForm(false)} />
               </div>
 
-              <form onSubmit={handleSubmit}>
-                <div className="mb-0.5">
+              <form onSubmit={handleSubmit} className="space-y-0.5">
+                {/* <div className="mb-0.5"> */}
+                <div>
                   <label htmlFor="title" className={FormFields.label}>
                     Title <span className="text-red-600">*</span>
                   </label>
@@ -165,7 +181,8 @@ function MyTickets() {
                 {errors.title && (
                   <p className={validations.required}>{errors.title}</p>
                 )}
-                <div className="mb-0.5 ">
+                {/* <div className="mb-0.5 "> */}
+                <div>
                   <label htmlFor="description" className={FormFields.label}>
                     Description <span className="text-red-600">*</span>
                   </label>
@@ -182,7 +199,8 @@ function MyTickets() {
                 {errors.description && (
                   <p className={validations.required}>{errors.description}</p>
                 )}
-                <div className="mb-0.5">
+                {/* <div className="mb-0.5"> */}
+                <div>
                   <label htmlFor="department" className={FormFields.label}>
                     Department <span className="text-red-600">*</span>
                   </label>
@@ -196,9 +214,9 @@ function MyTickets() {
                     <option disabled value="">
                       SELECT DEPARTMENT
                     </option>
-                    <option value="is">is</option>
-                    <option value="hr">hr</option>
-                    <option value="admin">admin</option>
+                    <option value="is">IS</option>
+                    <option value="hr">HR</option>
+                    <option value="admin">ADMIN</option>
                   </select>
                 </div>
                 {errors.department && (
@@ -223,6 +241,7 @@ function MyTickets() {
                     multiple
                   />
                 </div>
+
                 {errors.form && (
                   <p className={validations.required}>{errors.form}</p>
                 )}

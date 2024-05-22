@@ -7,7 +7,7 @@ import ApiService from "../ApiUtils/Api";
 import {
   ErrorToastMessage,
   SuccessToastMessage,
-} from "../common/commonMehtods";
+} from "../common/commonMethods";
 import { ToastContainer } from "react-toastify";
 import { MyRoutes, TicketStatus, UserRole } from "../common/common.config";
 import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
@@ -101,7 +101,6 @@ const AdminTickets = () => {
       }
     } catch (error) {
       console.error("Error approving ticket:", error);
-      alert("An error occurred while approving the ticket.");
     }
   };
 
