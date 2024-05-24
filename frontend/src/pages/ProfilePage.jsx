@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
-import { Link } from "react-router-dom";
 import CloseButton from "../components/button/CloseButton";
 import FormFields from "../components/form/FormFields.module.css";
 import Card from "../components/card/Card";
@@ -8,8 +6,11 @@ import ApiService from "../ApiUtils/Api";
 import {
   ErrorToastMessage,
   SuccessToastMessage,
-} from "../common/commonMehtods";
+} from "../common/commonMethods";
 import { ToastContainer } from "react-toastify";
+import { FaPencilAlt } from "react-icons/fa";
+import Navbar from "../components/navbar/Navbar";
+import { MyRoutes } from "../common/common.config";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
@@ -85,9 +86,8 @@ const MyProfile = () => {
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("An error occurred while updating the profile.");
+      throw new Error("this is error", error.response.data.message);
     }
-    // return response;
   };
 
   function formatDate(inputDateString) {
@@ -109,18 +109,9 @@ const MyProfile = () => {
 
   return (
     <>
-      <nav className="bg-gray-800 h-16">
-        <div className="flex h-full  max-w-7xl mx-auto px-4 sm:px-5 lg:px-8">
-          <Link
-            to="/home"
-            // className="flex items-center text-blue-500 hover:text-blue-700"
-            className="flex items-center text-xl text-white "
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-1 " />
-            Go to Homepage
-          </Link>
-        </div>
-      </nav>
+      {}
+      <Navbar screen={MyRoutes.PROFILE} />
+
       <div className="container mx-auto p-8">
         <h2 className="text-center font-semibold py-3 text-3xl text-zinc-800">
           My Profile
@@ -131,24 +122,20 @@ const MyProfile = () => {
           <div className=" justify-start mb-8">
             <img
               src={userDetails.avatar}
-              // src={
-              //   "https://media.istockphoto.com/id/469986766/photo/close-up-portrait-of-child-looking-up.jpg?s=170667a&w=0&k=20&c=7s9KHlN5E-ZfndTEJN70th0f5pnaOl47vta85mK7A5I="
-              // }
               alt="User Profile"
-              className="w-32 h-32 rounded-full object-cover"
+              className="w-32 h-32 rounded-full object-cover border-2 border-gray-700"
             />
           </div>
           {/* { Edit button } */}
           <div className=" justify-end mb-4">
             <button
               className="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
-              // className="btn  text-white p-3  font-bold shadow-md bg-blue-500 hover:bg-blue-600 focus:outline-none "
               onClick={() => {
                 setIsDialogOpen(true);
-                // userDetails.avatar = "";
               }}
             >
-              ✎ Edit Profile
+              <FaPencilAlt />
+              Edit Profile
             </button>
           </div>
         </div>
@@ -172,9 +159,12 @@ const MyProfile = () => {
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Date of Birth:</label>
-
-            {/* {userDetails.dob && <p>{userDetails.dob.substring(0, 10)} </p>} */}
-            <p>{new Date(userDetails.dob).toLocaleString()} </p>
+            <p>
+              {new Date(userDetails.dob)
+                .toLocaleString()
+                .substring(0, 10)
+                .replace(",", "")}{" "}
+            </p>
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Role:</label>
@@ -184,9 +174,9 @@ const MyProfile = () => {
 
         {isDialogOpen && (
           <Card>
-            <div className="flex justify-between ">
+            <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-center  text-zinc-800">
-                Edit My Profile
+                Edit Profile
               </h2>
               <CloseButton
                 onclick={() => {
@@ -196,17 +186,17 @@ const MyProfile = () => {
               />
             </div>
 
-            <div className="justify-start mb-8 relative ml-[125px]">
+            <div className="mb-8 relative ml-[195px]">
               <img
                 src={userDetails.avatar}
                 alt="User Profile"
-                className="w-24 h-24 rounded-full object-cover z-10 ring-2 outline-black"
+                className="w-24 h-24 rounded-full object-cover z-10 border-2 border-gray-500 outline-black"
               />
-              <div className="h-8 w-8 absolute top-0 left-0 mt-[90px] ml-[90px]  border border-black rounded-full bg-white p-1">
+              <div className="h-8 w-8 absolute mr-[215px] bottom-0 right-0 border border-black rounded-full bg-white p-1 flex items-center justify-center">
                 <img
                   src="https://cdn-icons-png.freepik.com/256/6933/6933103.png?ga=GA1.1.1614053947.1713869690&semt=ais_hybrid"
                   alt=""
-                  className="cursor-pointer h-5 w-5 pl-[0.1rem]"
+                  className="cursor-pointer h-5 w-5"
                   onClick={handleClick}
                 />
                 <input

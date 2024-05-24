@@ -64,3 +64,11 @@ export function getSteps(apiRes) {
     },
   ];
 }
+
+export function getTicketDetails(ticketData) {
+  return {
+    ticketNo: ticketData.number,
+    title: ticketData.title,
+    username: ticketData.statusFlow.fromUser.updatedBy.username,
+  };
+}

@@ -9,13 +9,17 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ErrorToastMessage,
   SuccessToastMessage,
-} from "../common/commonMehtods";
+} from "../common/commonMethods";
 import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
+import {
+  validateCreateNewTicketFields,
+  validateEditProfileFields,
+} from "../Validation/Validation";
+import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
+import { MyRoutes } from "../common/common.config";
 
-function Home({ onLogout }) {
-  // Test Commit
-
+function MyTickets() {
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({});
   const [title, setTitle] = useState("");
@@ -26,50 +30,59 @@ function Home({ onLogout }) {
   const apiService = new ApiService(setLoading);
   const navigate = useNavigate();
   const { userDetails } = useContext(UserContext);
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  useEffect(() => {
+    fetchTickets().then((val) => {
+      console.log("fetch tickets called----", val);
+    });
+  }, [page]);
+
+  useEffect(() => {
+    const handleInfiniteScroll = async (e) => {
+      const scrollHeight = e.target.documentElement.scrollHeight;
+      const currentHeight =
+        e.target.documentElement.scrollTop + window.innerHeight;
+      try {
+        if (currentHeight + 1 >= scrollHeight) {
+          console.log("v_ UE handleInfiniteScroll IF ---- ");
+          setPage((prevpage) => prevpage + 1);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    window.addEventListener("scroll", handleInfiniteScroll);
+    return () => window.removeEventListener("scroll", handleInfiniteScroll);
+  }, []);
 
   const fetchTickets = async () => {
-    setLoading(true);
     try {
-      const response = await apiService.fetchUserTickets();
+      const response = await apiService.fetchUserTickets({ page, perPage });
       const sortedTickets = response.data.data.tickets.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
-
-      setTickets(sortedTickets);
+      if (page === 1) {
+        setTickets(sortedTickets);
+      } else {
+        setTickets((pre) => [...pre, ...sortedTickets]);
+      }
     } catch (error) {
+      setLoading(false);
       console.error("Error fetching tickets:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchTickets().then((val) => {
-      console.log("fetch tickets called----", val);
-    });
-  }, []);
-
-  const validateFields = (title, description, department) => {
-    const validationErrors = {};
-
-    if (!title) {
-      validationErrors.title = "Title is required.";
-    }
-
-    if (!description) {
-      validationErrors.description = "Description is required.";
-    }
-
-    if (!department) {
-      validationErrors.department = "Department is required.";
-    }
-
-    return validationErrors;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateFields(title, description, department);
+    const validationErrors = validateCreateNewTicketFields(
+      title,
+      description,
+      department
+    );
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -96,12 +109,24 @@ function Home({ onLogout }) {
     } catch (error) {
       ErrorToastMessage("Error creating ticket");
       console.error("Error submitting ticket:", error);
-      setErrors({ form: error.message });
+      if (!error.response) {
+        setErrors({ form: error.message });
+      } else {
+        if (error.response.status === 400) {
+          if (error.response.data.message.includes("Title")) {
+            setErrors({ title: error.response.data.message });
+          } else {
+            setErrors({ description: error.response.data.message });
+          }
+        } else {
+          console.log(error.message);
+        }
+      }
     }
   };
 
   const handleTicketClick = (ticketData) => {
-    navigate("/ticketDetailsPage", { state: { ticketDetail: ticketData } });
+    navigate(MyRoutes.TICKET_DETAILS, { state: { ticketDetail: ticketData } });
   };
 
   const [files, setFiles] = useState(false);
@@ -120,7 +145,7 @@ function Home({ onLogout }) {
 
   return (
     <>
-      <Navbar onLogout={onLogout} userRole={userDetails.role} />
+      <Navbar userRole={userDetails.role} screen={MyRoutes.MY_TICKETS} />
       <button
         className="btn fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
         onClick={() => setShowForm(true)}
@@ -136,47 +161,13 @@ function Home({ onLogout }) {
             <p className="text-center">No tickets found.</p>
           ) : Array.isArray(tickets) && tickets.length > 0 ? (
             tickets.map((ticket) => (
-              <div
-                className="bg-white border border-gray-100 shadow-md rounded-md p-4 mb-4 cursor-pointer"
-                onClick={() => {
-                  handleTicketClick(ticket);
-                }}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="first-part flex items-center gap-3">
-                    <h3 className="ticket-number">{ticket.number}</h3>
-                    <div className="ticket-heading flex items-center gap-2 max-w-[1000px]">
-                      <div className="wrapper">
-                        <h3 className="text-lg font-semibold w-[700px] h-[25px] text-ellipsis overflow-hidden text-truncate">
-                          {ticket.title}
-                        </h3>
-
-                        <span className="font-semibold text-xs">
-                          {ticket.createdAt.substring(0, 10)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="second-part">
-                    <div className="ticket-status-and-details flex gap-3 items-center min-w-28 text-center">
-                      <span
-                        className={` text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
-                          ticket.status === "raised"
-                            ? "text-yellow-500"
-                            : ticket.status.includes("accepted")
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {ticket.status}
-                      </span>
-                      <span className="text-md font-medium text-gray-600">
-                        {ticket.department.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <TicketDisplayCard
+                key={ticket._id}
+                ticket={ticket}
+                handleTicketClick={handleTicketClick}
+                userRole={userDetails.role}
+                screen={MyRoutes.MY_TICKETS}
+              />
             ))
           ) : (
             <tr>
@@ -187,8 +178,6 @@ function Home({ onLogout }) {
           )}
 
           {showForm && (
-            // <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
-            //   <div className="bg-white rounded-lg p-8 w-full max-w-md">
             <Card>
               <div className="flex justify-between items-center">
                 <h2 className=" text-2xl font-semibold text-center  text-zinc-800">
@@ -197,10 +186,11 @@ function Home({ onLogout }) {
                 <CloseButton onclick={() => setShowForm(false)} />
               </div>
 
-              <form onSubmit={handleSubmit}>
-                <div className="mb-0.5">
+              <form onSubmit={handleSubmit} className="space-y-0.5">
+                {/* <div className="mb-0.5"> */}
+                <div>
                   <label htmlFor="title" className={FormFields.label}>
-                    Title
+                    Title <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -214,9 +204,10 @@ function Home({ onLogout }) {
                 {errors.title && (
                   <p className={validations.required}>{errors.title}</p>
                 )}
-                <div className="mb-0.5 ">
+                {/* <div className="mb-0.5 "> */}
+                <div>
                   <label htmlFor="description" className={FormFields.label}>
-                    Description
+                    Description <span className="text-red-600">*</span>
                   </label>
                   <textarea
                     id="description"
@@ -231,9 +222,10 @@ function Home({ onLogout }) {
                 {errors.description && (
                   <p className={validations.required}>{errors.description}</p>
                 )}
-                <div className="mb-0.5">
+                {/* <div className="mb-0.5"> */}
+                <div>
                   <label htmlFor="department" className={FormFields.label}>
-                    Department
+                    Department <span className="text-red-600">*</span>
                   </label>
                   <select
                     id="department"
@@ -245,9 +237,9 @@ function Home({ onLogout }) {
                     <option disabled value="">
                       SELECT DEPARTMENT
                     </option>
-                    <option value="is">is</option>
-                    <option value="hr">hr</option>
-                    <option value="admin">admin</option>
+                    <option value="is">IS</option>
+                    <option value="hr">HR</option>
+                    <option value="admin">ADMIN</option>
                   </select>
                 </div>
                 {errors.department && (
@@ -260,7 +252,7 @@ function Home({ onLogout }) {
                     className={FormFields.label}
                     // className="block text-sm font-medium text-gray-700"
                   >
-                    Attachments
+                    Attachments &#40;Optional&#41;
                   </label>
                   <input
                     type="file"
@@ -273,21 +265,20 @@ function Home({ onLogout }) {
                   />
                 </div>
 
-                <div className="flex justify-end">
+                {errors.form && (
+                  <p className={validations.required}>{errors.form}</p>
+                )}
+
+                <div className="flex justify-end ">
                   <button
                     type="submit"
-                    className="btn px-4 py-2 mt-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    className="btn px-4 py-2 mt-5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                   >
                     Create
                   </button>
-                  {errors.form && (
-                    <p className={validations.required}>{errors.form}</p>
-                  )}
                 </div>
               </form>
             </Card>
-            /* </div> */
-            /* </div> */
           )}
         </div>
         <ToastContainer />
@@ -296,4 +287,4 @@ function Home({ onLogout }) {
   );
 }
 
-export default Home;
+export default MyTickets;

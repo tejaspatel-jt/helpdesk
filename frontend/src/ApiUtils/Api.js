@@ -118,6 +118,7 @@ export default class ApiService {
       );
       return response;
     } catch (error) {
+      throw error;
       this.setLoading(false);
       console.error("Error while creating ticket:", error);
     } finally {
@@ -125,7 +126,7 @@ export default class ApiService {
     }
   };
 
-  fetchUserTickets = async () => {
+  fetchUserTickets = async (params) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
@@ -134,6 +135,7 @@ export default class ApiService {
 
       const response = await BaseApi.get(USER_FETCH_TICEKTS_ENDPOINT, {
         headers,
+        params: params,
       });
       console.log(response);
       return response;
@@ -212,15 +214,14 @@ export default class ApiService {
     }
   };
 
-  fetchAllUserTickets = async () => {
+  handleApproveOrReject = async (body) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
         ContentType: "application/json",
       };
-
-      const response = await BaseApi.get(FETCH_ALL_USER_TICKETS, {
+      const response = await BaseApi.patch(USER_TICKET_APPROVE_REJECT, body, {
         headers,
       });
       return response;
@@ -232,24 +233,43 @@ export default class ApiService {
     }
   };
 
-  handleApproveOrReject = async (ticketId, ticketStatus) => {
+  downloadAttachment = async (attachment) => {
     try {
-      const accessToken = localStorage.getItem("accessToken");
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        ContentType: "application/json",
-      };
-      const response = await BaseApi.patch(
-        USER_TICKET_APPROVE_REJECT,
-        { ticketId: ticketId, ticketStatus: ticketStatus },
-        { headers }
-      );
-      return response;
+      // Fetch the image from the API using Axios
+      const response = await axios.get(attachment, {
+        responseType: "blob", // Important to specify the response type as 'blob'
+      });
+
+      // Create a Blob from the response data
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+
+      // Create a temporary URL for the Blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a link element
+      const a = document.createElement("a");
+      a.href = url;
+
+      a.download = ""; // You can change the default file name here
+
+      // Append the link to the body (required for Firefox)
+      document.body.appendChild(a);
+
+      // Programmatically click the link to trigger the download
+      a.click();
+
+      // Remove the link from the document
+      document.body.removeChild(a);
+
+      // Revoke the object URL to free up memory
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      this.setLoading(false);
-      console.error("Error fetching tickets:", error);
-    } finally {
-      this.setLoading(false);
+      console.error(
+        "There has been a problem with your Axios operation:",
+        error
+      );
     }
   };
 }

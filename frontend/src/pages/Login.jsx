@@ -17,11 +17,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserDetails } from "../components/CustomObjects/UserDetails";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import jtlogo from "../images/jtlogo.png";
-import pageslayout from "../styles/pageslayout.module.css";
-import { SuccessToastMessage } from "../common/commonMehtods";
+import { SuccessToastMessage } from "../common/commonMethods";
+import { useAuth } from "../components/contexts/AuthContextProvider";
+import { MyRoutes } from "../common/common.config";
 
-// Test Commit 24 May
-const LoginPage = ({ handleLogin }) => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -33,6 +33,8 @@ const LoginPage = ({ handleLogin }) => {
 
   const { setUserDetails } = useContext(UserContext);
   const userDetail = new UserDetails("");
+
+  const { login } = useAuth();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -75,8 +77,9 @@ const LoginPage = ({ handleLogin }) => {
 
         setTimeout(() => {
           const accessToken = response.data.data.accessToken;
-          handleLogin(accessToken);
-          navigate("/home");
+
+          login(accessToken);
+          navigate(MyRoutes.MY_TICKETS);
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });
@@ -97,16 +100,10 @@ const LoginPage = ({ handleLogin }) => {
     }
   };
 
-  // const showToastMessage = (message) => {
-  //   toast.success(message, {
-  //     position: "top-right",
-  //   });
-  // };
-
   return (
     <>
       {loading && <Loader />}
-      <div className={pageslayout.loginpageLayout}>
+      <div className="flex min-h-screen mr-[1%] bg-center place-content-center">
         {isDesktop && (
           <div
             className=" flex bg-center mr-[1%] bg-cover min-h-screen w-full bg-white "

@@ -42,3 +42,21 @@ export const validateLoginFields = (email, password) => {
 
   return validationErrors;
 };
+
+export const validateCreateNewTicketFields = (
+  title,
+  description,
+  department
+) => {
+  const validationErrors = {};
+  if (!title) {
+    validationErrors.title = "Title is required.";
+  }
+  if (!description) {
+    validationErrors.description = "Description is required.";
+  }
+  if (!department) {
+    validationErrors.department = "Department is required.";
+  }
+  return validationErrors;
+};
