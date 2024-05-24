@@ -30,28 +30,51 @@ function MyTickets() {
   const apiService = new ApiService(setLoading);
   const navigate = useNavigate();
   const { userDetails } = useContext(UserContext);
-
-  const fetchTickets = async () => {
-    setLoading(true);
-    try {
-      const response = await apiService.fetchUserTickets();
-      const sortedTickets = response.data.data.tickets.sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-
-      setTickets(sortedTickets);
-    } catch (error) {
-      console.error("Error fetching tickets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   useEffect(() => {
     fetchTickets().then((val) => {
       console.log("fetch tickets called----", val);
     });
+  }, [page]);
+
+  useEffect(() => {
+    const handleInfiniteScroll = async (e) => {
+      const scrollHeight = e.target.documentElement.scrollHeight;
+      const currentHeight =
+        e.target.documentElement.scrollTop + window.innerHeight;
+      try {
+        if (currentHeight + 1 >= scrollHeight) {
+          console.log("v_ UE handleInfiniteScroll IF ---- ");
+          setPage((prevpage) => prevpage + 1);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    window.addEventListener("scroll", handleInfiniteScroll);
+    return () => window.removeEventListener("scroll", handleInfiniteScroll);
   }, []);
+
+  const fetchTickets = async () => {
+    try {
+      const response = await apiService.fetchUserTickets({ page, perPage });
+      const sortedTickets = response.data.data.tickets.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      if (page === 1) {
+        setTickets(sortedTickets);
+      } else {
+        setTickets((pre) => [...pre, ...sortedTickets]);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching tickets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,7 +145,7 @@ function MyTickets() {
 
   return (
     <>
-      <Navbar userRole={userDetails.role} />
+      <Navbar userRole={userDetails.role} screen={MyRoutes.MY_TICKETS} />
       <button
         className="btn fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
         onClick={() => setShowForm(true)}

@@ -14,10 +14,10 @@ export const TicketStatus = {
   ACCEPTED_ADMIN: "accepted_admin",
   PENDING_ADMIN: "pending_admin",
   REJECTED_ADMIN: "rejected_admin",
-  APPROVE: "Approve",
-  APPROVED: "Approved",
-  REJECT: "Reject",
-  REJECTED: "Rejected",
+  BUTTON_APPROVE: "Approve",
+  BUTTON_APPROVED: "Approved",
+  BUTTON_REJECT: "Reject",
+  BUTTON_REJECTED: "Rejected",
 };
 
 export const UserRole = {
@@ -33,6 +33,6 @@ export const MyRoutes = {
   MY_TICKETS: "/mytickets",
   FORGOT_PASSWORD: "/forgotpassword",
   PROFILE: "/profile",
-  RASIED_TICKETS: "/raisedtickets",
+  RAISED_TICKETS: "/raisedtickets",
   TICKET_DETAILS: "/ticketDetailsPage",
 };

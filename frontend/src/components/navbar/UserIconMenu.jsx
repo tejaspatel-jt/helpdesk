@@ -4,11 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
 import { useAuth } from "../contexts/AuthContextProvider";
 import { MyRoutes } from "../../common/common.config";
+import DialogModal from "../modal/DialogModal";
 
 const UserIconMenu = () => {
   const navigate = useNavigate();
   const { userDetails } = useContext(UserContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const menuRef = useRef(null);
 
   const { logout } = useAuth();
@@ -61,13 +63,23 @@ const UserIconMenu = () => {
               My Profile
             </Link>
             <button
-              onClick={handleLogout}
+              onClick={() => setModalOpen(true)}
               className="block px-4 py-2 w-full text-left text-gray-800 hover:bg-gray-200"
             >
               Log out
             </button>
           </div>
         </div>
+      )}
+
+      {modalOpen && (
+        <DialogModal
+          message={"Are you Sure you want to Logout ?"}
+          closeButtonOnClick={() => setModalOpen(false)}
+          button2Name={"Logout"}
+          button2StyleExtra={"btn"}
+          button2Click={handleLogout}
+        />
       )}
     </div>
   );

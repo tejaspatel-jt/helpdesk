@@ -17,7 +17,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserDetails } from "../components/CustomObjects/UserDetails";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import jtlogo from "../images/jtlogo.png";
-import pageslayout from "../styles/pageslayout.module.css";
 import { SuccessToastMessage } from "../common/commonMethods";
 import { useAuth } from "../components/contexts/AuthContextProvider";
 import { MyRoutes } from "../common/common.config";
@@ -104,7 +103,7 @@ const LoginPage = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className={pageslayout.loginpageLayout}>
+      <div className="flex min-h-screen mr-[1%] bg-center place-content-center">
         {isDesktop && (
           <div
             className=" flex bg-center mr-[1%] bg-cover min-h-screen w-full bg-white "

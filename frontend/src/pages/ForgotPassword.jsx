@@ -12,7 +12,6 @@ import { changePasswordWithOTP } from "../ApiUtils/Api";
 import Loader from "../components/loader/Loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import pageslayout from "../styles/pageslayout.module.css";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -101,7 +100,7 @@ const ForgotPassword = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className={pageslayout.forgotpasswordLayout}>
+      <div className="flex bg-white min-h-full flex-1 flex-col justify-center px-6 py-10 lg:px-8">
         <FormLayout>
           {!otpSent && (
             <FormBody handleSubmit={handleForgotPassword}>
@@ -168,7 +167,6 @@ const ForgotPassword = () => {
           route={"/"}
         />
         <ToastContainer />
-        {/* </Layout> */}
       </div>
     </>
   );

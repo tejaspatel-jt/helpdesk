@@ -61,9 +61,9 @@ const NavLinks = ({ userRole }) => {
         </NavLink>
         {!(userRole === UserRole.EMPLOYEE) && (
           <NavLink
-            to={MyRoutes.RASIED_TICKETS}
+            to={MyRoutes.RAISED_TICKETS}
             className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
-              location.pathname === MyRoutes.RASIED_TICKETS
+              location.pathname === MyRoutes.RAISED_TICKETS
                 ? "bg-gray-700 text-white"
                 : ""
             }`}

@@ -31,7 +31,7 @@ function App() {
               <Route path={MyRoutes.MY_TICKETS} element={<MyTickets />} />
               <Route path={MyRoutes.PROFILE} element={<MyProfile />} />
               <Route
-                path={MyRoutes.RASIED_TICKETS}
+                path={MyRoutes.RAISED_TICKETS}
                 element={<RaisedTickets />}
               />
               <Route
