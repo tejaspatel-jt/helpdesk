@@ -20,6 +20,7 @@ import jtlogo from "../images/jtlogo.png";
 import pageslayout from "../styles/pageslayout.module.css";
 import { SuccessToastMessage } from "../common/commonMehtods";
 
+// Test Commit 24 May
 const LoginPage = ({ handleLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
