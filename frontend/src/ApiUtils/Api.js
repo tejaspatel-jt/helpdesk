@@ -126,7 +126,7 @@ export default class ApiService {
     }
   };
 
-  fetchUserTickets = async () => {
+  fetchUserTickets = async (params) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
@@ -135,6 +135,7 @@ export default class ApiService {
 
       const response = await BaseApi.get(USER_FETCH_TICEKTS_ENDPOINT, {
         headers,
+        params: params,
       });
       console.log(response);
       return response;

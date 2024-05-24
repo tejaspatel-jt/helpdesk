@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
-import { Link } from "react-router-dom";
 import CloseButton from "../components/button/CloseButton";
 import FormFields from "../components/form/FormFields.module.css";
 import Card from "../components/card/Card";
@@ -11,6 +9,8 @@ import {
 } from "../common/commonMethods";
 import { ToastContainer } from "react-toastify";
 import { FaPencilAlt } from "react-icons/fa";
+import Navbar from "../components/navbar/Navbar";
+import { MyRoutes } from "../common/common.config";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
@@ -109,17 +109,9 @@ const MyProfile = () => {
 
   return (
     <>
-      <nav className="bg-gray-800 h-16">
-        <div className="flex h-full  max-w-7xl mx-auto px-4 sm:px-5 lg:px-8">
-          <Link
-            to="/mytickets"
-            className="flex items-center text-xl text-white hover:text-gray-300 "
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-1  " />
-            Go to Homepage
-          </Link>
-        </div>
-      </nav>
+      {}
+      <Navbar screen={MyRoutes.PROFILE} />
+
       <div className="container mx-auto p-8">
         <h2 className="text-center font-semibold py-3 text-3xl text-zinc-800">
           My Profile
@@ -138,10 +130,8 @@ const MyProfile = () => {
           <div className=" justify-end mb-4">
             <button
               className="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
-              // className="btn  text-white p-3  font-bold shadow-md bg-blue-500 hover:bg-blue-600 focus:outline-none "
               onClick={() => {
                 setIsDialogOpen(true);
-                // userDetails.avatar = "";
               }}
             >
               <FaPencilAlt />

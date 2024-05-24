@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import Navbar from "../components/navbar/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ApiService from "../ApiUtils/Api";
 import {
   ErrorToastMessage,
@@ -28,9 +27,6 @@ const AdminTickets = () => {
 
   useEffect(() => {
     const handleInfiniteScroll = async (e) => {
-      // console.log("scrollheight", document.documentElement.scrollHeight);
-      // console.log("innerHeight", window.innerHeight);
-      // console.log("scrollTop", document.documentElement.scrollTop);
       const scrollHeight = e.target.documentElement.scrollHeight;
       const currentHeight =
         e.target.documentElement.scrollTop + window.innerHeight;
@@ -131,12 +127,14 @@ const AdminTickets = () => {
   };
 
   const handleTicketClick = (ticketData) => {
-    navigate(MyRoutes.TICKET_DETAILS, { state: { ticketDetail: ticketData } });
+    navigate(MyRoutes.TICKET_DETAILS, {
+      state: { ticketDetail: ticketData },
+    });
   };
 
   return (
     <>
-      <Navbar userRole={userDetails.role} />
+      <Navbar userRole={userDetails.role} screen={MyRoutes.RAISED_TICKETS} />
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 gap-4">
           {loading ? (

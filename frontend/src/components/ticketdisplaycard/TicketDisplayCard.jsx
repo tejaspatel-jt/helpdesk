@@ -88,7 +88,7 @@ const TicketDisplayCard = ({
             >
               {ticket.status}
             </span>
-            <span className="text-md font-medium text-gray-600">
+            <span className="text-md font-medium w-[75px] text-gray-600">
               {ticket.department.toUpperCase()}
             </span>
           </div>
@@ -106,7 +106,9 @@ const TicketDisplayCard = ({
                   handleApprove(ticket._id, setIsApproved);
                 }}
               >
-                {isApproved ? TicketStatus.APPROVED : TicketStatus.APPROVE}
+                {isApproved
+                  ? TicketStatus.BUTTON_APPROVED
+                  : TicketStatus.BUTTON_APPROVE}
               </button>
               <button
                 disabled={isApproved || isRejected}
@@ -120,7 +122,9 @@ const TicketDisplayCard = ({
                   handleReject(ticket._id, setIsRejected);
                 }}
               >
-                {isRejected ? TicketStatus.REJECTED : TicketStatus.REJECT}
+                {isRejected
+                  ? TicketStatus.BUTTON_REJECTED
+                  : TicketStatus.BUTTON_REJECT}
               </button>
             </div>
           )}
