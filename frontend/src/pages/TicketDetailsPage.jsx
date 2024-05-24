@@ -174,11 +174,12 @@ const TicketDetailsPage = () => {
 
         <Stepper steps={steps} />
 
-        <div className="p-2 mt-4  rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.3)]">
-          <h2 className="text-xl font-semibold mb-2 mt-5">Details:</h2>
+        <div className="px-4 py-2 mt-8  rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.3)]">
+          <h2 className="text-2xl font-semibold mb-2 mt-5">Details:</h2>
           <ul className="divide-y divide-gray-200">
             <li className="py-2">
-              <span className="font-semibold">Title:</span> {ticketDetail.title}
+              <span className=" font-semibold">Title:</span>{" "}
+              {ticketDetail.title}
             </li>
             <li className="py-2">
               <span className="font-semibold">Description:</span>{" "}
@@ -213,8 +214,8 @@ const TicketDetailsPage = () => {
       </div>
 
       {isDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full overflow-y-auto h-17/20">
+        <div className="fixed  inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full overflow-y- h-17/20">
             <div className="flex justify-between items-center mb-4 sticky top-0 bg-gray-600 ">
               <button onClick={handleCloseDialog}>
                 <CloseButtonWhite />
@@ -253,6 +254,7 @@ const TicketDetailsPage = () => {
 
       {openModal && (
         <DialogModal
+          title={"Confirmation"}
           message={"Are you Sure you want to Reject ?"}
           closeButtonOnClick={() => setOpenModal(false)}
           button1Name={"Reject"}

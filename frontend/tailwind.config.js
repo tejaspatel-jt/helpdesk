@@ -2,7 +2,16 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        smallMobile: "320px",
+        mobile: "480px",
+        tablet: "768px",
+        smallDesktop: "1200px",
+        desktop: "1440px",
+        largeDesktop: "1920px",
+      },
+    },
   },
   daisyui: {
     themes: false, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]

@@ -63,12 +63,18 @@ function Step({ details, last }) {
 export default function Stepper({ steps }) {
   console.log("Stepper steps -- ", steps);
   return (
-    <>
-      <div className="flex p-4 gap-5 justify-center rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.3)]">
+    <div className="flex flex-col  rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.3)]">
+      <div className="text-2xl font-semibold pl-4 py-2">
+        <h1>Status Flow:</h1>
+      </div>
+      <div className="flex p-4 gap-5 justify-center">
+        <div></div>
         {steps.map((step, i, arr) => (
-          <Step details={step} last={i == arr.length - 1} />
+          <div>
+            <Step details={step} last={i == arr.length - 1} />
+          </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

@@ -74,6 +74,7 @@ const UserIconMenu = () => {
 
       {modalOpen && (
         <DialogModal
+          title={"Confirmation"}
           message={"Are you Sure you want to Logout ?"}
           closeButtonOnClick={() => setModalOpen(false)}
           button2Name={"Logout"}

@@ -3,6 +3,7 @@ import React from "react";
 import Card from "../card/Card";
 import CloseButton from "../button/CloseButton";
 function DialogModal({
+  title,
   message,
   closeButtonOnClick,
   button1Name,
@@ -18,27 +19,30 @@ function DialogModal({
 }) {
   return (
     <>
-      <Card>
-        <div className="flex justify-between items-center">
-          {message}
-          <CloseButton onclick={closeButtonOnClick} />
+      <Card extraStyle={"p-4"}>
+        <div className="flex flex-col">
+          <div className="flex flex-row justify-between items-center">
+            <div className="font-bold text-xl">{title}</div>
+            <CloseButton onclick={closeButtonOnClick} />
+          </div>
+          <div className="mt-4">{message}</div>
         </div>
-        <div className="flex justify-end items-end mt-3 ">
+        <div className="flex justify-end items-end mt-5 ">
           <button
             onClick={button1Click}
-            className={` bg-red-500 hover:bg-red-600 text-white rounded-md shadow-md ${button1StyleExtra}`}
+            className={`text-xl bg-red-500 hover:bg-red-600 text-white rounded-md shadow-md ${button1StyleExtra}`}
           >
             {button1Name}
           </button>
           <button
             onClick={button2Click}
-            className={` bg-blue-500 hover:bg-blue-600 text-white rounded-md shadow-md ${button2StyleExtra}`}
+            className={`text-xl bg-blue-500 hover:bg-blue-600 text-white rounded-md shadow-md ${button2StyleExtra}`}
           >
             {button2Name}
           </button>
           <button
             onClick={button3Click}
-            className={` bg-gray-500 hover:bg-gray-600 text-white rounded-md shadow-md ${button3StyleExtra}`}
+            className={`text-xl bg-gray-500 hover:bg-gray-600 text-white rounded-md shadow-md ${button3StyleExtra}`}
           >
             {button3Name}
           </button>
