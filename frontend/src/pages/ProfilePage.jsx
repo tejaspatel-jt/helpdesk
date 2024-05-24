@@ -11,6 +11,7 @@ import {
 } from "../common/commonMethods";
 import { ToastContainer } from "react-toastify";
 import { FaPencilAlt } from "react-icons/fa";
+
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
@@ -115,7 +116,7 @@ const MyProfile = () => {
             to="/mytickets"
             className="flex items-center text-xl text-white hover:text-gray-300 "
           >
-            <ArrowLeftIcon className="h-5 w-5 mr-1  " />
+            <ArrowLeftIcon className="h-6 w-6 mr-1" />
             Go to Homepage
           </Link>
         </div>
@@ -183,7 +184,7 @@ const MyProfile = () => {
           <Card>
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-center  text-zinc-800">
-                Edit My Profile
+                Edit Profile
               </h2>
               <CloseButton
                 onclick={() => {

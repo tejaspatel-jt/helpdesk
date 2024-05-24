@@ -88,7 +88,7 @@ const TicketDisplayCard = ({
             >
               {ticket.status}
             </span>
-            <span className="text-md font-medium text-gray-600">
+            <span className="text-md font-medium w-[75px] text-gray-600">
               {ticket.department.toUpperCase()}
             </span>
           </div>
