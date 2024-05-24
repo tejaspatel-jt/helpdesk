@@ -232,4 +232,44 @@ export default class ApiService {
       this.setLoading(false);
     }
   };
+
+  downloadAttachment = async (attachment) => {
+    try {
+      // Fetch the image from the API using Axios
+      const response = await axios.get(attachment, {
+        responseType: "blob", // Important to specify the response type as 'blob'
+      });
+
+      // Create a Blob from the response data
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+
+      // Create a temporary URL for the Blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a link element
+      const a = document.createElement("a");
+      a.href = url;
+
+      a.download = ""; // You can change the default file name here
+
+      // Append the link to the body (required for Firefox)
+      document.body.appendChild(a);
+
+      // Programmatically click the link to trigger the download
+      a.click();
+
+      // Remove the link from the document
+      document.body.removeChild(a);
+
+      // Revoke the object URL to free up memory
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(
+        "There has been a problem with your Axios operation:",
+        error
+      );
+    }
+  };
 }

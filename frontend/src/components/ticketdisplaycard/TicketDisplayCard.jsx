@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MyRoutes, TicketStatus, UserRole } from "../../common/common.config";
 import { Routes } from "react-router-dom";
+import DialogModal from "../modal/DialogModal";
 
 const TicketDisplayCard = ({
   ticket,
@@ -12,6 +13,7 @@ const TicketDisplayCard = ({
 }) => {
   const [isApproved, setIsApproved] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     console.log("user role", userRole);
@@ -119,7 +121,8 @@ const TicketDisplayCard = ({
                 } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleReject(ticket._id, setIsRejected);
+
+                  setOpenModal(true);
                 }}
               >
                 {isRejected
@@ -130,6 +133,23 @@ const TicketDisplayCard = ({
           )}
         </div>
       </div>
+
+      {openModal && (
+        <DialogModal
+          message={"Are you Sure you want to Reject ?"}
+          closeButtonOnClick={(event) => {
+            event.stopPropagation();
+            setOpenModal(false);
+          }}
+          button1Name={"Reject"}
+          button1StyleExtra={"btn"}
+          button1Click={(event) => {
+            event.stopPropagation();
+            handleReject(ticket._id, setIsRejected);
+            setOpenModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -15,3 +15,17 @@ function CloseButton({ onclick }) {
 }
 
 export default CloseButton;
+
+export function CloseButtonWhite({ onclick }) {
+  return (
+    <>
+      <button
+        onClick={onclick}
+        type="button"
+        className="p-4 text-white text-lg rounded-md hover:bg-gray-700"
+      >
+        <GrClose />
+      </button>
+    </>
+  );
+}

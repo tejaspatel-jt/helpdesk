@@ -64,7 +64,7 @@ export default function Stepper({ steps }) {
   console.log("Stepper steps -- ", steps);
   return (
     <>
-      <div className="flex gap-5 justify-center">
+      <div className="flex p-4 gap-5 justify-center rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.3)]">
         {steps.map((step, i, arr) => (
           <Step details={step} last={i == arr.length - 1} />
         ))}

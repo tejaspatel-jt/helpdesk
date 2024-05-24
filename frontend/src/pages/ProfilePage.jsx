@@ -160,7 +160,10 @@ const MyProfile = () => {
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Date of Birth:</label>
             <p>
-              {new Date(userDetails.dob).toLocaleString().substring(0, 10)}{" "}
+              {new Date(userDetails.dob)
+                .toLocaleString()
+                .substring(0, 10)
+                .replace(",", "")}{" "}
             </p>
           </div>
           <div className="flex items-center">
@@ -173,7 +176,7 @@ const MyProfile = () => {
           <Card>
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-center  text-zinc-800">
-                Edit My Profile
+                Edit Profile
               </h2>
               <CloseButton
                 onclick={() => {
