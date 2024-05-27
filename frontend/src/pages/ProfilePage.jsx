@@ -117,7 +117,7 @@ const MyProfile = () => {
           My Profile
         </h2>
 
-        <div className="flex justify-between">
+        <div className="flex md:flex-row justify-between smallMobile:flex-col ">
           {/* { User photo } */}
           <div className=" justify-start mb-8">
             <img
@@ -186,13 +186,13 @@ const MyProfile = () => {
               />
             </div>
 
-            <div className="mb-8 relative ml-[195px]">
+            <div className="mb-8 relative w-fit m-auto ">
               <img
                 src={userDetails.avatar}
                 alt="User Profile"
                 className="w-24 h-24 rounded-full object-cover z-10 border-2 border-gray-500 outline-black"
               />
-              <div className="h-8 w-8 absolute mr-[215px] bottom-0 right-0 border border-black rounded-full bg-white p-1 flex items-center justify-center">
+              <div className="h-8 w-8 bottom-5 relative ml-auto right-0 border border-black rounded-full bg-white p-1 flex items-center justify-center">
                 <img
                   src="https://cdn-icons-png.freepik.com/256/6933/6933103.png?ga=GA1.1.1614053947.1713869690&semt=ais_hybrid"
                   alt=""

@@ -187,7 +187,7 @@ const TicketDetailsPage = () => {
             </li>
             <li className="py-2">
               <span className="font-semibold">Department:</span>{" "}
-              {ticketDetail.department}
+              {ticketDetail.department.toUpperCase()}
             </li>
             <li className="py-2">
               <span className="font-semibold">Created Date:</span>{" "}
@@ -215,7 +215,7 @@ const TicketDetailsPage = () => {
 
       {isDialogOpen && (
         <div className="fixed  inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full overflow-y- h-17/20">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full overflow-hidden h-17/20">
             <div className="flex justify-between items-center mb-4 sticky top-0 bg-gray-600 ">
               <button onClick={handleCloseDialog}>
                 <CloseButtonWhite />

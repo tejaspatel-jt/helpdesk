@@ -18,6 +18,7 @@ import {
 } from "../Validation/Validation";
 import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
 import { MyRoutes } from "../common/common.config";
+import Loader from "../components/loader/Loader";
 
 function MyTickets() {
   const [showForm, setShowForm] = useState(false);
@@ -145,6 +146,7 @@ function MyTickets() {
 
   return (
     <>
+      {loading && <Loader />}
       <Navbar userRole={userDetails.role} screen={MyRoutes.MY_TICKETS} />
       <button
         className="btn fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
@@ -252,7 +254,7 @@ function MyTickets() {
                     className={FormFields.label}
                     // className="block text-sm font-medium text-gray-700"
                   >
-                    Attachments &#40;Optional&#41;
+                    Attachments
                   </label>
                   <input
                     type="file"

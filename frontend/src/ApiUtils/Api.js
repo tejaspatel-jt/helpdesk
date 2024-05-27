@@ -104,6 +104,7 @@ export default class ApiService {
 
   createNewTicket = async (formData) => {
     try {
+      this.setLoading(true);
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
@@ -118,9 +119,9 @@ export default class ApiService {
       );
       return response;
     } catch (error) {
-      throw error;
       this.setLoading(false);
       console.error("Error while creating ticket:", error);
+      throw error;
     } finally {
       this.setLoading(false);
     }
