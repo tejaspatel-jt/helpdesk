@@ -262,7 +262,15 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 //Get all user
 const getAllUser = asyncHandler(async (req, res) => {
-  const user = await User.find().select("-password -otp");
+
+  const { searchKey } = req.query;
+  let filter = {};
+
+  filter.username = { $regex: new RegExp(searchKey, "i") };
+  filter.email = { $regex: new RegExp(searchKey, "i") };
+
+
+  const user = await User.find(filter).select("username email");
   return res
     .status(200)
     .json(new ApiResponse(200, user, "All user fetched successfully"));
