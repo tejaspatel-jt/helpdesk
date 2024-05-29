@@ -26,6 +26,7 @@ const TicketDetailsPage = () => {
   const { userDetails } = useContext(UserContext);
   const location = useLocation();
   const ticketDetail = location.state.ticketDetail;
+  const cameFrom = location.state.cameFrom;
   const navigate = useNavigate();
   const apiService = new ApiService(setLoading);
 
@@ -124,7 +125,6 @@ const TicketDetailsPage = () => {
   return (
     <>
       <Navbar screen={MyRoutes.TICKET_DETAILS} />
-
       <div className="bg-white rounded-lg p-8">
         <div className="flex items-baseline p-1 mb-4">
           <div className="h-10 w-10 flex items-center text-gray-700">
@@ -134,42 +134,43 @@ const TicketDetailsPage = () => {
             <h1 className="text-2xl font-semibold">{ticketDetail.title}</h1>
             <p className="text-base text-gray-500">{ticketData.username}</p>
           </div>
-          {userDetails.role != UserRole.EMPLOYEE && (
-            <div className="mt-2 ml-auto flex justify-center space-x-8">
-              <button
-                disabled={isApproved || isRejected}
-                className={`text-white px-3 py-1 ${
-                  isApproved || isRejected
-                    ? "bg-gray-300 hover:bg-gray-300"
-                    : "bg-green-500 hover:bg-green-600"
-                } rounded-md shadow-md mr-2 focus:outline-none focus:ring-2 focus:ring-green-500`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleApprove(ticketDetail._id, setIsApproved);
-                }}
-              >
-                {isApproved
-                  ? TicketStatus.BUTTON_APPROVED
-                  : TicketStatus.BUTTON_APPROVE}
-              </button>
-              <button
-                disabled={isApproved || isRejected}
-                className={`text-white px-3 py-1 ${
-                  isRejected || isApproved
-                    ? "bg-gray-300 hover:bg-gray-300"
-                    : "bg-red-500 hover:bg-red-600"
-                } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setOpenModal(true);
-                }}
-              >
-                {isRejected
-                  ? TicketStatus.BUTTON_REJECTED
-                  : TicketStatus.BUTTON_REJECT}
-              </button>
-            </div>
-          )}
+          {userDetails.role !== UserRole.EMPLOYEE &&
+            cameFrom == MyRoutes.RAISED_TICKETS && (
+              <div className="mt-2 ml-auto flex justify-center space-x-8">
+                <button
+                  disabled={isApproved || isRejected}
+                  className={`text-white px-3 py-1 ${
+                    isApproved || isRejected
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-green-500 hover:bg-green-600"
+                  } rounded-md shadow-md mr-2 focus:outline-none focus:ring-2 focus:ring-green-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleApprove(ticketDetail._id, setIsApproved);
+                  }}
+                >
+                  {isApproved
+                    ? TicketStatus.BUTTON_APPROVED
+                    : TicketStatus.BUTTON_APPROVE}
+                </button>
+                <button
+                  disabled={isApproved || isRejected}
+                  className={`text-white px-3 py-1 ${
+                    isRejected || isApproved
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-red-500 hover:bg-red-600"
+                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setOpenModal(true);
+                  }}
+                >
+                  {isRejected
+                    ? TicketStatus.BUTTON_REJECTED
+                    : TicketStatus.BUTTON_REJECT}
+                </button>
+              </div>
+            )}
         </div>
 
         <Stepper steps={steps} />
@@ -214,9 +215,9 @@ const TicketDetailsPage = () => {
       </div>
 
       {isDialogOpen && (
-        <div className="fixed  inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full overflow-hidden h-17/20">
-            <div className="flex justify-between items-center mb-4 sticky top-0 bg-gray-600 ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4 sticky top-0 bg-gray-600 p-2">
               <button onClick={handleCloseDialog}>
                 <CloseButtonWhite />
               </button>
@@ -224,11 +225,11 @@ const TicketDetailsPage = () => {
                 onClick={() => {
                   downloadButtonClick(selectedAttachment);
                 }}
-                className="text-white"
+                className="text-white p-3 rounded-md hover:bg-gray-700"
               >
-                <div className="flex items-baseline">
+                <div className="flex items-baseline ">
                   <span className="font-semibold">Download</span>
-                  <FaFileDownload className="mx-2" />
+                  <FaFileDownload className="ml-2" />
                 </div>
               </button>
             </div>
@@ -238,7 +239,7 @@ const TicketDetailsPage = () => {
                 <img
                   src={selectedAttachment}
                   alt="attachment"
-                  className="w-full h-auto"
+                  className="w-auto max-h-[75vh] mx-auto"
                 />
               ) : (
                 <iframe

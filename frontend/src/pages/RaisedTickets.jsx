@@ -128,7 +128,10 @@ const AdminTickets = () => {
 
   const handleTicketClick = (ticketData) => {
     navigate(MyRoutes.TICKET_DETAILS, {
-      state: { ticketDetail: ticketData },
+      state: {
+        ticketDetail: ticketData,
+        cameFrom: MyRoutes.RAISED_TICKETS,
+      },
     });
   };
 

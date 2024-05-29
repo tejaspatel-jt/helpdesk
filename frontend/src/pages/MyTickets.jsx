@@ -127,7 +127,12 @@ function MyTickets() {
   };
 
   const handleTicketClick = (ticketData) => {
-    navigate(MyRoutes.TICKET_DETAILS, { state: { ticketDetail: ticketData } });
+    navigate(MyRoutes.TICKET_DETAILS, {
+      state: {
+        ticketDetail: ticketData,
+        cameFrom: MyRoutes.MY_TICKETS,
+      },
+    });
   };
 
   const [files, setFiles] = useState(false);

@@ -5,6 +5,7 @@ import { UserContext } from "../contexts/UserContextProvider";
 import { useAuth } from "../contexts/AuthContextProvider";
 import { MyRoutes } from "../../common/common.config";
 import DialogModal from "../modal/DialogModal";
+import ApiService from "../../ApiUtils/Api";
 
 const UserIconMenu = () => {
   const navigate = useNavigate();
@@ -12,19 +13,24 @@ const UserIconMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const menuRef = useRef(null);
-
+  const [loading, setLoading] = useState(false);
+  const apiService = new ApiService(setLoading);
   const { logout } = useAuth();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleLogout = () => {
-    // if (onLogout) {
-    //   onLogout();
-    // }
-    logout();
-    navigate(MyRoutes.DEFAULT, { replace: true });
+  const handleLogout = async () => {
+    try {
+      const response = await apiService.logout();
+      if (response.status === 200) {
+        logout();
+        navigate(MyRoutes.DEFAULT, { replace: true });
+      }
+    } catch (error) {
+      console.log(" usericonmenu ma error logging out", error);
+    }
   };
 
   const handleClickOutside = (event) => {

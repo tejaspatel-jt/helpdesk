@@ -13,6 +13,7 @@ import {
   USER_UPDATE_PROFILE,
   FETCH_ALL_USER_TICKETS,
   USER_TICKET_APPROVE_REJECT,
+  USER_LOGOUT_ENDPOINT,
 } from "./ApiEndpoints";
 
 export default class ApiService {
@@ -271,6 +272,28 @@ export default class ApiService {
         "There has been a problem with your Axios operation:",
         error
       );
+    }
+  };
+
+  logout = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        ContentType: "application/json",
+      };
+      const response = await BaseApi.post(
+        USER_LOGOUT_ENDPOINT,
+        {},
+        {
+          headers,
+        }
+      );
+      console.log("logout method ni accesstoken:::::", accessToken);
+      console.log("logout no response-------", response);
+      return response;
+    } catch (error) {
+      console.log("api.js ma error logging out");
     }
   };
 }
