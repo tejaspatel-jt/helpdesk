@@ -58,9 +58,7 @@ const MyProfile = () => {
 
   // Fetch user details when the component mounts
   useEffect(() => {
-    fetchUserDetails().then((val) => {
-      console.log("hello from profile----", val);
-    });
+    fetchUserDetails();
   }, []);
 
   const formData = new FormData();
