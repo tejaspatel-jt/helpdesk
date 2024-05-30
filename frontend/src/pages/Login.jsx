@@ -34,8 +34,13 @@ const LoginPage = () => {
   const { setUserDetails } = useContext(UserContext);
   const userDetail = new UserDetails("");
 
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
+  useEffect(() => {
+    if (user) {
+      navigate(MyRoutes.MY_TICKETS);
+    }
+  }, [user]);
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -79,7 +84,6 @@ const LoginPage = () => {
           const accessToken = response.data.data.accessToken;
 
           login(accessToken);
-          navigate(MyRoutes.MY_TICKETS);
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });
