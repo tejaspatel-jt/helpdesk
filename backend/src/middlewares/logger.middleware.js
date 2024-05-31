@@ -3,7 +3,6 @@
 // import path from 'path';
 // import { asyncHandler } from '../utils/asyncHandler.js';
 
-
 // const logDirectoryPath = 'src';
 
 // // Ensure the directory exists, if not create it
@@ -16,7 +15,6 @@
 
 // // // Create a write stream to write logs to the file
 // const accessLogStream = fs.createWriteStream(logFilePath, { flags: "a" });
-
 
 // const Logger = morgan(
 //   (tokens, req, res) => {
@@ -65,12 +63,12 @@
 // }
 
 // export {Logger,getLogs,captureResponseBody} ;
-import fs from 'fs';
-import morgan from 'morgan';
-import path from 'path';
-import { asyncHandler } from '../utils/asyncHandler.js';
+import fs from "fs";
+import morgan from "morgan";
+import path from "path";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-const logDirectoryPath = 'src';
+const logDirectoryPath = "src";
 
 // Ensure the directory exists, if not create it
 if (!fs.existsSync(logDirectoryPath)) {
@@ -82,12 +80,25 @@ const logFilePath = path.join(logDirectoryPath, "access.log");
 
 // Create a function to append data to the log file
 const accessLogStream = (logFilePath, data) => {
-  const existingData = fs.existsSync(logFilePath) ? fs.readFileSync(logFilePath, 'utf8') : '';
+  const existingData = fs.existsSync(logFilePath)
+    ? fs.readFileSync(logFilePath, "utf8")
+    : "";
   fs.writeFileSync(logFilePath, `${data}\n${existingData}`);
 };
 
 const Logger = morgan(
   (tokens, req, res) => {
+    if (!fs.existsSync(logFilePath)) {
+      // If log file doesn't exist, create it
+      fs.writeFile(logFilePath, "", (err) => {
+        if (err) {
+          console.error("Error creating access log file:", err);
+          res.status(500).json({ message: "Error creating log file" });
+        } else {
+          console.log( "access.log file created");
+        }
+      });
+    }
     if (req.originalUrl === "/access-log") {
       return null; // Skip logging for /access-log requests
     }
@@ -112,11 +123,11 @@ const Logger = morgan(
     return null; // Return log entry for morgan to write to stream
   },
   {
-    skip: (req, res) => req.originalUrl === "/"
+    skip: (req, res) => req.originalUrl === "/",
   }
 );
 
-const getLogs = asyncHandler(async(req,res)=>{
+const getLogs = asyncHandler(async (req, res) => {
   fs.readFile(logFilePath, "utf8", (err, data) => {
     if (err) {
       console.error("Error reading access log:", err);
@@ -136,5 +147,26 @@ const captureResponseBody = (req, res, next) => {
   };
   next();
 };
+
+const runPeriodically = (deleteHours, deleteMinute) => {
+  setInterval(() => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    if (deleteHours === hours && deleteMinute === minutes) {
+      fs.writeFile(logFilePath, "", (err) => {
+        if (err) {
+          console.error("Error while clearing access log:", err);
+        } else {
+          console.log("Log cleared ");
+        }
+      });
+    }
+  }, 60000);
+};
+
+// Start running the function periodically
+runPeriodically(23, 58);
 
 export { Logger, getLogs, captureResponseBody };

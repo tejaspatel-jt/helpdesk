@@ -20,8 +20,8 @@ const Navbar = ({ userRole, screen }) => {
   };
   return (
     <>
-      <nav className="bg-gray-800 sticky ">
-        <div className="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8">
+      <nav className="bg-gray-800 sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 ">
           <div className="flex items-center justify-between h-16">
             {screen === MyRoutes.MY_TICKETS ||
             screen === MyRoutes.RAISED_TICKETS ? (

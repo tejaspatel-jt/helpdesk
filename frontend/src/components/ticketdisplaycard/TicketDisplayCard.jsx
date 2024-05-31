@@ -16,7 +16,6 @@ const TicketDisplayCard = ({
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    console.log("user role", userRole);
     setIsApproved(ticket.status === `accepted_${userRole}`);
     setIsRejected(ticket.status === `rejected_${userRole}`);
   }, [ticket.status]);

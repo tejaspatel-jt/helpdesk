@@ -6,7 +6,6 @@
 // import morgan from "morgan";
 // import { ApiError } from "./utils/ApiError.js";
 
-
 // const app = express();
 
 // app.use(
@@ -132,14 +131,17 @@ app.use((err, req, res, next) => {
 export { app };
 */
 
-
-import express from 'express';
-import cors from 'cors';
-import userRouter from './routes/user.routes.js'; // Assuming these are your routers
-import ticketRouter from './routes/ticket.routes.js'; // Assuming these are your routers
-import {Logger, captureResponseBody, getLogs } from './middlewares/logger.middleware.js';
-import { ApiError } from './utils/ApiError.js';
-import cookieParser from 'cookie-parser';
+import express from "express";
+import cors from "cors";
+import userRouter from "./routes/user.routes.js"; // Assuming these are your routers
+import ticketRouter from "./routes/ticket.routes.js"; // Assuming these are your routers
+import {
+  Logger,
+  captureResponseBody,
+  getLogs,
+} from "./middlewares/logger.middleware.js";
+import { ApiError } from "./utils/ApiError.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -148,8 +150,7 @@ app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
-app.use(express.static("public"))
-
+app.use(express.static("public"));
 
 // Use personal logger middleware
 app.use(Logger);
@@ -160,7 +161,7 @@ app.use(captureResponseBody);
 // Routes
 app.use("/user", userRouter);
 app.use("/user/ticket", ticketRouter);
-app.get("/",getLogs)
+app.get("/", getLogs);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -168,7 +169,7 @@ app.use((err, req, res, next) => {
     res.status(err.statusCode).json(err.toJSON());
   } else {
     res.status(500).json({
-      message: err.message || "Internal Server Error"
+      message: err.message || "Internal Server Error",
     });
   }
 });

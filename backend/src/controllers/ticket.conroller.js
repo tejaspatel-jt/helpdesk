@@ -194,7 +194,10 @@ const getAllTickets = asyncHandler(async (req, res) => {
   }
 
   if (status) {
-    filter.status = status;
+    filter.status =
+      req.user.role !== "master" && status === "raised"
+        ? "accepted_master"
+        : status;
   }
 
   if (username) {
