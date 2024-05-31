@@ -22,7 +22,7 @@ function DialogModal({
       <div className="flex flex-col">
         <div className="flex flex-row justify-between items-center">
           <h2 className="text-lg font-bold text-gray-800 mb-2">{title}</h2>
-          <CloseButton onClick={closeButtonOnClick} />
+          <CloseButton onclick={closeButtonOnClick} />
         </div>
         <p className="text-gray-700">{message}</p>
       </div>

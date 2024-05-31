@@ -39,9 +39,9 @@ const AdminTickets = () => {
     [status, department, username]
   );
 
-  useEffect(() => {
-    debouncedFetchTickets();
-  }, [username, debouncedFetchTickets]);
+  // useEffect(() => {
+  //   debouncedFetchTickets();
+  // }, [username, debouncedFetchTickets]);
 
   useEffect(() => {
     if (status != tempStatus || department != tempDepartment) {

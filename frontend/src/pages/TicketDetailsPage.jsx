@@ -257,7 +257,9 @@ const TicketDetailsPage = () => {
         <DialogModal
           title={"Confirmation"}
           message={"Are you Sure you want to Reject ?"}
-          closeButtonOnClick={() => setOpenModal(false)}
+          closeButtonOnClick={() => {
+            setOpenModal(false);
+          }}
           button1Name={"Reject"}
           button1StyleExtra={"btn"}
           button1Click={() => {
