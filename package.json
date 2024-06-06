@@ -21,9 +21,5 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "nodemon": "^3.1.0"
-  },
-  "dependencies": {
-    "lodash": "^4.17.21",
-    "react-infinite-scroll-component": "^6.1.0"
   }
 }

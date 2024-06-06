@@ -1,6 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { UserContext } from "../contexts/UserContextProvider";
 import debounce from "lodash/debounce";
+import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import Example from "../dropdown/Dropdown";
+
+import ApiService from "../../ApiUtils/Api";
 const FilterDropdown = ({
   status,
   setStatus,
@@ -9,88 +13,125 @@ const FilterDropdown = ({
   username,
   setUsername,
 }) => {
+  const [loading, setLoading] = useState(false);
   const { userDetails } = useContext(UserContext);
-  const [inputValue, setInputValue] = useState("");
+  const [search, setSearch] = useState([]);
+  const apiService = new ApiService(setLoading);
+
+  const statusOptions = [
+    { value: "", label: "All" },
+    { value: "raised", label: "Raised" },
+    { value: `accepted_${userDetails.role}`, label: "Accepted" },
+    { value: `rejected_${userDetails.role}`, label: "Rejected" },
+  ];
+
+  const departmentOptions = [
+    { value: "", label: "All" },
+    { value: "hr", label: "HR" },
+    { value: "is", label: "IS" },
+    { value: "admin", label: "Admin" },
+  ];
+
+  // const handleStatusChange = useCallback(
+  //   (e) => {
+  //     setStatus(e.target.value);
+  //   },
+  //   [setStatus]
+  // );
+
+  // const handleDepartmentChange = useCallback(
+  //   (e) => {
+  //     setDepartment(e.target.value);
+  //   },
+  //   [setDepartment]
+  // );
 
   const handleStatusChange = useCallback(
-    (e) => {
-      setStatus(e.target.value);
+    (value) => {
+      setStatus(value);
     },
     [setStatus]
   );
 
   const handleDepartmentChange = useCallback(
-    (e) => {
-      setDepartment(e.target.value);
+    (value) => {
+      setDepartment(value);
     },
     [setDepartment]
   );
-  const handleUsernameChange = (e) => {
-    const value = e.target.value;
-    setInputValue(value);
-    debouncedSetUsername(value);
+
+  const handleOnSearch = async (query) => {
+    if (query.length === 3) {
+      try {
+        const response = await apiService.getAllUsernames(query);
+        if (response.status === 200) {
+          setSearch(
+            response.data.data.map((user) => ({
+              id: user._id,
+              name: user.username,
+            }))
+          );
+        } else {
+          setSearch([]);
+        }
+      } catch (error) {
+        console.error("Error fetching usernames", error);
+      }
+    }
   };
 
-  // Debounce function to set the username state
-  const debouncedSetUsername = useCallback(
-    debounce((value) => {
-      setUsername(value);
-    }, 300),
-    [setUsername]
-  );
+  const debouncedSetUsername = useCallback(debounce(handleOnSearch, 400));
+
+  const handleOnSelect = (item) => {
+    setUsername(item.name);
+  };
 
   return (
-    <div className=" justify-end filter-dropdowns mb-4 flex sticky top-16 gap-4 pt-2 z-10 bg-white">
-      <div className="search-bar">
+    <div className=" smallDesktop:flex-row justify-end filter-dropdowns mb-4 flex sticky top-16 gap-4 pt-2 z-10 bg-white smallMobile:flex-col">
+      <div className="search-bar flex items-center">
         <label htmlFor="username" className="mr-2">
           Username:
         </label>
-        <input
-          id="username"
-          type="text"
-          value={username}
-          onChange={handleUsernameChange}
-          className="p-2 border border-gray-300 rounded"
+        <ReactSearchAutocomplete
+          className="w-[200px]"
+          items={search}
+          onSearch={debouncedSetUsername}
+          onSelect={handleOnSelect}
+          autoFocus
+          debounce={400}
+          styling={{ zIndex: 4 }} // To ensure the suggestions dropdown is above other elements
         />
       </div>
       <div className="dropdown mr-4">
         <label htmlFor="status" className="mr-2">
           Status:
         </label>
-        <select
-          id="status"
-          value={status}
-          // onChange={(e) => setStatus(e.target.value)}
+        <Example
+          label={
+            statusOptions.find((opt) => opt.value === status)?.label ||
+            "Select Status"
+          }
+          options={statusOptions}
+          selectedOption={status}
           onChange={handleStatusChange}
-          className="p-2 border border-gray-300 rounded"
-        >
-          <option value="">All</option>
-          <option value={"raised"}>Raised</option>
-          <option value={`accepted_${userDetails.role}`}>Accepted</option>
-          <option value={`rejected_${userDetails.role}`}>Rejected</option>
-        </select>
+        />
       </div>
       {userDetails.role === "master" ? (
         <div className="dropdown mr-4">
           <label htmlFor="department" className="mr-2">
             Department:
           </label>
-          <select
-            id="department"
-            value={department}
-            // onChange={(e) => setDepartment(e.target.value)}
+          <Example
+            label={
+              departmentOptions.find((opt) => opt.value === department)
+                ?.label || "Select Department"
+            }
+            options={departmentOptions}
+            selectedOption={department}
             onChange={handleDepartmentChange}
-            className="p-2 border border-gray-300 rounded"
-          >
-            <option value="">All</option>
-            <option value="hr">HR</option>
-            <option value="is">IS</option>
-            <option value="admin">Admin</option>
-          </select>
+          />
         </div>
-      ) : (
-        ""
-      )}
+      ) : null}
     </div>
   );
 };

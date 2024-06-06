@@ -13,6 +13,7 @@ import {
   USER_UPDATE_PROFILE,
   FETCH_ALL_USER_TICKETS,
   USER_TICKET_APPROVE_REJECT,
+  GET_ALL_USERNAMES,
 } from "./ApiEndpoints";
 
 export default class ApiService {
@@ -270,6 +271,25 @@ export default class ApiService {
         "There has been a problem with your Axios operation:",
         error
       );
+    }
+  };
+
+  getAllUsernames = async (searchKey) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        ContentType: "application/json",
+      };
+
+      const response = await BaseApi.get(GET_ALL_USERNAMES, {
+        headers,
+        params: { searchKey },
+      });
+      console.log("get all usernames called---", response.data);
+      return response;
+    } catch (error) {
+      console.log("error fetching", error);
     }
   };
 }

@@ -15,19 +15,13 @@ export function getSteps(apiRes) {
     return [
       {
         username: fromUser.updatedBy.username.toUpperCase(),
-        status: fromUser.status
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" By "),
+        status: getStatus(fromUser.status),
         updatedAt: fromUser.updatedBy.updatedAt.substring(0, 10),
         avatar: fromUser.updatedBy.avatar,
       },
       {
         username: fromMaster.updatedBy.username.toUpperCase(),
-        status: fromMaster.status
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" By "),
+        status: getStatus(fromMaster.status),
         updatedAt: fromMaster.updatedBy.updatedAt.substring(0, 10),
         avatar: fromMaster.updatedBy.avatar,
       },
@@ -37,28 +31,19 @@ export function getSteps(apiRes) {
   return [
     {
       username: fromUser.updatedBy.username.toUpperCase(),
-      status: fromUser.status
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" By "),
+      status: getStatus(fromUser.status),
       updatedAt: fromUser.updatedAt.substring(0, 10),
       avatar: fromUser.updatedBy.avatar,
     },
     {
       username: fromMaster.updatedBy.username.toUpperCase(),
-      status: fromMaster.status
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" By "),
+      status: getStatus(fromMaster.status),
       updatedAt: fromMaster.updatedAt.substring(0, 10),
       avatar: fromMaster.updatedBy.avatar,
     },
     {
       username: fromDepartment.updatedBy.username.toUpperCase(),
-      status: fromDepartment.status
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" By "),
+      status: getStatus(fromDepartment.status),
       updatedAt: fromDepartment.updatedBy.updatedAt.substring(0, 10),
       avatar: fromDepartment.updatedBy.avatar,
     },
@@ -71,4 +56,11 @@ export function getTicketDetails(ticketData) {
     title: ticketData.title,
     username: ticketData.statusFlow.fromUser.updatedBy.username,
   };
+}
+
+export function getStatus(status) {
+  return status
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" By ");
 }

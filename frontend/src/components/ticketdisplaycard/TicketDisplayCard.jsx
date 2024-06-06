@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MyRoutes, TicketStatus, UserRole } from "../../common/common.config";
 import { Routes } from "react-router-dom";
 import DialogModal from "../modal/DialogModal";
+import { getStatus } from "../utils/dataProcessing";
 
 const TicketDisplayCard = ({
   ticket,
@@ -77,7 +78,7 @@ const TicketDisplayCard = ({
         <div className="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
           <div className="ticket-status-and-details smallMobile:mt-3 smallMobile:justify-between smallMobile:w-full flex gap-3 items-center min-w-28 text-center">
             <span
-              className={`text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 w-[125px] text-center rounded-badge ${
+              className={`text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 min-w-[150px] text-center rounded-badge ${
                 ticket.status === TicketStatus.RAISED
                   ? "text-yellow-500"
                   : ticket.status.includes(TicketStatus.ACCEPTED)
@@ -85,7 +86,7 @@ const TicketDisplayCard = ({
                   : "text-red-500"
               }`}
             >
-              {ticket.status}
+              {getStatus(ticket.status)}
             </span>
             <span className="text-md font-medium w-[75px] text-gray-600">
               {ticket.department.toUpperCase()}

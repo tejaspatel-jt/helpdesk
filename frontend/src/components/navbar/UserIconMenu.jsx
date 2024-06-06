@@ -20,9 +20,6 @@ const UserIconMenu = () => {
   };
 
   const handleLogout = () => {
-    // if (onLogout) {
-    //   onLogout();
-    // }
     logout();
     navigate(MyRoutes.DEFAULT, { replace: true });
   };
@@ -77,9 +74,9 @@ const UserIconMenu = () => {
           title={"Confirmation"}
           message={"Are you Sure you want to Logout ?"}
           closeButtonOnClick={() => setModalOpen(false)}
-          button2Name={"Logout"}
-          button2StyleExtra={"btn"}
-          button2Click={handleLogout}
+          button1Name={"Logout"}
+          button1StyleExtra={"btn"}
+          button1Click={handleLogout}
         />
       )}
     </div>

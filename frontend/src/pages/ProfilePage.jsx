@@ -171,7 +171,7 @@ const MyProfile = () => {
         </div>
 
         {isDialogOpen && (
-          <Card>
+          <Card extraStyle={"max-w-[80vh] overflow-y-auto "}>
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-center  text-zinc-800">
                 Edit Profile

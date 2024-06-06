@@ -77,9 +77,8 @@ const LoginPage = () => {
 
         setTimeout(() => {
           const accessToken = response.data.data.accessToken;
-
           login(accessToken);
-          navigate(MyRoutes.MY_TICKETS);
+          navigate(MyRoutes.MY_TICKETS, { replace: true });
         }, 1000);
       } else {
         setErrors({ form: "Invalid credentials" });

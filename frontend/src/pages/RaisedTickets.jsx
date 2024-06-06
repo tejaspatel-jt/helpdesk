@@ -187,7 +187,7 @@ import { ToastContainer } from "react-toastify";
 import { MyRoutes, TicketStatus, UserRole } from "../common/common.config";
 import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
 import InfiniteScroll from "react-infinite-scroll-component";
-import FilterDropdown from "../components/filterdropdown/FIlterDropdown";
+import FilterDropdown from "../components/filterdropdown/FilterDropdown";
 import { debounce } from "lodash";
 
 const AdminTickets = () => {
@@ -205,20 +205,6 @@ const AdminTickets = () => {
   const [tempStatus, setTempStatus] = useState("");
   const [tempDepartment, setTempDepartment] = useState("");
 
-  const debouncedFetchTickets = useCallback(
-    debounce(() => {
-      setPage(1);
-      setTickets([]);
-      setHasMore(true);
-      fetchTickets();
-    }, 300),
-    [status, department, username]
-  );
-
-  useEffect(() => {
-    debouncedFetchTickets();
-  }, [username, debouncedFetchTickets]);
-
   useEffect(() => {
     if (status != tempStatus || department != tempDepartment) {
       setPage(1);
@@ -231,9 +217,8 @@ const AdminTickets = () => {
   }, [status, department]);
 
   useEffect(() => {
-    console.log("UE called...");
     fetchTickets();
-  }, [page]);
+  }, [page, username]);
 
   const fetchTickets = async () => {
     try {
@@ -328,14 +313,18 @@ const AdminTickets = () => {
         setUsername={setUsername}
       />
       <div className="container mx-auto p-4">
-        <InfiniteScroll
-          dataLength={tickets.length}
-          loader={loading ? <p className="text-center">Loading...</p> : ""}
-          next={() => setPage((prevPage) => prevPage + 1)}
-          hasMore={hasMore}
-          endMessage={<p className="text-center">No more tickets to load.</p>}
-        >
-          <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4">
+          <InfiniteScroll
+            dataLength={tickets.length}
+            loader={loading ? <p className="text-center">Loading...</p> : ""}
+            next={() => setPage((prevPage) => prevPage + 1)}
+            hasMore={hasMore}
+            endMessage={
+              tickets.length === 0 && (
+                <p className="text-center">No more tickets to load.</p>
+              )
+            }
+          >
             {tickets.map((ticket) => (
               <TicketDisplayCard
                 key={ticket._id}
@@ -346,8 +335,8 @@ const AdminTickets = () => {
                 handleTicketClick={handleTicketClick}
               />
             ))}
-          </div>
-        </InfiniteScroll>
+          </InfiniteScroll>
+        </div>
       </div>
       <ToastContainer />
     </>
