@@ -1,7 +1,7 @@
 import React from "react";
-
 import Card from "../card/Card";
 import CloseButton from "../button/CloseButton";
+
 function DialogModal({
   title,
   message,
@@ -18,37 +18,41 @@ function DialogModal({
   canDismissed = false,
 }) {
   return (
-    <>
-      <Card extraStyle={"p-4"}>
-        <div className="flex flex-col">
-          <div className="flex flex-row justify-between items-center">
-            <div className="font-bold text-xl">{title}</div>
-            <CloseButton onclick={closeButtonOnClick} />
-          </div>
-          <div className="mt-4">{message}</div>
+    <Card extraStyle="p-4 bg-white rounded-md shadow-md">
+      <div className="flex flex-col">
+        <div className="flex flex-row justify-between items-center">
+          <h2 className="text-lg font-bold text-gray-800 mb-2">{title}</h2>
+          <CloseButton onclick={closeButtonOnClick} />
         </div>
-        <div className="flex justify-end items-end mt-5 ">
-          <button
-            onClick={button1Click}
-            className={`text-xl bg-red-500 hover:bg-red-600 text-white rounded-md shadow-md ${button1StyleExtra}`}
-          >
-            {button1Name}
-          </button>
-          <button
-            onClick={button2Click}
-            className={`text-xl bg-blue-500 hover:bg-blue-600 text-white rounded-md shadow-md ${button2StyleExtra}`}
-          >
-            {button2Name}
-          </button>
+        <p className="text-gray-700">{message}</p>
+      </div>
+      <div className="flex justify-end mt-4">
+        {button3Name && (
           <button
             onClick={button3Click}
-            className={`text-xl bg-gray-500 hover:bg-gray-600 text-white rounded-md shadow-md ${button3StyleExtra}`}
+            className={`bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md shadow-md ${button3StyleExtra}`}
           >
             {button3Name}
           </button>
-        </div>
-      </Card>
-    </>
+        )}
+        {button2Name && (
+          <button
+            onClick={button2Click}
+            className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md ${button2StyleExtra}`}
+          >
+            {button2Name}
+          </button>
+        )}
+        {button1Name && (
+          <button
+            onClick={button1Click}
+            className={`bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md shadow-md ${button1StyleExtra}`}
+          >
+            {button1Name}
+          </button>
+        )}
+      </div>
+    </Card>
   );
 }
 

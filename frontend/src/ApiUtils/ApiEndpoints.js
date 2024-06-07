@@ -10,3 +10,4 @@ export const USER_UPDATE_PROFILE = "/user/update/details";
 export const FETCH_ALL_USER_TICKETS = "/user/ticket/get/all";
 export const USER_TICKET_APPROVE_REJECT = "/user/ticket/update/status";
 export const GET_ALL_USERNAMES = "/user/get/all";
+export const USER_LOGOUT_ENDPOINT = "/user/logout";

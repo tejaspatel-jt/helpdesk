@@ -99,7 +99,7 @@ const FilterDropdown = ({
           onSelect={handleOnSelect}
           autoFocus
           debounce={400}
-          styling={{ zIndex: 4 }} // To ensure the suggestions dropdown is above other elements
+          styling={{ zIndex: 4, height: "50px" }} // To ensure the suggestions dropdown is above other elements
         />
       </div>
       <div className="dropdown mr-4">

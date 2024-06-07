@@ -16,6 +16,7 @@ import { validateCreateNewTicketFields } from "../Validation/Validation";
 import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
 import { MyRoutes } from "../common/common.config";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Loader from "../components/loader/Loader";
 
 function MyTickets() {
   const [showForm, setShowForm] = useState(false);
@@ -109,7 +110,12 @@ function MyTickets() {
   };
 
   const handleTicketClick = (ticketData) => {
-    navigate(MyRoutes.TICKET_DETAILS, { state: { ticketDetail: ticketData } });
+    navigate(MyRoutes.TICKET_DETAILS, {
+      state: {
+        ticketDetail: ticketData,
+        cameFrom: MyRoutes.MY_TICKETS,
+      },
+    });
   };
 
   const [files, setFiles] = useState(false);
@@ -128,6 +134,7 @@ function MyTickets() {
 
   return (
     <>
+      {loading && <Loader />}
       <Navbar userRole={userDetails.role} screen={MyRoutes.MY_TICKETS} />
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 gap-4">
@@ -221,8 +228,12 @@ function MyTickets() {
                 )}
 
                 <div className="my-1">
-                  <label htmlFor="attachments" className={FormFields.label}>
-                    Attachments &#40;Optional&#41;
+                  <label
+                    htmlFor="attachments"
+                    className={FormFields.label}
+                    // className="block text-sm font-medium text-gray-700"
+                  >
+                    Attachments
                   </label>
                   <input
                     type="file"

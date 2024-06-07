@@ -96,7 +96,7 @@ const TicketDisplayCard = ({
             <div className="flex smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
               <button
                 disabled={isApproved || isRejected}
-                className={`text-white px-3 py-1 ${
+                className={`w-[90px] text-white px-3 py-1 ${
                   isApproved || isRejected
                     ? "bg-gray-300 hover:bg-gray-300"
                     : "bg-green-500 hover:bg-green-600"
@@ -112,7 +112,7 @@ const TicketDisplayCard = ({
               </button>
               <button
                 disabled={isApproved || isRejected}
-                className={`text-white px-3 py-1 ${
+                className={`w-[90px] text-white px-3 py-1 ${
                   isRejected || isApproved
                     ? "bg-gray-300 hover:bg-gray-300"
                     : "bg-red-500 hover:bg-red-600"
