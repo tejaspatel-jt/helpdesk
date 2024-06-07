@@ -26,38 +26,23 @@ const AdminTickets = () => {
   const apiService = new ApiService(setLoading);
   const navigate = useNavigate();
 
-  const [tempStatus, setTempStatus] = useState("");
-  const [tempDepartment, setTempDepartment] = useState("");
-
   const debouncedFetchTickets = useCallback(
     debounce(() => {
       setPage(1);
       setTickets([]);
       setHasMore(true);
       fetchTickets();
-    }, 300),
-    [username]
+    }),
+    [username, status, department]
   );
 
   useEffect(() => {
-    console.log("debounce vado UE");
+    console.log("debounce all fields dependency UE called-----");
     debouncedFetchTickets();
-  }, [username, debouncedFetchTickets]);
+  }, [username, status, department, debouncedFetchTickets]);
 
   useEffect(() => {
-    console.log("status,dept vado UE");
-
-    if (status != tempStatus || department != tempDepartment) {
-      setPage(1);
-      setTickets([]);
-      setHasMore(true);
-      setTempStatus(status);
-      setTempDepartment(department);
-    }
-    fetchTickets();
-  }, [status, department]);
-
-  useEffect(() => {
+    console.log("page dependency UE called-----");
     fetchTickets();
   }, [page]);
 

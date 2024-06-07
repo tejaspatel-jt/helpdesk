@@ -32,20 +32,6 @@ const FilterDropdown = ({
     { value: "admin", label: "Admin" },
   ];
 
-  // const handleStatusChange = useCallback(
-  //   (e) => {
-  //     setStatus(e.target.value);
-  //   },
-  //   [setStatus]
-  // );
-
-  // const handleDepartmentChange = useCallback(
-  //   (e) => {
-  //     setDepartment(e.target.value);
-  //   },
-  //   [setDepartment]
-  // );
-
   const handleStatusChange = useCallback(
     (value) => {
       setStatus(value);
@@ -96,10 +82,11 @@ const FilterDropdown = ({
           className="w-[200px]"
           items={search}
           onSearch={debouncedSetUsername}
+          // onSearch={handleOnSearch}
           onSelect={handleOnSelect}
           autoFocus
           debounce={400}
-          styling={{ zIndex: 4, height: "50px" }} // To ensure the suggestions dropdown is above other elements
+          styling={{ zIndex: 4, height: "35px", border: "2px solid gray" }} // To ensure the suggestions dropdown is above other elements
         />
       </div>
       <div className="dropdown mr-4">
