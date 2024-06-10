@@ -109,12 +109,12 @@ const LoginPage = () => {
             style={{ backgroundImage: `url(${image})` }}
           ></div>
         )}
-        {!isDesktop && (
+        {/* {!isDesktop && (
           <div
             className="absolute sm:px-[30%] py-[30%]  w-[40%] h-[30%] md:py[50%] bg-cover bg-center z-[-1]"
             style={{ backgroundImage: `url(${jtlogo})`, opacity: 0.5 }}
           ></div>
-        )}
+        )} */}
         <FormLayout>
           <FormBody handleSubmit={handleSubmit}>
             <FormHeader label={"Login"} />

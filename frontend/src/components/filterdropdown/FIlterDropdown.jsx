@@ -73,8 +73,8 @@ const FilterDropdown = ({
   };
 
   return (
-    <div className=" smallDesktop:flex-row justify-end filter-dropdowns mb-4 flex sticky top-16 gap-4 pt-2 z-10 bg-white smallMobile:flex-col">
-      <div className="search-bar flex items-center">
+    <div className=" smallDesktop:flex-row justify-end filter-dropdowns mb-4 flex sticky top-16 gap-4 py-2 z-10 bg-white smallMobile:flex-col">
+      <div className="search-bar flex items-center smallMobile:ml-[20px]">
         <label htmlFor="username" className="mr-2">
           Username:
         </label>
@@ -89,36 +89,39 @@ const FilterDropdown = ({
           styling={{ zIndex: 4, height: "35px", border: "2px solid gray" }} // To ensure the suggestions dropdown is above other elements
         />
       </div>
-      <div className="dropdown mr-4">
-        <label htmlFor="status" className="mr-2">
-          Status:
-        </label>
-        <Example
-          label={
-            statusOptions.find((opt) => opt.value === status)?.label ||
-            "Select Status"
-          }
-          options={statusOptions}
-          selectedOption={status}
-          onChange={handleStatusChange}
-        />
-      </div>
-      {userDetails.role === "master" ? (
+
+      <div className="smallMobile:flex-row smallMobile:justify-evenly">
         <div className="dropdown mr-4">
-          <label htmlFor="department" className="mr-2">
-            Department:
+          <label htmlFor="status" className="mr-2">
+            Status:
           </label>
           <Example
             label={
-              departmentOptions.find((opt) => opt.value === department)
-                ?.label || "Select Department"
+              statusOptions.find((opt) => opt.value === status)?.label ||
+              "Select Status"
             }
-            options={departmentOptions}
-            selectedOption={department}
-            onChange={handleDepartmentChange}
+            options={statusOptions}
+            selectedOption={status}
+            onChange={handleStatusChange}
           />
         </div>
-      ) : null}
+        {userDetails.role === "master" ? (
+          <div className="dropdown mr-4">
+            <label htmlFor="department" className="mr-2">
+              Department:
+            </label>
+            <Example
+              label={
+                departmentOptions.find((opt) => opt.value === department)
+                  ?.label || "Select Department"
+              }
+              options={departmentOptions}
+              selectedOption={department}
+              onChange={handleDepartmentChange}
+            />
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

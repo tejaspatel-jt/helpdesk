@@ -148,11 +148,7 @@ const AdminTickets = () => {
             loader={loading ? <p className="text-center">Loading...</p> : ""}
             next={() => setPage((prevPage) => prevPage + 1)}
             hasMore={hasMore}
-            endMessage={
-              tickets.length === 0 && (
-                <p className="text-center">No more tickets to load.</p>
-              )
-            }
+            endMessage={<p className="text-center">No more tickets to load.</p>}
           >
             {tickets.map((ticket) => (
               <TicketDisplayCard

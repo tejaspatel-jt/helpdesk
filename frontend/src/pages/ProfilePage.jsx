@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { FaPencilAlt } from "react-icons/fa";
 import Navbar from "../components/navbar/Navbar";
 import { MyRoutes } from "../common/common.config";
+import Loader from "../components/loader/Loader";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
@@ -26,6 +27,7 @@ const MyProfile = () => {
   const [loading, setLoading] = useState(false);
   const apiService = new ApiService(setLoading);
   const [changePhoto, setChangePhoto] = useState(false);
+  const [imagePreview, setImagePreview] = useState(false);
 
   const handleClick = () => {
     document.getElementById("profilePictureInput").click();
@@ -109,7 +111,26 @@ const MyProfile = () => {
     <>
       {}
       <Navbar screen={MyRoutes.PROFILE} />
-
+      {imagePreview && (
+        <Card cardContainerStyleOverride={"w-fit"}>
+          <div className="flex justify-center">
+            <div>
+              <CloseButton
+                onclick={() => {
+                  setImagePreview(false);
+                }}
+              />
+            </div>
+            <div>
+              <img
+                className="w-96 h-96 rounded-full object-cover border-2 border-gray-700"
+                src={userDetails.avatar}
+                alt="User Photo"
+              />
+            </div>
+          </div>
+        </Card>
+      )}
       <div className="container mx-auto p-8">
         <h2 className="text-center font-semibold py-3 text-3xl text-zinc-800">
           My Profile
@@ -117,7 +138,10 @@ const MyProfile = () => {
 
         <div className="flex md:flex-row justify-between smallMobile:flex-col ">
           {/* { User photo } */}
-          <div className=" justify-start mb-8">
+          <div
+            className=" justify-start mb-8"
+            onClick={() => setImagePreview(true)}
+          >
             <img
               src={userDetails.avatar}
               alt="User Profile"
@@ -171,7 +195,7 @@ const MyProfile = () => {
         </div>
 
         {isDialogOpen && (
-          <Card extraStyle={"max-w-[80vh] overflow-y-auto "}>
+          <Card extraStyle={"max-h-[90vh] overflow-y-scroll "}>
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-center  text-zinc-800">
                 Edit Profile
