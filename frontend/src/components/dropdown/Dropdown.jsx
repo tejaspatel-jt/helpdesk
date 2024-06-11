@@ -5,7 +5,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example({ label, options, selectedOption, onChange }) {
+export default function Dropdown({ label, options, selectedOption, onChange }) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>

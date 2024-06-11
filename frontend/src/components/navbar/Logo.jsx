@@ -1,10 +1,10 @@
 import React from "react";
-import jtlogo from "../../images/jtlogo1024.png";
+import jtlogo from "../../images/jignect_logo.png";
 
 const Logo = () => {
   return (
     <div
-      className="flex lg:w-14 h-14 bg-cover"
+      className="flex lg:w-52 h-14 bg-cover "
       style={{ backgroundImage: `url(${jtlogo})` }}
     ></div>
   );

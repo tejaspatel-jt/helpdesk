@@ -16,7 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserDetails } from "../components/CustomObjects/UserDetails";
 import { UserContext } from "../components/contexts/UserContextProvider";
-import jtlogo from "../images/jtlogo.png";
+import jtlogo from "../images/jtlogo1024.png";
 import { SuccessToastMessage } from "../common/commonMethods";
 import { useAuth } from "../components/contexts/AuthContextProvider";
 import { MyRoutes } from "../common/common.config";
@@ -109,15 +109,14 @@ const LoginPage = () => {
             style={{ backgroundImage: `url(${image})` }}
           ></div>
         )}
-        {/* {!isDesktop && (
-          <div
-            className="absolute sm:px-[30%] py-[30%]  w-[40%] h-[30%] md:py[50%] bg-cover bg-center z-[-1]"
-            style={{ backgroundImage: `url(${jtlogo})`, opacity: 0.5 }}
-          ></div>
-        )} */}
+
         <FormLayout>
+          <div
+            className="flex mx-[30%] h-32 w-32 bg-center bg-cover place-content-center"
+            style={{ backgroundImage: `url(${jtlogo})`, opacity: 1 }}
+          ></div>
           <FormBody handleSubmit={handleSubmit}>
-            <FormHeader label={"Login"} />
+            <FormHeader label={"Login to HelpDesk"} />
             <div>
               <FormField
                 labelFor={email}

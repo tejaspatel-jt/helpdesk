@@ -24,9 +24,12 @@ function MyTickets() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [department, setDepartment] = useState("");
+  const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [tickets, setTickets] = useState([]);
   const [hasMore, sethasMore] = useState(true);
+  const [files, setFiles] = useState(false);
+  const [attachments, setAttachments] = useState([]);
   const apiService = new ApiService(setLoading);
   const navigate = useNavigate();
   const { userDetails } = useContext(UserContext);
@@ -65,7 +68,8 @@ function MyTickets() {
     const validationErrors = validateCreateNewTicketFields(
       title,
       description,
-      department
+      department,
+      category
     );
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -76,6 +80,7 @@ function MyTickets() {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("department", department);
+    formData.append("category", category);
     if (files) formData.append("attachment", attachments);
 
     try {
@@ -118,8 +123,6 @@ function MyTickets() {
     });
   };
 
-  const [files, setFiles] = useState(false);
-  const [attachments, setAttachments] = useState([]);
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -136,7 +139,13 @@ function MyTickets() {
     <>
       {loading && <Loader />}
       <Navbar userRole={userDetails.role} screen={MyRoutes.MY_TICKETS} />
-      <div className="container mx-auto p-4">
+      <div
+        className="container mx-auto p-4"
+        // style={{
+        //   background:
+        //     "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(0,74,124,0.5357595919227065) 100%)",
+        // }}
+      >
         <div className="grid grid-cols-1 gap-4">
           <InfiniteScroll
             dataLength={tickets.length}
@@ -216,23 +225,137 @@ function MyTickets() {
                     onChange={(e) => setDepartment(e.target.value)}
                   >
                     <option disabled value="">
-                      SELECT DEPARTMENT
+                      Select Department
                     </option>
-                    <option value="is">IS</option>
-                    <option value="hr">HR</option>
-                    <option value="admin">ADMIN</option>
+                    <option value="is">Information Security (IS)</option>
+                    <option value="hr">Human Resource (HR)</option>
+                    <option value="admin">Admininstartion (ADMIN)</option>
+                    <option value="finance">Finance</option>
                   </select>
                 </div>
-                {errors.department && (
+                {!department && errors.department && (
                   <p className={validations.required}>{errors.department}</p>
                 )}
 
+                {department && (
+                  <div>
+                    {department === "hr" && (
+                      <div>
+                        <label
+                          htmlFor="hrcategory"
+                          className={FormFields.label}
+                        >
+                          Category <span className="text-red-600">*</span>
+                        </label>
+                        <select
+                          id="hrcategory"
+                          name="hrcategory"
+                          className={FormFields.input}
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                        >
+                          <option disabled value="">
+                            SELECT CATEGORY
+                          </option>
+                          <option value="Attendance Logs">
+                            Attendance Logs
+                          </option>
+                          <option value="Leave Request">Leave Request</option>
+                          <option value="Documents">Documents</option>
+                          <option value="JigNect Policy">JigNect Policy</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    )}
+                    {department === "is" && (
+                      <div>
+                        <label
+                          htmlFor="iscategory"
+                          className={FormFields.label}
+                        >
+                          Category <span className="text-red-600">*</span>
+                        </label>
+                        <select
+                          id="iscategory"
+                          name="iscategory"
+                          className={FormFields.input}
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                        >
+                          <option disabled value="">
+                            Select Category
+                          </option>
+                          <option value="Software Installation Request">
+                            Software Installation Request
+                          </option>
+                          <option value="PC/Keyboard/Mouse related query">
+                            PC/Keyboard/Mouse related query
+                          </option>
+                          <option value="Internet Access Request for specific web">
+                            Internet Access Request for specific web
+                          </option>
+                          <option value="Desk Change">Desk Change</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    )}
+                    {department === "admin" && (
+                      <div>
+                        <label
+                          htmlFor="admincategory"
+                          className={FormFields.label}
+                        >
+                          Category <span className="text-red-600">*</span>
+                        </label>
+                        <select
+                          id="admincategory"
+                          name="admincategory"
+                          className={FormFields.input}
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                        >
+                          <option disabled value="">
+                            SELECT CATEGORY
+                          </option>
+                          <option value="Stationary">Stationary</option>
+                          <option value="Desk Clean Up">Desk Clean Up</option>
+                          <option value="Desk / Chair">Desk / Chair</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    )}
+                    {department === "finance" && (
+                      <div>
+                        <label
+                          htmlFor="financecategory"
+                          className={FormFields.label}
+                        >
+                          Category <span className="text-red-600">*</span>
+                        </label>
+                        <select
+                          id="financecategory"
+                          name="financecategory"
+                          className={FormFields.input}
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                        >
+                          <option disabled value="">
+                            SELECT CATEGORY
+                          </option>
+                          <option value="Payroll">Payroll</option>
+                          <option value="PF">PF</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {department && !category && errors.category && (
+                  <p className={validations.required}>{errors.category}</p>
+                )}
+
                 <div className="my-1">
-                  <label
-                    htmlFor="attachments"
-                    className={FormFields.label}
-                    // className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="attachments" className={FormFields.label}>
                     Attachments
                   </label>
                   <input
@@ -240,7 +363,7 @@ function MyTickets() {
                     id="attachments"
                     accept=".jpg, .jpeg, .png, .pdf"
                     name="attachments"
-                    className="file-input file-input-bordered file-input-sm w-full max-w-xs"
+                    className="file-input file-input-bordered file-input-sm w-full max-w-xs "
                     onChange={handleFileInputChange}
                     multiple
                   />
@@ -264,7 +387,8 @@ function MyTickets() {
         </div>
       </div>
       <button
-        className="btn fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
+        // className="btn fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
+        className="btn fixed bottom-4 right-4 bg-jtBlue hover:bg-jtBlue text-white font-bold py-2 px-4 rounded shadow"
         onClick={() => setShowForm(true)}
       >
         + Create New Ticket

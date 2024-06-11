@@ -2,9 +2,10 @@ import React, { useCallback, useContext, useState } from "react";
 import { UserContext } from "../contexts/UserContextProvider";
 import debounce from "lodash/debounce";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import Example from "../dropdown/Dropdown";
+import Dropdown from "../dropdown/Dropdown";
 
 import ApiService from "../../ApiUtils/Api";
+
 const FilterDropdown = ({
   status,
   setStatus,
@@ -47,21 +48,26 @@ const FilterDropdown = ({
   );
 
   const handleOnSearch = async (query) => {
-    if (query.length === 3) {
-      try {
-        const response = await apiService.getAllUsernames(query);
-        if (response.status === 200) {
-          setSearch(
-            response.data.data.map((user) => ({
-              id: user._id,
-              name: user.username,
-            }))
-          );
-        } else {
-          setSearch([]);
+    if (query.length === 0) {
+      setUsername("");
+      setSearch([]);
+    } else {
+      if (query.length === 3) {
+        try {
+          const response = await apiService.getAllUsernames(query);
+          if (response.status === 200) {
+            setSearch(
+              response.data.data.map((user) => ({
+                id: user._id,
+                name: user.username,
+              }))
+            );
+          } else {
+            setSearch([]);
+          }
+        } catch (error) {
+          console.error("Error fetching usernames", error);
         }
-      } catch (error) {
-        console.error("Error fetching usernames", error);
       }
     }
   };
@@ -95,7 +101,7 @@ const FilterDropdown = ({
           <label htmlFor="status" className="mr-2">
             Status:
           </label>
-          <Example
+          <Dropdown
             label={
               statusOptions.find((opt) => opt.value === status)?.label ||
               "Select Status"
@@ -110,7 +116,7 @@ const FilterDropdown = ({
             <label htmlFor="department" className="mr-2">
               Department:
             </label>
-            <Example
+            <Dropdown
               label={
                 departmentOptions.find((opt) => opt.value === department)
                   ?.label || "Select Department"

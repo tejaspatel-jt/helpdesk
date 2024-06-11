@@ -51,9 +51,10 @@ const NavLinks = ({ userRole }) => {
       <div className="ml-10 flex items-baseline space-x-4">
         <NavLink
           to={MyRoutes.MY_TICKETS}
-          className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
+          // className={`text-gray-700 hover:bg-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
+          className={`text-white hover:bg-white hover:text-jtBlue px-3 py-2 rounded-md text-sm font-medium ${
             location.pathname === MyRoutes.MY_TICKETS
-              ? "bg-gray-700 text-white"
+              ? "text-green-900 bg-white"
               : ""
           }`}
         >
@@ -62,9 +63,9 @@ const NavLinks = ({ userRole }) => {
         {!(userRole === UserRole.EMPLOYEE) && (
           <NavLink
             to={MyRoutes.RAISED_TICKETS}
-            className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
+            className={`text-white hover:bg-white hover:text-jtBlue px-3 py-2 rounded-md text-sm font-medium ${
               location.pathname === MyRoutes.RAISED_TICKETS
-                ? "bg-gray-700 text-white"
+                ? "text-green-900 bg-white"
                 : ""
             }`}
           >

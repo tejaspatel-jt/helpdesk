@@ -49,7 +49,8 @@ const UserIconMenu = () => {
   return (
     <div className="relative" ref={menuRef}>
       <button
-        className="flex items-center justify-center p-2 rounded-full text-gray-200 hover:text-gray-500 focus:outline-none focus:text-gray-500"
+        // className="flex items-center justify-center p-2 rounded-full text-gray-700 hover:bg-gray-300 hover:text-white focus:outline-none focus:text-gray-600"
+        className="flex items-center justify-center p-2 rounded-full hover:bg-white text-white hover:text-jtBlue focus:text-jtBlue focus:bg-white"
         onClick={toggleMenu}
       >
         <FaUser className="w-6 h-6" />

@@ -20,16 +20,12 @@ const Navbar = ({ userRole, screen }) => {
   };
   return (
     <>
-      <nav className="bg-gray-800 sticky top-0 z-20">
+      <nav className="bg-jtBlue sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 ">
-          <div className="flex items-center justify-between h-16">
-            {screen === MyRoutes.MY_TICKETS ||
-            screen === MyRoutes.RAISED_TICKETS ? (
-              <div className="flex items-center">
-                <Logo />
-                <NavLinks userRole={userRole} />
-              </div>
-            ) : (
+          {/* <div className="flex items-center justify-between h-16"> */}
+
+          {screen === MyRoutes.PROFILE || screen === MyRoutes.TICKET_DETAILS ? (
+            <div className="flex h-[68px] items-center ">
               <button
                 onClick={() => goBack()}
                 className="flex items-center text-xl text-white hover:text-gray-300 "
@@ -37,11 +33,23 @@ const Navbar = ({ userRole, screen }) => {
                 <ArrowLeftIcon className="h-5 w-5 mr-1  " />
                 Go Back
               </button>
-            )}
 
-            <UserIconMenu />
-            <MenuButton toggleNavbar={toggleNavbar} />
-          </div>
+              <MenuButton toggleNavbar={toggleNavbar} />
+            </div>
+          ) : (
+            <div>
+              <div className="flex flex-row justify-between h-[68px] items-center">
+                <Logo />
+
+                <div className="flex justify-end items-center gap-5">
+                  <NavLinks userRole={userRole} />
+                  <UserIconMenu />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* </div> */}
         </div>
         <MobileMenu isOpen={isOpen} />
       </nav>

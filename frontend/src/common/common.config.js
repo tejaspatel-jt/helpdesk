@@ -26,6 +26,7 @@ export const UserRole = {
   HR: "hr",
   ADMIN: "admin",
   IS: "is",
+  FINANCE: "finance",
 };
 
 export const MyRoutes = {

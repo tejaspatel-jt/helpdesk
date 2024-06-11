@@ -31,8 +31,8 @@ const AdminTickets = () => {
       setPage(1);
       setTickets([]);
       setHasMore(true);
-      fetchTickets();
-    }),
+      fetchTickets(1, true);
+    }, 500),
     [username, status, department]
   );
 
@@ -42,29 +42,32 @@ const AdminTickets = () => {
   }, [username, status, department, debouncedFetchTickets]);
 
   useEffect(() => {
-    console.log("page dependency UE called-----");
-    fetchTickets();
+    if (page > 1) {
+      console.log("page dependency UE called-----");
+      fetchTickets(page, false);
+    }
   }, [page]);
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (pageToFetch, reset = false) => {
     try {
       setLoading(true);
-      const params = { page, perPage: 10 };
+      const params = { page: pageToFetch, perPage: 10 };
       if (status) params.status = status;
       if (department) params.department = department;
       if (username) params.username = username;
       const response = await apiService.fetchAllUserTicketsPerPage(params);
-
       const newTickets = response.data.data.tickets;
+
       if (newTickets.length === 0) {
         setHasMore(false);
-      } else if (page === 1) {
-        setTickets(newTickets);
       } else {
-        setTickets((prevTickets) => [...prevTickets, ...newTickets]);
+        setTickets((prevTickets) =>
+          reset ? newTickets : [...prevTickets, ...newTickets]
+        );
       }
     } catch (error) {
       console.error("Error fetching tickets:", error);
+    } finally {
       setLoading(false);
     }
   };

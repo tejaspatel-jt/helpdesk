@@ -70,7 +70,10 @@ const TicketDisplayCard = ({
               </h3>
 
               <span className="font-semibold text-xs">
-                {new Date(ticket.createdAt).toLocaleString().substring(0, 9)}
+                <p>
+                  Created date:
+                  {new Date(ticket.createdAt).toLocaleString().substring(0, 9)}
+                </p>
               </span>
             </div>
           </div>
