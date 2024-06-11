@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { TicketStatus } from "../constants.js";
 
 const commentSchema = new Schema(
   {
@@ -23,7 +24,7 @@ const statusFlowSchema = new Schema({
     },
     status: {
       type: String,
-      default: "raised",
+      default: TicketStatus.IN_REVIEW,
     },
     updatedBy: {
       type: Schema.Types.ObjectId,
@@ -40,7 +41,7 @@ const statusFlowSchema = new Schema({
     },
     status: {
       type: String,
-      default: "pending_master",
+      default: TicketStatus.PENDING_WITH,
     },
   },
   fromDepartment: {
@@ -53,7 +54,6 @@ const statusFlowSchema = new Schema({
     },
     status: {
       type: String,
-      // default: "pending",
     },
   },
 });
@@ -75,7 +75,7 @@ const ticketSchema = new Schema(
     },
     status: {
       type: String,
-      default: "raised",
+      default: TicketStatus.IN_REVIEW,
       trim: true,
     },
     user: {
@@ -87,9 +87,12 @@ const ticketSchema = new Schema(
     },
     department: {
       type: String,
-      enum: ["hr", "is", "admin"],
+      enum: ["hr", "is", "admin","finance"],
       required: true,
       trim: true,
+    },
+    category:{
+      type: String,
     },
     comments: [commentSchema],
     statusFlow: statusFlowSchema,
