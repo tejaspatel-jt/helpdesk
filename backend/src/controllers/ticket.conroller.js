@@ -104,14 +104,11 @@ const createTicket = asyncHandler(async (req, res) => {
   await ticket.save();
 
   ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
-    .populate({
-      path: "statusFlow.fromUser.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromMaster.updatedBy",
-      model: "User",
-    });
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role"
+    );
 
   res
     .status(201)
@@ -232,18 +229,12 @@ const getTicket = async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate({
-      path: "statusFlow.fromUser.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromMaster.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromDepartment.updatedBy",
-      model: "User",
-    })
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromDepartment.updatedBy",
+      "username fullname email role"
+    )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
@@ -276,12 +267,13 @@ const getTicket = async (req, res) => {
 //Get all ticket data
 const getAllTickets = asyncHandler(async (req, res) => {
   const { status, username, department, page, perPage } = req.query;
-
   let filter = {};
-  if (req.user.role != UserRole.MASTER) {
+  if (req.user.role !== UserRole.MASTER) {
     const userRole = req.user.role;
     filter.department = userRole;
-    filter.statusFlow.fromMaster = TicketStatus.APPROVED
+    filter.status = {
+      $in: [TicketStatus.APPROVED, TicketStatus.OPEN],
+    };
   }
 
   if (department) {
@@ -302,18 +294,12 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate({
-      path: "statusFlow.fromUser.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromMaster.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromDepartment.updatedBy",
-      model: "User",
-    })
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromDepartment.updatedBy",
+      "username fullname email role"
+    )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
