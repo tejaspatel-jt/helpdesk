@@ -7,6 +7,7 @@ import MobileMenu from "./MobileMenu";
 import { MyRoutes } from "../../common/common.config";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
 const Navbar = ({ userRole, screen }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,13 +21,14 @@ const Navbar = ({ userRole, screen }) => {
   };
   return (
     <>
-      <nav className="bg-gray-800 sticky top-0 z-20">
+      <nav className="bg-gray-600 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 ">
           <div className="flex items-center justify-between h-16">
             {screen === MyRoutes.MY_TICKETS ||
             screen === MyRoutes.RAISED_TICKETS ? (
               <div className="flex items-center">
                 <Logo />
+
                 <NavLinks userRole={userRole} />
               </div>
             ) : (
@@ -40,7 +42,15 @@ const Navbar = ({ userRole, screen }) => {
             )}
 
             <UserIconMenu />
+
             <MenuButton toggleNavbar={toggleNavbar} />
+            <div>
+              <div>
+                <button onClick={() => navigate("/help")}>
+                  <QuestionMarkCircleIcon height={"40px"} />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <MobileMenu isOpen={isOpen} />

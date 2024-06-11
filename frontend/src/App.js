@@ -15,6 +15,8 @@ import { AuthProvider } from "./components/contexts/AuthContextProvider";
 import MyTickets from "./pages/MyTickets";
 
 import { MyRoutes } from "./common/common.config";
+import HelpPage from "./pages/HelpPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
                 path={MyRoutes.MY_TICKETS}
                 element={<Navigate to={MyRoutes.MY_TICKETS} />}
               />
+              {/* <Route path={"/help"} element={<AdminDashboard />} /> */}
+              <Route path={"/help"} element={<HelpPage />} />
             </Route>
           </Routes>
         </Router>
