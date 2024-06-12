@@ -1,17 +1,12 @@
-import { set } from "mongoose";
-import { User } from "../models/user.model.js";
 import fs from "fs";
+import { File } from "../models/files.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {
-  deleteOldFileInCloudinary,
-  uploadOnCloudinary,
-  uploadOnCloudinaryWithBase64,
-} from "../utils/cloudinary.js";
-import { generateOTP, sendOTPByEmail } from "../utils/otp.js";
 import { fileToBase64, saveBase64Data } from "../utils/fileHandler.js";
-import { File } from "../models/files.model.js";
+import { generateOTP, sendOTPByEmail } from "../utils/otp.js";
+import { UserRole, UserRoleList } from "../constants.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -294,10 +289,15 @@ const updateUserRole = asyncHandler(async (req, res) => {
   if (!userExists) {
     throw new ApiError(404, "user does not exist.");
   }
-  if (!["employee", "hr", "is", "admin"].includes(updateRole.toLowerCase())) {
+
+  if (
+    !UserRoleList.filter((role) => role !== UserRole.MASTER).includes(
+      updateRole.toLowerCase()
+    )
+  ) {
     throw new ApiError(
       400,
-      "'updateRole' must be either 'employee' or 'HR' or 'IS'"
+      "'updateRole' must be either 'employee' or 'HR' or 'IS' or 'Finance' or 'Admin'"
     );
   }
 
@@ -349,15 +349,33 @@ const updateUserDetails = asyncHandler(async (req, res) => {
   });
 });
 
+const getProfilePicture = asyncHandler(async (req, res) => {
+  const { fileId } = req.query;
+
+  if (!fileId) {
+    throw new ApiError(400, "Please provide id of file.");
+  }
+  const file = await File.findById(fileId);
+
+  if (!file) {
+    throw new ApiError(404, "File not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, file, "Profile picture fetched successfully."));
+});
+
 export {
+  getAllUser,
+  getCurrentUser,
+  getProfilePicture,
   // registerUser,
   loginUser,
   logoutUser,
-  getCurrentUser,
-  getAllUser,
-  updateUserRole,
   // verifyUser,
   otpForPassword,
-  verifyOTPForForgotPassword,
   updateUserDetails,
+  updateUserRole,
+  verifyOTPForForgotPassword,
 };

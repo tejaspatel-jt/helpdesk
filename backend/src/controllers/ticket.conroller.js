@@ -1,17 +1,12 @@
-import { User } from "../models/user.model.js";
+import fs from "fs";
+import { TicketStatus, TicketStatuses, UserRole } from "../constants.js";
+import { File } from "../models/files.model.js";
 import { Ticket } from "../models/ticket.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse, ticketResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {
-  deleteOldFileInCloudinary,
-  uploadOnCloudinary,
-  uploadOnCloudinaryWithBase64,
-} from "../utils/cloudinary.js";
-import fs from "fs";
-import { TicketStatus, TicketStatuses, UserRole } from "../constants.js";
 import { fileToBase64, saveBase64Data } from "../utils/fileHandler.js";
-import path from "path";
 
 //Create new ticket
 const createTicket = asyncHandler(async (req, res) => {
@@ -76,7 +71,7 @@ const createTicket = asyncHandler(async (req, res) => {
     .populate("statusFlow.fromUser.updatedBy", "username fullname email role")
     .populate(
       "statusFlow.fromMaster.updatedBy",
-      "username fullname email role"
+      "username fullname email role avatar"
     );
 
   res
@@ -171,11 +166,17 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
   await ticket.save();
   ticket = await Ticket.findById(ticketId)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role")
-    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar"
+    )
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role avatar"
+    )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role"
+      "username fullname email role avatar"
     );
 
   return res
@@ -192,31 +193,18 @@ const getTicket = async (req, res) => {
   let filter = {};
   if (ticketId) {
     const ticket = await Ticket.findById(ticketId)
-      .populate({
-        path: "statusFlow.fromUser.updatedBy",
-        select: "username fullname email role avatar",
-        populate: {
-          path: "avatar",
-          model: "File",
-        },
-      })
-      .populate({
-        path: "statusFlow.fromMaster.updatedBy",
-        select: "username fullname email role avatar",
-        populate: {
-          path: "avatar",
-          model: "File",
-        },
-      })
-      .populate({
-        path: "statusFlow.fromDepartment.updatedBy",
-        select: "username fullname email role avatar",
-        populate: {
-          path: "avatar",
-          model: "File",
-        },
-      })
-      .populate("attachFile");
+      .populate(
+        "statusFlow.fromUser.updatedBy",
+        "username fullname email role avatar"
+      )
+      .populate(
+        "statusFlow.fromMaster.updatedBy",
+        "username fullname email role avatar"
+      )
+      .populate(
+        "statusFlow.fromDepartment.updatedBy",
+        "username fullname email role avatar"
+      );
 
     return res
       .status(200)
@@ -234,11 +222,11 @@ const getTicket = async (req, res) => {
     .populate("statusFlow.fromUser.updatedBy", "username fullname email role  ")
     .populate(
       "statusFlow.fromMaster.updatedBy",
-      "username fullname email role "
+      "username fullname email role avatar"
     )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role "
+      "username fullname email role avatar"
     )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
@@ -274,11 +262,8 @@ const getAllTickets = asyncHandler(async (req, res) => {
   const { status, username, department, page, perPage } = req.query;
   let filter = {};
   if (req.user.role !== UserRole.MASTER) {
-    const userRole = req.user.role;
-    filter.department = userRole;
-    filter.status = {
-      $in: [TicketStatus.APPROVED, TicketStatus.OPEN],
-    };
+    filter.department = req.user.role;
+    filter["statusFlow.fromMaster.status"] = TicketStatus.APPROVED;
   }
 
   if (department) {
@@ -302,11 +287,11 @@ const getAllTickets = asyncHandler(async (req, res) => {
     .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
     .populate(
       "statusFlow.fromMaster.updatedBy",
-      "username fullname email role "
+      "username fullname email role avatar"
     )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role "
+      "username fullname email role avatar"
     )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
@@ -405,10 +390,26 @@ const getTicketDetails = asyncHandler(async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 });
+
+const getTicketFile = asyncHandler(async (req, res) => {
+  const { fileId } = req.query;
+
+  if (!fileId) {
+    throw new ApiError(400, "Please provide id of file.");
+  }
+
+  const file = await File.findById(fileId);
+
+  if (!file) {
+    throw new ApiError(404, "File not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, file, "File fetched successfully."));
+});
 export {
-  createTicket,
-  getTicket,
-  getAllTickets,
-  updateTicketStatus,
-  getTicketDetails,
+  createTicket, getAllTickets, getTicket, getTicketDetails,
+  getTicketFile, updateTicketStatus
 };
+

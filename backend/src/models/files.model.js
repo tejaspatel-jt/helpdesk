@@ -21,4 +21,3 @@ const fileSchema = new Schema(
 );
 
 export const File = mongoose.model("File", fileSchema);
-
