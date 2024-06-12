@@ -44,8 +44,8 @@ function App() {
                 path={MyRoutes.MY_TICKETS}
                 element={<Navigate to={MyRoutes.MY_TICKETS} />}
               />
-              {/* <Route path={"/help"} element={<AdminDashboard />} /> */}
-              <Route path={"/help"} element={<HelpPage />} />
+              <Route path={"/help"} element={<AdminDashboard />} />
+              {/* <Route path={"/help"} element={<HelpPage />} /> */}
             </Route>
           </Routes>
         </Router>

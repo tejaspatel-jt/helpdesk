@@ -75,7 +75,7 @@ const AdminTickets = () => {
   const handleApprove = async (ticketId, setIsApproved) => {
     const body = {
       ticketId: ticketId,
-      ticketStatus: TicketStatus.ACCEPTED,
+      ticketStatus: TicketStatus.APPROVED,
     };
 
     try {

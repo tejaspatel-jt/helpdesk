@@ -25,7 +25,9 @@ const Navbar = ({ userRole, screen }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 ">
           {/* <div className="flex items-center justify-between h-16"> */}
 
-          {screen === MyRoutes.PROFILE || screen === MyRoutes.TICKET_DETAILS ? (
+          {screen === MyRoutes.PROFILE ||
+          screen === MyRoutes.TICKET_DETAILS ||
+          screen === MyRoutes.HELP_PAGE ? (
             <div className="flex h-[68px] items-center ">
               <button
                 onClick={() => goBack()}
@@ -36,13 +38,6 @@ const Navbar = ({ userRole, screen }) => {
               </button>
 
               <MenuButton toggleNavbar={toggleNavbar} />
-              <div>
-                <div>
-                  <button onClick={() => navigate("/help")}>
-                    <QuestionMarkCircleIcon height={"40px"} />
-                  </button>
-                </div>
-              </div>
             </div>
           ) : (
             <div>
@@ -52,6 +47,9 @@ const Navbar = ({ userRole, screen }) => {
                 <div className="flex justify-end items-center gap-5">
                   <NavLinks userRole={userRole} />
                   <UserIconMenu />
+                  <button onClick={() => navigate("/help")}>
+                    <QuestionMarkCircleIcon height={"40px"} />
+                  </button>
                 </div>
               </div>
             </div>

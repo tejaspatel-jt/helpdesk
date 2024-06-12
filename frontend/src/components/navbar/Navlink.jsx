@@ -46,6 +46,7 @@ import { MyRoutes, UserRole } from "../../common/common.config";
 
 const NavLinks = ({ userRole }) => {
   const location = useLocation();
+  console.log("location---", location.pathname);
   return (
     <div className="hidden md:block">
       <div className="ml-10 flex items-baseline space-x-4">
@@ -54,7 +55,7 @@ const NavLinks = ({ userRole }) => {
           // className={`text-gray-700 hover:bg-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
           className={`text-white hover:bg-white hover:text-jtBlue px-3 py-2 rounded-md text-sm font-medium ${
             location.pathname === MyRoutes.MY_TICKETS
-              ? "text-green-900 bg-white"
+              ? "text-red-900 bg-white"
               : ""
           }`}
         >

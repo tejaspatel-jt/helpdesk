@@ -21,9 +21,13 @@ const FilterDropdown = ({
 
   const statusOptions = [
     { value: "", label: "All" },
-    { value: "raised", label: "Raised" },
-    { value: `accepted_${userDetails.role}`, label: "Accepted" },
-    { value: `rejected_${userDetails.role}`, label: "Rejected" },
+    { value: "in_review", label: "In Review" },
+    { value: `approved`, label: "Approved" },
+    { value: `rejected`, label: "Rejected" },
+    { value: `open`, label: "Open" },
+    { value: `resolved`, label: "Resolved" },
+    { value: `returned`, label: "Returned" },
+    { value: `on_hold`, label: "On Hold" },
   ];
 
   const departmentOptions = [

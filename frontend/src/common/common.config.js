@@ -1,6 +1,7 @@
 export const TicketStatus = {
   RAISED: "raised",
-  ACCEPTED: "accepted",
+  // ACCEPTED: "accepted",
+  APPROVED: "approved",
   REJECTED: "rejected",
   ACCEPTED_MASTER: "accepted_master",
   PENDING_MASTER: "pending_master",
@@ -36,4 +37,5 @@ export const MyRoutes = {
   PROFILE: "/profile",
   RAISED_TICKETS: "/raisedtickets",
   TICKET_DETAILS: "/ticketDetailsPage",
+  HELP_PAGE: "/help",
 };
