@@ -17,7 +17,7 @@ router.route("/create").post(
   upload.fields([
     {
       name: "attachment",
-      maxCount: 10,
+      maxCount: 1,
     },
   ]),
   createTicket

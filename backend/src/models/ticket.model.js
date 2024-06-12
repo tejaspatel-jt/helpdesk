@@ -83,7 +83,8 @@ const ticketSchema = new Schema(
       ref: "User",
     },
     attachFile: {
-      type: Array,
+      type: Schema.Types.ObjectId,
+      ref: "File",
     },
     department: {
       type: String,
@@ -93,6 +94,7 @@ const ticketSchema = new Schema(
     },
     category:{
       type: String,
+      required:true,
     },
     comments: [commentSchema],
     statusFlow: statusFlowSchema,

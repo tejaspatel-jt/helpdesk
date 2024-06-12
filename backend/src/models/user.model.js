@@ -9,7 +9,7 @@ const userSchema = new Schema(
       trim: true,
     },
     contactNo: {
-      type:Number,
+      type: Number,
       trim: true,
     },
     dob: {
@@ -31,7 +31,8 @@ const userSchema = new Schema(
       trim: true,
     },
     avatar: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "File",
     },
     password: {
       type: String,
@@ -42,7 +43,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["employee", "admin", "hr", "is","master"],
+      enum: ["employee", "admin", "hr", "is", "master","finance"],
       default: "employee",
     },
     otp: {

@@ -10,11 +10,13 @@ import {
 } from "../utils/cloudinary.js";
 import fs from "fs";
 import { TicketStatus, TicketStatuses, UserRole } from "../constants.js";
+import { fileToBase64, saveBase64Data } from "../utils/fileHandler.js";
+import path from "path";
 
 //Create new ticket
 const createTicket = asyncHandler(async (req, res) => {
-  const { description, title, department, attachment } = req.body;
-  if (!(description || title || department)) {
+  const { description, title, department, attachment, category } = req.body;
+  if (!(description || title || department || category)) {
     throw new ApiError(
       400,
       "Please provide title, description, department, category."
@@ -32,49 +34,15 @@ const createTicket = asyncHandler(async (req, res) => {
     );
   }
 
-  const attachmentPath = req.files?.attachment;
-  let attachmentUrl = [];
-  if (attachmentPath && attachmentPath.length > 0) {
-    try {
-      for (const file of attachmentPath) {
-        const attachment = await uploadOnCloudinary(file.path);
-        attachmentUrl.push(attachment?.secure_url);
-      }
-    } catch (error) {
-      for (const url of attachmentUrl) {
-        await deleteOldFileInCloudinary(url);
-      }
-      throw new ApiError(500, "Failed to upload one or more files.");
-    }
+  const attachmentLocalPath = req.files?.attachment?.[0]?.path;
+  let file_id;
+  if (attachmentLocalPath) {
+    const attachFile = await fileToBase64(attachmentLocalPath);
+    file_id = await saveBase64Data(attachFile);
+    fs.unlinkSync(attachmentLocalPath);
   }
-
-  if (attachment && attachment.length > 0) {
-    try {
-      // Extracting file type from base64 data
-      const matches = attachment.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      if (!matches || matches.length !== 3) {
-        throw new Error("Invalid file format");
-      }
-
-      const fileType = matches[1].split("/")[1]; // Extracting file extension
-      const base64Data = matches[2];
-      const buffer = Buffer.from(base64Data, "base64");
-
-      // Generating a unique file name
-      var fileName = `attachment_${Date.now()}.${fileType}`;
-
-      // Writing file to disk
-      fs.writeFileSync(`./public/temp/${fileName}`, buffer, "base64");
-
-      // Uploading to Cloudinary
-      let fileUrl = await uploadOnCloudinaryWithBase64(fileName);
-      attachmentUrl.push(fileUrl.secure_url);
-    } catch (error) {
-      for (const url of attachmentUrl) {
-        await deleteOldFileInCloudinary(url);
-      }
-      throw new ApiError(500, "Failed to upload one or more files.");
-    }
+  if (attachment) {
+    file_id = await saveBase64Data(attachment);
   }
 
   const existingTicketCount = await Ticket.countDocuments();
@@ -83,8 +51,9 @@ const createTicket = asyncHandler(async (req, res) => {
     number: existingTicketCount + 1,
     title,
     description,
-    attachFile: attachmentUrl,
+    attachFile: file_id,
     department,
+    category,
     user: user._id,
   });
 
@@ -104,7 +73,7 @@ const createTicket = asyncHandler(async (req, res) => {
   await ticket.save();
 
   ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role")
     .populate(
       "statusFlow.fromMaster.updatedBy",
       "username fullname email role"
@@ -202,7 +171,7 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
   await ticket.save();
   ticket = await Ticket.findById(ticketId)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role")
     .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
     .populate(
       "statusFlow.fromDepartment.updatedBy",
@@ -218,10 +187,43 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
 //Get user ticket
 const getTicket = async (req, res) => {
-  const { status, page, perPage } = req.query;
+  const { status, page, perPage, ticketId } = req.query;
 
   let filter = {};
-  filter.user = req.user._id;
+  if (ticketId) {
+    const ticket = await Ticket.findById(ticketId)
+      .populate({
+        path: "statusFlow.fromUser.updatedBy",
+        select: "username fullname email role avatar",
+        populate: {
+          path: "avatar",
+          model: "File",
+        },
+      })
+      .populate({
+        path: "statusFlow.fromMaster.updatedBy",
+        select: "username fullname email role avatar",
+        populate: {
+          path: "avatar",
+          model: "File",
+        },
+      })
+      .populate({
+        path: "statusFlow.fromDepartment.updatedBy",
+        select: "username fullname email role avatar",
+        populate: {
+          path: "avatar",
+          model: "File",
+        },
+      })
+      .populate("attachFile");
+
+    return res
+      .status(200)
+      .json(new ticketResponse(200, ticket, "Ticket fetched successfully"));
+  } else {
+    filter.user = req.user._id;
+  }
 
   if (status) {
     filter.status = status;
@@ -229,11 +231,14 @@ const getTicket = async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
-    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role  ")
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role "
+    )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role"
+      "username fullname email role "
     )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
@@ -295,10 +300,13 @@ const getAllTickets = asyncHandler(async (req, res) => {
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
     .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
-    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role "
+    )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role"
+      "username fullname email role "
     )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
