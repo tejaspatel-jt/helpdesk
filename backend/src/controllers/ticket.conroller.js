@@ -9,14 +9,16 @@ import {
   uploadOnCloudinaryWithBase64,
 } from "../utils/cloudinary.js";
 import fs from "fs";
-
-// test commit & push post collaborator access from harsh
+import { TicketStatus, TicketStatuses, UserRole } from "../constants.js";
 
 //Create new ticket
 const createTicket = asyncHandler(async (req, res) => {
   const { description, title, department, attachment } = req.body;
   if (!(description || title || department)) {
-    throw new ApiError(400, "Please provide title & description both.");
+    throw new ApiError(
+      400,
+      "Please provide title, description, department, category."
+    );
   }
 
   if (title.length < 5 || title.length > 100) {
@@ -94,7 +96,7 @@ const createTicket = asyncHandler(async (req, res) => {
   ticket.statusFlow.fromUser = {
     updatedBy: req.user._id,
   };
-  const master = await User.find({ role: "master" });
+  const master = await User.find({ role: UserRole.MASTER });
   ticket.statusFlow.fromMaster = {
     updatedBy: master[0]._id,
   };
@@ -102,14 +104,11 @@ const createTicket = asyncHandler(async (req, res) => {
   await ticket.save();
 
   ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
-    .populate({
-      path: "statusFlow.fromUser.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromMaster.updatedBy",
-      model: "User",
-    });
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role"
+    );
 
   res
     .status(201)
@@ -119,6 +118,101 @@ const createTicket = asyncHandler(async (req, res) => {
         ticket,
         "You have successfully created a new ticket."
       )
+    );
+});
+
+//Update ticket status
+const updateTicketStatus = asyncHandler(async (req, res) => {
+  const { ticketId, ticketStatus, comment } = req.body;
+
+  if (!(ticketId || ticketStatus)) {
+    throw new ApiError(400, "Please provide ticket status and id.");
+  }
+
+  let ticket = await Ticket.findById(ticketId);
+  if (!ticket) {
+    throw new ApiError(404, "Ticket not found.");
+  }
+
+  if (
+    !TicketStatuses.filter(
+      (status) => status !== TicketStatus.IN_REVIEW
+    ).includes(ticketStatus)
+  ) {
+    throw new ApiError(400, "Invalid ticket status.");
+  }
+
+  if (req.user.role === UserRole.MASTER) {
+    if (TicketStatus.APPROVED === ticketStatus) {
+      ticket.status = ticketStatus;
+      ticket.statusFlow.fromMaster = {
+        updatedBy: req.user._id,
+        updatedAt: new Date(),
+        status: ticketStatus,
+      };
+      const department = await User.find({ role: ticket.department });
+      ticket.statusFlow.fromDepartment = {
+        status: TicketStatus.PENDING_WITH,
+        updatedBy: department[0]._id,
+      };
+    } else {
+      ticket.status = ticketStatus;
+      ticket.statusFlow.fromMaster = {
+        updatedBy: req.user._id,
+        updatedAt: new Date(),
+        status: ticketStatus,
+      };
+    }
+  }
+
+  if (
+    !(
+      req.user.role === UserRole.MASTER ||
+      ticket.statusFlow.fromMaster.status === TicketStatus.APPROVED
+    )
+  ) {
+    throw new ApiError(400, "You are not authorized to change ticket status.");
+  }
+
+  if (req.user.role !== UserRole.MASTER) {
+    if (TicketStatus.APPROVED === ticketStatus) {
+      ticket.status = TicketStatus.OPEN;
+      ticket.statusFlow.fromDepartment = {
+        updatedBy: req.user._id,
+        status: TicketStatus.OPEN,
+        updatedAt: new Date(),
+      };
+    } else {
+      ticket.status = ticketStatus;
+      ticket.statusFlow.fromDepartment = {
+        updatedBy: req.user._id,
+
+        status: ticketStatus,
+        updatedAt: new Date(),
+      };
+    }
+  }
+
+  if (comment) {
+    ticket.comments.push({
+      text: comment,
+      postedBy: req.user.username,
+    });
+  }
+
+  await ticket.save();
+  ticket = await Ticket.findById(ticketId)
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromDepartment.updatedBy",
+      "username fullname email role"
+    );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, ticket, "Ticket status is updated successfully")
     );
 });
 
@@ -135,18 +229,12 @@ const getTicket = async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate({
-      path: "statusFlow.fromUser.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromMaster.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromDepartment.updatedBy",
-      model: "User",
-    })
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromDepartment.updatedBy",
+      "username fullname email role"
+    )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
@@ -179,13 +267,12 @@ const getTicket = async (req, res) => {
 //Get all ticket data
 const getAllTickets = asyncHandler(async (req, res) => {
   const { status, username, department, page, perPage } = req.query;
-
   let filter = {};
-  if (req.user.role != "master") {
+  if (req.user.role !== UserRole.MASTER) {
     const userRole = req.user.role;
     filter.department = userRole;
     filter.status = {
-      $in: ["accepted_master", `accepted_${userRole}`, `rejected_${userRole}`],
+      $in: [TicketStatus.APPROVED, TicketStatus.OPEN],
     };
   }
 
@@ -195,8 +282,8 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   if (status) {
     filter.status =
-      req.user.role !== "master" && status === "raised"
-        ? "accepted_master"
+      req.user.role !== UserRole.MASTER && status === TicketStatus.IN_REVIEW
+        ? TicketStatus.APPROVED
         : status;
   }
 
@@ -207,18 +294,12 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate({
-      path: "statusFlow.fromUser.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromMaster.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromDepartment.updatedBy",
-      model: "User",
-    })
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromDepartment.updatedBy",
+      "username fullname email role"
+    )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
@@ -247,82 +328,6 @@ const getAllTickets = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ticketResponse(200, ticket, "All tickets fetched successfully"));
-});
-
-//Update ticket status
-const updateTicketStatus = asyncHandler(async (req, res) => {
-  const { ticketId, ticketStatus, comment } = req.body;
-
-  if (!(ticketId || ticketStatus)) {
-    throw new ApiError(400, "Please provide ticket status and id.");
-  }
-
-  let ticket = await Ticket.findById(ticketId);
-  if (!ticket) {
-    throw new ApiError(404, "Ticket not found.");
-  }
-
-  if (!["accepted", "rejected"].includes(ticketStatus)) {
-    throw new ApiError(400, "Invalid ticket status.");
-  }
-
-  const status = `${ticketStatus}_${req.user.role}`;
-  ticket.status = status;
-
-  // Initialize statusFlow if it's undefined
-  if (!ticket.statusFlow) {
-    ticket.statusFlow = {};
-  }
-
-  // Update the statusFlow based on the ticket status
-  if (["rejected_master", "accepted_master"].includes(status)) {
-    ticket.statusFlow.fromMaster = {
-      updatedBy: req.user._id,
-      updatedAt: new Date(),
-      status: status,
-    };
-  } else {
-    ticket.statusFlow.fromDepartment = {
-      updatedBy: req.user._id,
-      updatedAt: new Date(),
-      status: status,
-    };
-  }
-
-  if (["accepted_master"].includes(status)) {
-    const department = await User.find({ role: ticket.department });
-    ticket.statusFlow.fromDepartment = {
-      status: `pending_${ticket.department}`,
-      updatedBy: department[0]._id,
-    };
-  }
-
-  if (comment) {
-    ticket.comments.push({
-      text: comment,
-      postedBy: req.user.username,
-    });
-  }
-
-  await ticket.save();
-  ticket = await Ticket.findById(ticketId)
-    .populate({
-      path: "statusFlow.fromUser.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromMaster.updatedBy",
-      model: "User",
-    })
-    .populate({
-      path: "statusFlow.fromDepartment.updatedBy",
-      model: "User",
-    });
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, ticket, "Ticket status is updated successfully")
-    );
 });
 
 export { createTicket, getTicket, getAllTickets, updateTicketStatus };
