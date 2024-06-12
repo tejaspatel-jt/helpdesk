@@ -1,12 +1,14 @@
 import { Router } from "express";
 
-import { authorizedAccess, verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   createTicket,
   getAllTickets,
   getTicket,
+  getTicketDetails,
+  getTicketFile,
   updateTicketStatus,
 } from "../controllers/ticket.conroller.js";
+import { authorizedAccess, verifyJWT } from "../middlewares/auth.middleware.js";
 
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -17,7 +19,7 @@ router.route("/create").post(
   upload.fields([
     {
       name: "attachment",
-      maxCount: 10,
+      maxCount: 1,
     },
   ]),
   createTicket
@@ -27,5 +29,8 @@ router.route("/get/all").get(verifyJWT, authorizedAccess, getAllTickets);
 router
   .route("/update/status")
   .patch(verifyJWT, authorizedAccess, updateTicketStatus);
+
+router.route("/get/file").get(verifyJWT, getTicketFile);
+router.route("/dashboard").get(verifyJWT, authorizedAccess, getTicketDetails);
 
 export default router;

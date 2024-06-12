@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { UserRole, UserRoleList } from "../constants.js";
 
 const userSchema = new Schema(
   {
@@ -9,7 +10,7 @@ const userSchema = new Schema(
       trim: true,
     },
     contactNo: {
-      type:Number,
+      type: Number,
       trim: true,
     },
     dob: {
@@ -31,7 +32,8 @@ const userSchema = new Schema(
       trim: true,
     },
     avatar: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "File",
     },
     password: {
       type: String,
@@ -42,8 +44,8 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["employee", "admin", "hr", "is","master"],
-      default: "employee",
+      enum: UserRoleList,
+      default: UserRole.EMPLOYEE,
     },
     otp: {
       type: String,

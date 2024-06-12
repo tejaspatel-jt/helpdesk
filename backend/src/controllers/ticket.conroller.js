@@ -1,20 +1,17 @@
-import { User } from "../models/user.model.js";
+import fs from "fs";
+import { TicketStatus, TicketStatuses, UserRole } from "../constants.js";
+import { File } from "../models/files.model.js";
 import { Ticket } from "../models/ticket.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse, ticketResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {
-  deleteOldFileInCloudinary,
-  uploadOnCloudinary,
-  uploadOnCloudinaryWithBase64,
-} from "../utils/cloudinary.js";
-import fs from "fs";
-import { TicketStatus, TicketStatuses, UserRole } from "../constants.js";
+import { fileToBase64, saveBase64Data } from "../utils/fileHandler.js";
 
 //Create new ticket
 const createTicket = asyncHandler(async (req, res) => {
-  const { description, title, department, attachment } = req.body;
-  if (!(description || title || department)) {
+  const { description, title, department, attachment, category } = req.body;
+  if (!(description || title || department || category)) {
     throw new ApiError(
       400,
       "Please provide title, description, department, category."
@@ -32,49 +29,15 @@ const createTicket = asyncHandler(async (req, res) => {
     );
   }
 
-  const attachmentPath = req.files?.attachment;
-  let attachmentUrl = [];
-  if (attachmentPath && attachmentPath.length > 0) {
-    try {
-      for (const file of attachmentPath) {
-        const attachment = await uploadOnCloudinary(file.path);
-        attachmentUrl.push(attachment?.secure_url);
-      }
-    } catch (error) {
-      for (const url of attachmentUrl) {
-        await deleteOldFileInCloudinary(url);
-      }
-      throw new ApiError(500, "Failed to upload one or more files.");
-    }
+  const attachmentLocalPath = req.files?.attachment?.[0]?.path;
+  let file_id;
+  if (attachmentLocalPath) {
+    const attachFile = await fileToBase64(attachmentLocalPath);
+    file_id = await saveBase64Data(attachFile);
+    fs.unlinkSync(attachmentLocalPath);
   }
-
-  if (attachment && attachment.length > 0) {
-    try {
-      // Extracting file type from base64 data
-      const matches = attachment.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      if (!matches || matches.length !== 3) {
-        throw new Error("Invalid file format");
-      }
-
-      const fileType = matches[1].split("/")[1]; // Extracting file extension
-      const base64Data = matches[2];
-      const buffer = Buffer.from(base64Data, "base64");
-
-      // Generating a unique file name
-      var fileName = `attachment_${Date.now()}.${fileType}`;
-
-      // Writing file to disk
-      fs.writeFileSync(`./public/temp/${fileName}`, buffer, "base64");
-
-      // Uploading to Cloudinary
-      let fileUrl = await uploadOnCloudinaryWithBase64(fileName);
-      attachmentUrl.push(fileUrl.secure_url);
-    } catch (error) {
-      for (const url of attachmentUrl) {
-        await deleteOldFileInCloudinary(url);
-      }
-      throw new ApiError(500, "Failed to upload one or more files.");
-    }
+  if (attachment) {
+    file_id = await saveBase64Data(attachment);
   }
 
   const existingTicketCount = await Ticket.countDocuments();
@@ -83,8 +46,9 @@ const createTicket = asyncHandler(async (req, res) => {
     number: existingTicketCount + 1,
     title,
     description,
-    attachFile: attachmentUrl,
+    attachFile: file_id,
     department,
+    category,
     user: user._id,
   });
 
@@ -104,10 +68,10 @@ const createTicket = asyncHandler(async (req, res) => {
   await ticket.save();
 
   ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role")
     .populate(
       "statusFlow.fromMaster.updatedBy",
-      "username fullname email role"
+      "username fullname email role avatar"
     );
 
   res
@@ -202,11 +166,17 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
   await ticket.save();
   ticket = await Ticket.findById(ticketId)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
-    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar"
+    )
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role avatar"
+    )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role"
+      "username fullname email role avatar"
     );
 
   return res
@@ -218,10 +188,30 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
 //Get user ticket
 const getTicket = async (req, res) => {
-  const { status, page, perPage } = req.query;
+  const { status, page, perPage, ticketId } = req.query;
 
   let filter = {};
-  filter.user = req.user._id;
+  if (ticketId) {
+    const ticket = await Ticket.findById(ticketId)
+      .populate(
+        "statusFlow.fromUser.updatedBy",
+        "username fullname email role avatar"
+      )
+      .populate(
+        "statusFlow.fromMaster.updatedBy",
+        "username fullname email role avatar"
+      )
+      .populate(
+        "statusFlow.fromDepartment.updatedBy",
+        "username fullname email role avatar"
+      );
+
+    return res
+      .status(200)
+      .json(new ticketResponse(200, ticket, "Ticket fetched successfully"));
+  } else {
+    filter.user = req.user._id;
+  }
 
   if (status) {
     filter.status = status;
@@ -229,11 +219,14 @@ const getTicket = async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
-    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate("statusFlow.fromUser.updatedBy", "username fullname email role  ")
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role avatar"
+    )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role"
+      "username fullname email role avatar"
     )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
@@ -269,11 +262,8 @@ const getAllTickets = asyncHandler(async (req, res) => {
   const { status, username, department, page, perPage } = req.query;
   let filter = {};
   if (req.user.role !== UserRole.MASTER) {
-    const userRole = req.user.role;
-    filter.department = userRole;
-    filter.status = {
-      $in: [TicketStatus.APPROVED, TicketStatus.OPEN],
-    };
+    filter.department = req.user.role;
+    filter["statusFlow.fromMaster.status"] = TicketStatus.APPROVED;
   }
 
   if (department) {
@@ -295,10 +285,13 @@ const getAllTickets = asyncHandler(async (req, res) => {
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
     .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
-    .populate("statusFlow.fromMaster.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromMaster.updatedBy",
+      "username fullname email role avatar"
+    )
     .populate(
       "statusFlow.fromDepartment.updatedBy",
-      "username fullname email role"
+      "username fullname email role avatar"
     )
     .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
@@ -314,6 +307,7 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   if (currentPage == 1) {
     const totalTickets = await Ticket.countDocuments(filter);
+
     return res
       .status(200)
       .json(
@@ -330,4 +324,92 @@ const getAllTickets = asyncHandler(async (req, res) => {
     .json(new ticketResponse(200, ticket, "All tickets fetched successfully"));
 });
 
-export { createTicket, getTicket, getAllTickets, updateTicketStatus };
+const getTicketDetails = asyncHandler(async (req, res) => {
+  try {
+    const statuses = [
+      TicketStatus.IN_REVIEW,
+      TicketStatus.APPROVED,
+      TicketStatus.REJECTED,
+      TicketStatus.RETURNED,
+    ];
+
+    const departments = [
+      UserRole.ADMIN,
+      UserRole.IS,
+      UserRole.HR,
+      UserRole.FINANCE,
+    ];
+
+    // Count tickets by status
+    const statusCounts = await Promise.all(
+      statuses.map((status) => Ticket.countDocuments({ status }))
+    );
+    const [in_review, approved, rejected, returned] = statusCounts;
+
+    // Count tickets by status and department
+    const departmentCounts = await Promise.all(
+      departments.map((department) =>
+        Promise.all(
+          statuses.map((status) =>
+            Ticket.countDocuments({ status, department })
+          )
+        )
+      )
+    );
+
+    const admin = departmentCounts[0].reduce((sum, count) => sum + count, 0);
+    const is = departmentCounts[1].reduce((sum, count) => sum + count, 0);
+    const hr = departmentCounts[2].reduce((sum, count) => sum + count, 0);
+    const finance = departmentCounts[3].reduce((sum, count) => sum + count, 0);
+
+    const ticketStat = {
+      ticket_status: {
+        in_review,
+        approved,
+        rejected,
+        returned,
+      },
+      ticket_owner: {
+        admin,
+        is,
+        hr,
+        finance,
+      },
+    };
+
+    return res
+      .status(200)
+      .json(
+        new ticketResponse(
+          200,
+          ticketStat,
+          "All ticket data is fetched successfully"
+        )
+      );
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+const getTicketFile = asyncHandler(async (req, res) => {
+  const { fileId } = req.query;
+
+  if (!fileId) {
+    throw new ApiError(400, "Please provide id of file.");
+  }
+
+  const file = await File.findById(fileId);
+
+  if (!file) {
+    throw new ApiError(404, "File not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, file, "File fetched successfully."));
+});
+export {
+  createTicket, getAllTickets, getTicket, getTicketDetails,
+  getTicketFile, updateTicketStatus
+};
+
