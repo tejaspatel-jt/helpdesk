@@ -19,6 +19,10 @@ import Navbar from "../components/navbar/Navbar";
 const TicketDetailsPage = () => {
   const [isApproved, setIsApproved] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
+  const [isReturned, setIsReturned] = useState(false);
+  const [isResolved, setIsResolved] = useState(false);
+  const [onHold, setOnHold] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedAttachment, setSelectedAttachment] = useState(null);
@@ -31,8 +35,10 @@ const TicketDetailsPage = () => {
   const apiService = new ApiService(setLoading);
 
   useEffect(() => {
-    setIsApproved(ticketDetail.status === `accepted_${userDetails.role}`);
-    setIsRejected(ticketDetail.status === `rejected_${userDetails.role}`);
+    setIsApproved(ticketDetail.status === "approved");
+    setIsRejected(ticketDetail.status === "rejected");
+    setIsResolved(ticketDetail.status === "resolved");
+    setIsAccepted(ticketDetail.status === "accepted");
   }, [ticketDetail.status]);
 
   const goBack = () => {
@@ -45,7 +51,7 @@ const TicketDetailsPage = () => {
   const handleApprove = async (ticketId, setIsApproved) => {
     const body = {
       ticketId: ticketId,
-      ticketStatus: TicketStatus.ACCEPTED,
+      ticketStatus: TicketStatus.APPROVED,
     };
 
     try {
@@ -85,6 +91,102 @@ const TicketDetailsPage = () => {
     } catch (error) {
       console.error("Error rejecting ticket:", error);
       alert("An error occurred while rejecting the ticket.");
+    }
+  };
+
+  const handleAccept = async (ticketId, setIsAccepted) => {
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.APPROVED,
+    };
+
+    try {
+      const response = await apiService.handleApproveOrReject(body);
+      if (response.status === 200) {
+        setIsAccepted(true);
+        // setTickets((prevTickets) =>
+        //   prevTickets.map((ticket) =>
+        //     ticket._id === ticketId ? { ...ticket, status: "approved" } : ticket
+        //   )
+        // );
+        SuccessToastMessage("Ticket accepted successfully!");
+      } else {
+        ErrorToastMessage("Failed to accepted ticket. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error accepting ticket:", error);
+    }
+  };
+
+  const handleReturn = async (ticketId, setIsReturned) => {
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.RETURNED,
+    };
+    try {
+      const response = await apiService.handleApproveOrReject(body);
+      if (response.status === 200) {
+        setIsReturned(true);
+        // setTickets((prevTickets) =>
+        //   prevTickets.map((ticket) =>
+        //     ticket._id === ticketId ? { ...ticket, status: "returned" } : ticket
+        //   )
+        // );
+        SuccessToastMessage("Ticket returned successfully!");
+      } else {
+        ErrorToastMessage("Failed to return ticket. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error returning ticket:", error);
+      alert("An error occurred while returning the ticket.");
+    }
+  };
+
+  const handleOnHold = async (ticketId, setOnHold) => {
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.ON_HOLD,
+    };
+
+    try {
+      const response = await apiService.handleApproveOrReject(body);
+      if (response.status === 200) {
+        setOnHold(true);
+        // setTickets((prevTickets) =>
+        //   prevTickets.map((ticket) =>
+        //     ticket._id === ticketId ? { ...ticket, status: "on_hold" } : ticket
+        //   )
+        // );
+        SuccessToastMessage("Ticket is On Hold !");
+      } else {
+        ErrorToastMessage("Failed to hold the ticket. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error accepting ticket:", error);
+    }
+  };
+
+  const handleResolve = async (ticketId, setIsResolved) => {
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.RESOLVED,
+    };
+    try {
+      const response = await apiService.handleApproveOrReject(body);
+      if (response.status === 200) {
+        setIsResolved(true);
+        // setTickets((prevTickets) =>
+        //   prevTickets.map((ticket) =>
+        //     ticket._id === ticketId ? { ...ticket, status: "resolved" } : ticket
+        //   )
+        // );
+        SuccessToastMessage("Ticket resolved successfully!");
+      } else {
+        ErrorToastMessage("Failed to resolve the ticket. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error resolving ticket:", error);
+      alert("An error occurred while returning the ticket.");
     }
   };
 
@@ -134,7 +236,8 @@ const TicketDetailsPage = () => {
             <h1 className="text-2xl font-semibold">{ticketDetail.title}</h1>
             <p className="text-base text-gray-500">{ticketData.username}</p>
           </div>
-          {userDetails.role !== UserRole.EMPLOYEE &&
+          {userDetails.role === UserRole.MASTER &&
+            userDetails.role !== UserRole.EMPLOYEE &&
             cameFrom == MyRoutes.RAISED_TICKETS && (
               <div className="mt-2 ml-auto flex justify-center space-x-8">
                 <button
@@ -153,6 +256,7 @@ const TicketDetailsPage = () => {
                     ? TicketStatus.BUTTON_APPROVED
                     : TicketStatus.BUTTON_APPROVE}
                 </button>
+
                 <button
                   disabled={isApproved || isRejected}
                   className={`text-white px-3 py-1 ${
@@ -168,6 +272,79 @@ const TicketDetailsPage = () => {
                   {isRejected
                     ? TicketStatus.BUTTON_REJECTED
                     : TicketStatus.BUTTON_REJECT}
+                </button>
+              </div>
+            )}
+
+          {userDetails.role !== UserRole.EMPLOYEE &&
+            userDetails.role !== UserRole.MASTER && (
+              <div className="flex ml-auto smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
+                <button
+                  disabled={isAccepted || isReturned || isResolved}
+                  className={`w-[90px] text-white px-3 py-1 ${
+                    isAccepted || isReturned || isResolved
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-jtGreen hover:bg-green-600"
+                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleAccept(ticketDetail._id, setIsAccepted);
+                  }}
+                >
+                  {isAccepted
+                    ? TicketStatus.BUTTON_ACCEPTED
+                    : TicketStatus.BUTTON_ACCEPT}
+                </button>
+
+                <button
+                  disabled={isAccepted || isReturned || isResolved}
+                  className={`text-white px-3 py-1 ${
+                    onHold
+                      ? "bg-yellow-300 hover:bg-yellow-300"
+                      : "bg-black text-white "
+                  } rounded-md shadow-md mr-2 focus:outline-none focus:ring-2 focus:ring-green-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleOnHold(ticketDetail._id, setOnHold);
+                  }}
+                >
+                  {onHold
+                    ? TicketStatus.BUTTON_ON_HOLD
+                    : TicketStatus.BUTTON_ON_HOLD}
+                </button>
+
+                <button
+                  disabled={isAccepted || isReturned || isResolved}
+                  className={`w-[90px] text-white px-3 py-1 ${
+                    isReturned || isAccepted || isResolved
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-red-500 hover:bg-red-600"
+                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleReturn(ticketDetail._id, setIsReturned);
+                  }}
+                >
+                  {isRejected
+                    ? TicketStatus.BUTTON_RETURNED
+                    : TicketStatus.BUTTON_RETURN}
+                </button>
+
+                <button
+                  disabled={isAccepted || isReturned || isResolved}
+                  className={`text-white px-3 py-1 ${
+                    isResolved
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-jtGreen hover:bg-green-600"
+                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleResolve(ticketDetail._id, setIsResolved);
+                  }}
+                >
+                  {isResolved
+                    ? TicketStatus.BUTTON_RESOLVED
+                    : TicketStatus.BUTTON_RESOLVE}
                 </button>
               </div>
             )}
@@ -192,7 +369,9 @@ const TicketDetailsPage = () => {
             </li>
             <li className="py-2">
               <span className="font-semibold">Created Date:</span>{" "}
-              {new Date(ticketDetail.createdAt).toLocaleString()}
+              {new Date(ticketDetail.createdAt)
+                .toLocaleString()
+                .substring(0, 10)}
             </li>
           </ul>
         </div>

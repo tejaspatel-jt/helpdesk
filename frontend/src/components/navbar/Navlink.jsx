@@ -50,28 +50,45 @@ const NavLinks = ({ userRole }) => {
   return (
     <div className="hidden md:block">
       <div className="ml-10 flex items-baseline space-x-4">
+        {userRole === UserRole.MASTER ? (
+          <NavLink
+            to={MyRoutes.ADMIN_DASHBOARD}
+            className={`px-3 py-2 rounded-md text-sm font-medium ${
+              location.pathname == MyRoutes.ADMIN_DASHBOARD
+                ? "text-jtBlue bg-white"
+                : "text-white"
+            }`}
+          >
+            Admin Dashboard
+          </NavLink>
+        ) : (
+          ""
+        )}
+
         <NavLink
           to={MyRoutes.MY_TICKETS}
           // className={`text-gray-700 hover:bg-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
-          className={`text-white hover:bg-white hover:text-jtBlue px-3 py-2 rounded-md text-sm font-medium ${
-            location.pathname === MyRoutes.MY_TICKETS
-              ? "text-red-900 bg-white"
-              : ""
+          className={`px-3 py-2 rounded-md text-sm font-medium ${
+            location.pathname == MyRoutes.MY_TICKETS
+              ? "text-jtBlue bg-white"
+              : "text-white"
           }`}
         >
           My Tickets
         </NavLink>
-        {!(userRole === UserRole.EMPLOYEE) && (
+        {!(userRole === UserRole.EMPLOYEE) ? (
           <NavLink
             to={MyRoutes.RAISED_TICKETS}
-            className={`text-white hover:bg-white hover:text-jtBlue px-3 py-2 rounded-md text-sm font-medium ${
-              location.pathname === MyRoutes.RAISED_TICKETS
-                ? "text-green-900 bg-white"
-                : ""
+            className={`px-3 py-2 rounded-md text-sm font-medium ${
+              location.pathname == MyRoutes.RAISED_TICKETS
+                ? "text-jtBlue bg-white"
+                : "text-white"
             }`}
           >
             Raised Tickets
           </NavLink>
+        ) : (
+          ""
         )}
       </div>
     </div>

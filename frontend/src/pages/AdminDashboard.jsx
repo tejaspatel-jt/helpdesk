@@ -67,10 +67,14 @@
 // export default AdminDashboard;
 
 // src/AdminDashboard.js
-import React from "react";
+import React, { useContext } from "react";
 import { PieChart } from "react-minimal-pie-chart";
+import Navbar from "../components/navbar/Navbar";
+import { MyRoutes } from "../common/common.config";
+import { UserContext } from "../components/contexts/UserContextProvider";
 
 const AdminDashboard = () => {
+  const { userDetails } = useContext(UserContext);
   const salesData = [
     { title: "In Review", value: 40, color: "#F3DE0C" },
     { title: "Accepted", value: 30, color: "#008000" },
@@ -87,9 +91,10 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="font-sans text-gray-800 p-5 bg-gray-100 min-h-screen">
-      <header className="bg-blue-900 p-5 text-white text-center rounded">
-        <h1 className="text-3xl">Admin Dashboard</h1>
+    <div className="font-sans bg-gray-100 min-h-screen">
+      <Navbar userRole={userDetails.role} />
+      <header className=" p-5 text-white text-center rounded">
+        <h1 className="text-3xl text-jtBlue">Admin Dashboard</h1>
       </header>
       <main className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Sales Distribution */}

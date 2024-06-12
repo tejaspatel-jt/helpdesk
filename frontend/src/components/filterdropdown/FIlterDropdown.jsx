@@ -100,7 +100,7 @@ const FilterDropdown = ({
         />
       </div>
 
-      <div className="smallMobile:flex-row smallMobile:justify-evenly">
+      <div className=" smallMobile:ml-[20px] smallMobile:flex-row smallMobile:justify-evenly">
         <div className="dropdown mr-4">
           <label htmlFor="status" className="mr-2">
             Status:

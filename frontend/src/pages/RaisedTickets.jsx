@@ -84,9 +84,7 @@ const AdminTickets = () => {
         setIsApproved(true);
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
-            ticket._id === ticketId
-              ? { ...ticket, status: `accepted_${userDetails.role}` }
-              : ticket
+            ticket._id === ticketId ? { ...ticket, status: `approved` } : ticket
           )
         );
         SuccessToastMessage("Ticket approved successfully!");
@@ -95,6 +93,29 @@ const AdminTickets = () => {
       }
     } catch (error) {
       console.error("Error approving ticket:", error);
+    }
+  };
+  const handleAccept = async (ticketId, setIsAccepted) => {
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.APPROVED,
+    };
+
+    try {
+      const response = await apiService.handleApproveOrReject(body);
+      if (response.status === 200) {
+        setIsAccepted(true);
+        setTickets((prevTickets) =>
+          prevTickets.map((ticket) =>
+            ticket._id === ticketId ? { ...ticket, status: "approved" } : ticket
+          )
+        );
+        SuccessToastMessage("Ticket accepted successfully!");
+      } else {
+        ErrorToastMessage("Failed to accepted ticket. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error accepting ticket:", error);
     }
   };
 
@@ -109,9 +130,7 @@ const AdminTickets = () => {
         setIsRejected(true);
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
-            ticket._id === ticketId
-              ? { ...ticket, status: `rejected_${userDetails.role}` }
-              : ticket
+            ticket._id === ticketId ? { ...ticket, status: `rejected` } : ticket
           )
         );
         SuccessToastMessage("Ticket rejected successfully!");
@@ -121,6 +140,29 @@ const AdminTickets = () => {
     } catch (error) {
       console.error("Error rejecting ticket:", error);
       alert("An error occurred while rejecting the ticket.");
+    }
+  };
+  const handleReturn = async (ticketId, setIsReturned) => {
+    const body = {
+      ticketId: ticketId,
+      ticketStatus: TicketStatus.RETURNED,
+    };
+    try {
+      const response = await apiService.handleApproveOrReject(body);
+      if (response.status === 200) {
+        setIsReturned(true);
+        setTickets((prevTickets) =>
+          prevTickets.map((ticket) =>
+            ticket._id === ticketId ? { ...ticket, status: "returned" } : ticket
+          )
+        );
+        SuccessToastMessage("Ticket returned successfully!");
+      } else {
+        ErrorToastMessage("Failed to return ticket. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error returning ticket:", error);
+      alert("An error occurred while returning the ticket.");
     }
   };
 
@@ -159,6 +201,8 @@ const AdminTickets = () => {
                 ticket={ticket}
                 handleApprove={handleApprove}
                 handleReject={handleReject}
+                handleAccept={handleAccept}
+                handleReturn={handleReturn}
                 userRole={userDetails.role}
                 handleTicketClick={handleTicketClick}
               />

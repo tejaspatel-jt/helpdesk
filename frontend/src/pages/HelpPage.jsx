@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -18,11 +18,13 @@ import {
 } from "@heroicons/react/20/solid";
 import { FaArrowRight } from "react-icons/fa";
 import Navbar from "../components/navbar/Navbar";
+import { UserContext } from "../components/contexts/UserContextProvider";
 
 const HelpPage = () => {
+  const { userDetails } = useContext(UserContext);
   return (
     <>
-      <Navbar />
+      <Navbar userRole={userDetails.role} />
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold mb-6">Help</h1>
 

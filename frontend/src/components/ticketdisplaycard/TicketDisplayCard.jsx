@@ -9,16 +9,23 @@ const TicketDisplayCard = ({
   handleTicketClick,
   handleApprove,
   handleReject,
+  handleAccept,
+  handleReturn,
   userRole,
   screen,
 }) => {
   const [isApproved, setIsApproved] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
+  const [isReturned, setIsReturned] = useState(false);
+  const [isResolved, setIsResolved] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    setIsApproved(ticket.status === `accepted_${userRole}`);
-    setIsRejected(ticket.status === `rejected_${userRole}`);
+    setIsApproved(ticket.status === "approved");
+    setIsRejected(ticket.status === "rejected");
+    setIsResolved(ticket.status === "resolved");
+    setIsAccepted(ticket.status === "accepted");
   }, [ticket.status]);
 
   return (
@@ -81,11 +88,12 @@ const TicketDisplayCard = ({
         <div className="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
           <div className="ticket-status-and-details smallMobile:mt-3 smallMobile:justify-between smallMobile:w-full flex gap-3 items-center min-w-28 text-center">
             <span
-              className={`text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 min-w-[150px] text-center rounded-badge ${
-                ticket.status === TicketStatus.RAISED
+              className={`text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 min-w-[120px] text-center rounded-badge ${
+                ticket.status === TicketStatus.IN_REVIEW ||
+                ticket.status === TicketStatus.OPEN
                   ? "text-yellow-500"
-                  : ticket.status.includes(TicketStatus.ACCEPTED)
-                  ? "text-green-500"
+                  : ticket.status.includes(TicketStatus.APPROVED)
+                  ? "text-jtGreen"
                   : "text-red-500"
               }`}
             >
@@ -95,39 +103,78 @@ const TicketDisplayCard = ({
               {ticket.department.toUpperCase()}
             </span>
           </div>
-          {userRole !== UserRole.EMPLOYEE && screen !== MyRoutes.MY_TICKETS && (
+          {userRole !== UserRole.EMPLOYEE &&
+            screen !== MyRoutes.MY_TICKETS &&
+            userRole === UserRole.MASTER && (
+              <div className="flex smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
+                <button
+                  disabled={isApproved || isRejected}
+                  className={`w-[90px] text-white px-3 py-1 ${
+                    isApproved || isRejected
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-jtGreen hover:bg-green-600"
+                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleApprove(ticket._id, setIsApproved);
+                  }}
+                >
+                  {isApproved
+                    ? TicketStatus.BUTTON_APPROVED
+                    : TicketStatus.BUTTON_APPROVE}
+                </button>
+                <button
+                  disabled={isApproved || isRejected}
+                  className={`w-[90px] text-white px-3 py-1 ${
+                    isRejected || isApproved
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-red-500 hover:bg-red-600"
+                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setOpenModal(true);
+                  }}
+                >
+                  {isRejected
+                    ? TicketStatus.BUTTON_REJECTED
+                    : TicketStatus.BUTTON_REJECT}
+                </button>
+              </div>
+            )}
+
+          {userRole !== UserRole.EMPLOYEE && userRole !== UserRole.MASTER && (
             <div className="flex smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
               <button
-                disabled={isApproved || isRejected}
+                disabled={isAccepted || isReturned}
                 className={`w-[90px] text-white px-3 py-1 ${
-                  isApproved || isRejected
+                  isAccepted || isReturned
                     ? "bg-gray-300 hover:bg-gray-300"
-                    : "bg-green-500 hover:bg-green-600"
+                    : "bg-jtGreen hover:bg-green-600"
                 } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleApprove(ticket._id, setIsApproved);
+                  handleAccept(ticket._id, setIsAccepted);
                 }}
               >
-                {isApproved
-                  ? TicketStatus.BUTTON_APPROVED
-                  : TicketStatus.BUTTON_APPROVE}
+                {isAccepted
+                  ? TicketStatus.BUTTON_ACCEPTED
+                  : TicketStatus.BUTTON_ACCEPT}
               </button>
               <button
-                disabled={isApproved || isRejected}
+                disabled={isAccepted || isReturned}
                 className={`w-[90px] text-white px-3 py-1 ${
-                  isRejected || isApproved
+                  isReturned || isAccepted
                     ? "bg-gray-300 hover:bg-gray-300"
                     : "bg-red-500 hover:bg-red-600"
                 } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
                 onClick={(event) => {
                   event.stopPropagation();
-                  setOpenModal(true);
+                  handleReturn(ticket._id, setIsReturned);
                 }}
               >
                 {isRejected
-                  ? TicketStatus.BUTTON_REJECTED
-                  : TicketStatus.BUTTON_REJECT}
+                  ? TicketStatus.BUTTON_RETURNED
+                  : TicketStatus.BUTTON_RETURN}
               </button>
             </div>
           )}

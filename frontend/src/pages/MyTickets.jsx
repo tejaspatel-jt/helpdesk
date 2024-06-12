@@ -237,7 +237,7 @@ function MyTickets() {
                   <p className={validations.required}>{errors.department}</p>
                 )}
 
-                {department && (
+                {department ? (
                   <div>
                     {department === "hr" && (
                       <div>
@@ -349,6 +349,8 @@ function MyTickets() {
                       </div>
                     )}
                   </div>
+                ) : (
+                  ""
                 )}
                 {department && !category && errors.category && (
                   <p className={validations.required}>{errors.category}</p>

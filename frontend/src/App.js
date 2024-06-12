@@ -41,11 +41,14 @@ function App() {
                 element={<TicketDetailsPage />}
               />
               <Route
+                path={MyRoutes.ADMIN_DASHBOARD}
+                element={<AdminDashboard />}
+              />
+              <Route path={MyRoutes.HELP_PAGE} element={<HelpPage />} />
+              <Route
                 path={MyRoutes.MY_TICKETS}
                 element={<Navigate to={MyRoutes.MY_TICKETS} />}
               />
-              <Route path={"/help"} element={<AdminDashboard />} />
-              {/* <Route path={"/help"} element={<HelpPage />} /> */}
             </Route>
           </Routes>
         </Router>

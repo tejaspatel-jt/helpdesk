@@ -22,7 +22,7 @@ const Navbar = ({ userRole, screen }) => {
   return (
     <>
       <nav className="bg-jtBlue sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-5 lg:px-8 ">
+        <div className="mx-auto px-4 sm:px-5 lg:px-8 ">
           {/* <div className="flex items-center justify-between h-16"> */}
 
           {screen === MyRoutes.PROFILE ||
@@ -36,8 +36,6 @@ const Navbar = ({ userRole, screen }) => {
                 <ArrowLeftIcon className="h-5 w-5 mr-1  " />
                 Go Back
               </button>
-
-              <MenuButton toggleNavbar={toggleNavbar} />
             </div>
           ) : (
             <div>
@@ -48,8 +46,12 @@ const Navbar = ({ userRole, screen }) => {
                   <NavLinks userRole={userRole} />
                   <UserIconMenu />
                   <button onClick={() => navigate("/help")}>
-                    <QuestionMarkCircleIcon height={"40px"} />
+                    <QuestionMarkCircleIcon
+                      height={"32px"}
+                      className="text-white"
+                    />
                   </button>
+                  <MenuButton toggleNavbar={toggleNavbar} />
                 </div>
               </div>
             </div>
