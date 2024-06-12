@@ -7,6 +7,7 @@ import MobileMenu from "./MobileMenu";
 import { MyRoutes } from "../../common/common.config";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowLeftIcon from "@heroicons/react/24/solid/ArrowLeftIcon";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
 const Navbar = ({ userRole, screen }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +36,13 @@ const Navbar = ({ userRole, screen }) => {
               </button>
 
               <MenuButton toggleNavbar={toggleNavbar} />
+              <div>
+                <div>
+                  <button onClick={() => navigate("/help")}>
+                    <QuestionMarkCircleIcon height={"40px"} />
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <div>
