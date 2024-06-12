@@ -322,6 +322,7 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   if (currentPage == 1) {
     const totalTickets = await Ticket.countDocuments(filter);
+
     return res
       .status(200)
       .json(
@@ -338,4 +339,76 @@ const getAllTickets = asyncHandler(async (req, res) => {
     .json(new ticketResponse(200, ticket, "All tickets fetched successfully"));
 });
 
-export { createTicket, getTicket, getAllTickets, updateTicketStatus };
+const getTicketDetails = asyncHandler(async (req, res) => {
+  try {
+    const statuses = [
+      TicketStatus.IN_REVIEW,
+      TicketStatus.APPROVED,
+      TicketStatus.REJECTED,
+      TicketStatus.RETURNED,
+    ];
+
+    const departments = [
+      UserRole.ADMIN,
+      UserRole.IS,
+      UserRole.HR,
+      UserRole.FINANCE,
+    ];
+
+    // Count tickets by status
+    const statusCounts = await Promise.all(
+      statuses.map((status) => Ticket.countDocuments({ status }))
+    );
+    const [in_review, approved, rejected, returned] = statusCounts;
+
+    // Count tickets by status and department
+    const departmentCounts = await Promise.all(
+      departments.map((department) =>
+        Promise.all(
+          statuses.map((status) =>
+            Ticket.countDocuments({ status, department })
+          )
+        )
+      )
+    );
+
+    const admin = departmentCounts[0].reduce((sum, count) => sum + count, 0);
+    const is = departmentCounts[1].reduce((sum, count) => sum + count, 0);
+    const hr = departmentCounts[2].reduce((sum, count) => sum + count, 0);
+    const finance = departmentCounts[3].reduce((sum, count) => sum + count, 0);
+
+    const ticketStat = {
+      ticket_status: {
+        in_review,
+        approved,
+        rejected,
+        returned,
+      },
+      ticket_owner: {
+        admin,
+        is,
+        hr,
+        finance,
+      },
+    };
+
+    return res
+      .status(200)
+      .json(
+        new ticketResponse(
+          200,
+          ticketStat,
+          "All ticket data is fetched successfully"
+        )
+      );
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+export {
+  createTicket,
+  getTicket,
+  getAllTickets,
+  updateTicketStatus,
+  getTicketDetails,
+};
