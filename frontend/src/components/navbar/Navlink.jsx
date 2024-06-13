@@ -46,7 +46,6 @@ import { MyRoutes, UserRole } from "../../common/common.config";
 
 const NavLinks = ({ userRole }) => {
   const location = useLocation();
-  console.log("location---", location.pathname);
   return (
     <div className="hidden md:block">
       <div className="ml-10 flex items-baseline space-x-4">

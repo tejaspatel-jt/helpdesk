@@ -110,14 +110,19 @@ export default class ApiService {
       const accessToken = localStorage.getItem("accessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
-        ContentType: "application/json",
+        // ContentType: "application/json",
+        ContentType: "multipart/form-data",
       };
 
       const response = await BaseApi.post(
         USER_CREATE_NEW_TICEKT_ENDPOINT,
 
         formData,
-        { headers }
+        {
+          headers: headers,
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        }
       );
       return response;
     } catch (error) {
@@ -212,6 +217,7 @@ export default class ApiService {
     } catch (error) {
       this.setLoading(false);
       console.error("Error fetching tickets:", error);
+      throw error;
     } finally {
       this.setLoading(false);
     }

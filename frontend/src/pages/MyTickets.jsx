@@ -27,7 +27,7 @@ function MyTickets() {
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [tickets, setTickets] = useState([]);
-  const [hasMore, sethasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
   const [files, setFiles] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const apiService = new ApiService(setLoading);
@@ -44,11 +44,15 @@ function MyTickets() {
     try {
       setLoading(true);
       const response = await apiService.fetchUserTickets({ page, perPage });
+      if (response.data.data === null) {
+        setHasMore(false);
+      }
       const sortedTickets = response.data.data.tickets.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
-      if (sortedTickets.length === 0) {
-        sethasMore(false);
+      if (sortedTickets && sortedTickets.length < 10) {
+        setTickets((prev) => [...prev, ...sortedTickets]);
+        setHasMore(false);
       }
       if (page === 1) {
         setTickets(sortedTickets);
@@ -152,13 +156,7 @@ function MyTickets() {
             loader={loading ? <p className="text-center">Loading...</p> : ""}
             next={() => setPage((prevPage) => prevPage + 1)}
             hasMore={hasMore}
-            endMessage={
-              tickets.length === 0 ? (
-                <p className="text-center">No more tickets to load.</p>
-              ) : (
-                ""
-              )
-            }
+            endMessage={<p className="text-center">No more tickets to load.</p>}
           >
             {tickets.map((ticket) => (
               <TicketDisplayCard
@@ -367,7 +365,6 @@ function MyTickets() {
                     name="attachments"
                     className="file-input file-input-bordered file-input-sm w-full max-w-xs "
                     onChange={handleFileInputChange}
-                    multiple
                   />
                 </div>
 

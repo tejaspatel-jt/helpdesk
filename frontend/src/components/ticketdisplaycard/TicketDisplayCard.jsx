@@ -19,13 +19,16 @@ const TicketDisplayCard = ({
   const [isAccepted, setIsAccepted] = useState(false);
   const [isReturned, setIsReturned] = useState(false);
   const [isResolved, setIsResolved] = useState(false);
+  const [onHold, setOnHold] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    setIsApproved(ticket.status === "approved");
-    setIsRejected(ticket.status === "rejected");
-    setIsResolved(ticket.status === "resolved");
-    setIsAccepted(ticket.status === "accepted");
+    setIsApproved(ticket.status === TicketStatus.APPROVED_MASTER);
+    setIsRejected(ticket.status === TicketStatus.REJECTED_MASTER);
+    setIsResolved(ticket.status === TicketStatus.RESOLVED);
+    setIsAccepted(ticket.status === TicketStatus.OPEN);
+    setIsReturned(ticket.status === TicketStatus.RETURNED);
+    setOnHold(ticket.status === TicketStatus.ON_HOLD);
   }, [ticket.status]);
 
   return (
@@ -103,6 +106,8 @@ const TicketDisplayCard = ({
               {ticket.department.toUpperCase()}
             </span>
           </div>
+
+          {/* //FOR MASTER VIEW */}
           {userRole !== UserRole.EMPLOYEE &&
             screen !== MyRoutes.MY_TICKETS &&
             userRole === UserRole.MASTER && (
@@ -142,12 +147,15 @@ const TicketDisplayCard = ({
               </div>
             )}
 
+          {/* //FOR DEPARTMENT VIEW */}
           {userRole !== UserRole.EMPLOYEE && userRole !== UserRole.MASTER && (
             <div className="flex smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
               <button
-                disabled={isAccepted || isReturned}
+                disabled={
+                  isAccepted || isReturned || isResolved || isRejected || onHold
+                }
                 className={`w-[90px] text-white px-3 py-1 ${
-                  isAccepted || isReturned
+                  isAccepted || isReturned || isResolved || isRejected || onHold
                     ? "bg-gray-300 hover:bg-gray-300"
                     : "bg-jtGreen hover:bg-green-600"
                 } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
@@ -161,9 +169,9 @@ const TicketDisplayCard = ({
                   : TicketStatus.BUTTON_ACCEPT}
               </button>
               <button
-                disabled={isAccepted || isReturned}
+                disabled={isAccepted || isReturned || isResolved || isRejected}
                 className={`w-[90px] text-white px-3 py-1 ${
-                  isReturned || isAccepted
+                  isReturned || isAccepted || isResolved || isReturned
                     ? "bg-gray-300 hover:bg-gray-300"
                     : "bg-red-500 hover:bg-red-600"
                 } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -172,7 +180,7 @@ const TicketDisplayCard = ({
                   handleReturn(ticket._id, setIsReturned);
                 }}
               >
-                {isRejected
+                {isReturned
                   ? TicketStatus.BUTTON_RETURNED
                   : TicketStatus.BUTTON_RETURN}
               </button>
@@ -181,23 +189,40 @@ const TicketDisplayCard = ({
         </div>
       </div>
 
-      {openModal && (
-        <DialogModal
-          title={"Confirmation"}
-          message={"Are you Sure you want to Reject ?"}
-          closeButtonOnClick={(event) => {
-            event.stopPropagation();
-            setOpenModal(false);
-          }}
-          button1Name={"Reject"}
-          button1StyleExtra={"btn"}
-          button1Click={(event) => {
-            event.stopPropagation();
-            handleReject(ticket._id, setIsRejected);
-            setOpenModal(false);
-          }}
-        />
-      )}
+      {openModal &&
+        (userRole === UserRole.MASTER ? (
+          <DialogModal
+            title={"Confirmation"}
+            message={"Are you Sure you want to Reject ?"}
+            closeButtonOnClick={(event) => {
+              event.stopPropagation();
+              setOpenModal(false);
+            }}
+            button1Name={"Reject"}
+            button1StyleExtra={"btn"}
+            button1Click={(event) => {
+              event.stopPropagation();
+              handleReject(ticket._id, setIsRejected);
+              setOpenModal(false);
+            }}
+          />
+        ) : (
+          <DialogModal
+            title={"Confirmation"}
+            message={"Are you Sure you want to Return ?"}
+            closeButtonOnClick={(event) => {
+              event.stopPropagation();
+              setOpenModal(false);
+            }}
+            button1Name={"Return"}
+            button1StyleExtra={"btn"}
+            button1Click={(event) => {
+              event.stopPropagation();
+              handleReturn(ticket._id, setIsReturned);
+              setOpenModal(false);
+            }}
+          />
+        ))}
     </div>
   );
 };

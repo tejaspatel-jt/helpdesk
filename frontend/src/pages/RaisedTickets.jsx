@@ -56,9 +56,14 @@ const AdminTickets = () => {
       if (department) params.department = department;
       if (username) params.username = username;
       const response = await apiService.fetchAllUserTicketsPerPage(params);
+      if (response.data.data === null) {
+        setHasMore(false);
+      }
       const newTickets = response.data.data.tickets;
 
-      if (newTickets.length === 0) {
+      console.log("new tickets ni length: ", newTickets.length);
+      if (newTickets && newTickets.length < 10) {
+        setTickets((prev) => [...prev, ...newTickets]);
         setHasMore(false);
       } else {
         setTickets((prevTickets) =>
@@ -95,6 +100,7 @@ const AdminTickets = () => {
       console.error("Error approving ticket:", error);
     }
   };
+
   const handleAccept = async (ticketId, setIsAccepted) => {
     const body = {
       ticketId: ticketId,
@@ -105,6 +111,7 @@ const AdminTickets = () => {
       const response = await apiService.handleApproveOrReject(body);
       if (response.status === 200) {
         setIsAccepted(true);
+        // setStatus("open");
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
             ticket._id === ticketId ? { ...ticket, status: "approved" } : ticket

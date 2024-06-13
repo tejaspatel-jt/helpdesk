@@ -35,10 +35,12 @@ const TicketDetailsPage = () => {
   const apiService = new ApiService(setLoading);
 
   useEffect(() => {
-    setIsApproved(ticketDetail.status === "approved");
-    setIsRejected(ticketDetail.status === "rejected");
-    setIsResolved(ticketDetail.status === "resolved");
-    setIsAccepted(ticketDetail.status === "accepted");
+    setIsApproved(ticketDetail.status === TicketStatus.APPROVED_MASTER);
+    setIsRejected(ticketDetail.status === TicketStatus.REJECTED_MASTER);
+    setIsResolved(ticketDetail.status === TicketStatus.RESOLVED);
+    setIsAccepted(ticketDetail.status === TicketStatus.OPEN);
+    setIsReturned(ticketDetail.status === TicketStatus.RETURNED);
+    setOnHold(ticketDetail.status === TicketStatus.ON_HOLD);
   }, [ticketDetail.status]);
 
   const goBack = () => {
@@ -104,6 +106,7 @@ const TicketDetailsPage = () => {
       const response = await apiService.handleApproveOrReject(body);
       if (response.status === 200) {
         setIsAccepted(true);
+
         // setTickets((prevTickets) =>
         //   prevTickets.map((ticket) =>
         //     ticket._id === ticketId ? { ...ticket, status: "approved" } : ticket
@@ -236,6 +239,8 @@ const TicketDetailsPage = () => {
             <h1 className="text-2xl font-semibold">{ticketDetail.title}</h1>
             <p className="text-base text-gray-500">{ticketData.username}</p>
           </div>
+
+          {/* //FOR MASTER VIEW  */}
           {userDetails.role === UserRole.MASTER &&
             userDetails.role !== UserRole.EMPLOYEE &&
             cameFrom == MyRoutes.RAISED_TICKETS && (
@@ -276,13 +281,24 @@ const TicketDetailsPage = () => {
               </div>
             )}
 
+          {/* //FOR DEPARTMENT VIEW */}
           {userDetails.role !== UserRole.EMPLOYEE &&
             userDetails.role !== UserRole.MASTER && (
               <div className="flex ml-auto smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
                 <button
-                  disabled={isAccepted || isReturned || isResolved}
+                  disabled={
+                    isAccepted ||
+                    isReturned ||
+                    isResolved ||
+                    isRejected ||
+                    onHold
+                  }
                   className={`w-[90px] text-white px-3 py-1 ${
-                    isAccepted || isReturned || isResolved
+                    isAccepted ||
+                    isReturned ||
+                    isResolved ||
+                    isRejected ||
+                    onHold
                       ? "bg-gray-300 hover:bg-gray-300"
                       : "bg-jtGreen hover:bg-green-600"
                   } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
@@ -297,7 +313,7 @@ const TicketDetailsPage = () => {
                 </button>
 
                 <button
-                  disabled={isAccepted || isReturned || isResolved}
+                  disabled={isReturned || isResolved || isRejected}
                   className={`text-white px-3 py-1 ${
                     onHold
                       ? "bg-yellow-300 hover:bg-yellow-300"
@@ -314,9 +330,9 @@ const TicketDetailsPage = () => {
                 </button>
 
                 <button
-                  disabled={isAccepted || isReturned || isResolved}
+                  disabled={isReturned || isResolved || isRejected}
                   className={`w-[90px] text-white px-3 py-1 ${
-                    isReturned || isAccepted || isResolved
+                    isReturned || isResolved || isRejected
                       ? "bg-gray-300 hover:bg-gray-300"
                       : "bg-red-500 hover:bg-red-600"
                   } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -325,15 +341,15 @@ const TicketDetailsPage = () => {
                     handleReturn(ticketDetail._id, setIsReturned);
                   }}
                 >
-                  {isRejected
+                  {isReturned
                     ? TicketStatus.BUTTON_RETURNED
                     : TicketStatus.BUTTON_RETURN}
                 </button>
 
                 <button
-                  disabled={isAccepted || isReturned || isResolved}
+                  disabled={isReturned || isResolved || isRejected}
                   className={`text-white px-3 py-1 ${
-                    isResolved
+                    isReturned || isResolved || isRejected
                       ? "bg-gray-300 hover:bg-gray-300"
                       : "bg-jtGreen hover:bg-green-600"
                   } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
@@ -362,6 +378,10 @@ const TicketDetailsPage = () => {
             <li className="py-2">
               <span className="font-semibold">Description:</span>{" "}
               {ticketDetail.description}
+            </li>
+            <li className="py-2">
+              <span className="font-semibold">Category:</span>{" "}
+              {ticketDetail.category}
             </li>
             <li className="py-2">
               <span className="font-semibold">Department:</span>{" "}
