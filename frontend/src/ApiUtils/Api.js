@@ -15,6 +15,7 @@ import {
   USER_TICKET_APPROVE_REJECT,
   GET_ALL_USERNAMES,
   USER_LOGOUT_ENDPOINT,
+  GET_ADMIN_DASHBOARD_DATA_ENDPOINT,
 } from "./ApiEndpoints";
 
 export default class ApiService {
@@ -320,6 +321,26 @@ export default class ApiService {
       return response;
     } catch (error) {
       console.log("api.js ma error logging out");
+    }
+  };
+
+  getAdminDashboardData = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const response = await BaseApi.get(GET_ADMIN_DASHBOARD_DATA_ENDPOINT, {
+        headers,
+      });
+      console.log(response.data.data);
+      return response;
+    } catch (error) {
+      this.setLoading(false);
+      console.error("Error fetching tickets:", error);
+    } finally {
+      this.setLoading(false);
     }
   };
 }
