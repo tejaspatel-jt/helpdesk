@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
   getAllUser,
   getCurrentUser,
-  getProfilePicture,
   loginUser,
   logoutUser,
   otpForPassword,
@@ -45,6 +44,5 @@ router.route("/update/details").patch(
   ]),
   updateUserDetails
 );
-router.route("/get/profile/picture").get(verifyJWT, getProfilePicture);
 
 export default router;

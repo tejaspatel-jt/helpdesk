@@ -2,6 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { UserRole, UserRoleList } from "../constants.js";
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
@@ -35,7 +36,9 @@ const authorizedAccess = (req, res, next) => {
 
   if (
     !user ||
-    !["admin", "hr", "is", "master"].includes(user.role.toLowerCase())
+    !UserRoleList.filter((role) => role !== UserRole.EMPLOYEE).includes(
+      user.role.toLowerCase()
+    )
   ) {
     throw new ApiError(401, "Unauthorized request");
   }

@@ -135,6 +135,8 @@ import express from "express";
 import cors from "cors";
 import userRouter from "./routes/user.routes.js"; // Assuming these are your routers
 import ticketRouter from "./routes/ticket.routes.js"; // Assuming these are your routers
+
+import masterRouter from "./routes/additional.routes.js"; // Assuming these are your routers
 import {
   Logger,
   captureResponseBody,
@@ -161,6 +163,7 @@ app.use(captureResponseBody);
 // Routes
 app.use("/user", userRouter);
 app.use("/user/ticket", ticketRouter);
+app.use("/data",masterRouter);
 app.get("/", getLogs);
 
 // Error handling middleware
