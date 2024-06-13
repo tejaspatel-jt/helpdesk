@@ -4,7 +4,6 @@ import {
   createTicket,
   getAllTickets,
   getTicket,
-  getTicketDetails,
   getTicketFile,
   updateTicketStatus,
 } from "../controllers/ticket.conroller.js";
@@ -31,6 +30,5 @@ router
   .patch(verifyJWT, authorizedAccess, updateTicketStatus);
 
 router.route("/get/file").get(verifyJWT, getTicketFile);
-router.route("/dashboard").get(verifyJWT, authorizedAccess, getTicketDetails);
 
 export default router;
