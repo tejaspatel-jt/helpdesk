@@ -11,7 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { MyRoutes, TicketStatus, UserRole } from "../common/common.config";
 import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
 import InfiniteScroll from "react-infinite-scroll-component";
-import FilterDropdown from "../components/filterdropdown/FilterDropdown";
+import FilterDropdown from "../components/filterdropdown/FilterSection";
 import { debounce } from "lodash";
 
 const AdminTickets = () => {
