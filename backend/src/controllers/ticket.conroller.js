@@ -325,70 +325,186 @@ const getAllTickets = asyncHandler(async (req, res) => {
 });
 
 const getTicketDetails = asyncHandler(async (req, res) => {
-  try {
-    const statuses = [
-      TicketStatus.IN_REVIEW,
-      TicketStatus.APPROVED,
-      TicketStatus.REJECTED,
-      TicketStatus.RETURNED,
-    ];
+  const inReview = await Ticket.countDocuments({
+    status: TicketStatus.IN_REVIEW,
+  });
+  const approved = await Ticket.countDocuments({
+    status: TicketStatus.APPROVED,
+  });
+  const onHold = await Ticket.countDocuments({ status: TicketStatus.ON_HOLD });
+  const open = await Ticket.countDocuments({ status: TicketStatus.OPEN });
+  const rejected = await Ticket.countDocuments({
+    status: TicketStatus.REJECTED,
+  });
+  const returned = await Ticket.countDocuments({
+    status: TicketStatus.RETURNED,
+  });
 
-    const departments = [
-      UserRole.ADMIN,
-      UserRole.IS,
-      UserRole.HR,
-      UserRole.FINANCE,
-    ];
+  //// master
+  const MasterInReview = await Ticket.countDocuments({
+    status: TicketStatus.IN_REVIEW,
+  });
+  const MasterApproved = await Ticket.countDocuments({
+    status: TicketStatus.APPROVED,
+  });
 
-    // Count tickets by status
-    const statusCounts = await Promise.all(
-      statuses.map((status) => Ticket.countDocuments({ status }))
+  const MasterRejected = await Ticket.countDocuments({
+    ["statusFlow.fromMaster.status"]: TicketStatus.REJECTED,
+  });
+  const MasterReturned = await Ticket.countDocuments({
+    ["statusFlow.fromMaster.status"]: TicketStatus.RETURNED,
+  });
+  const MasterOnHold = await Ticket.countDocuments({
+    ["statusFlow.fromMaster.status"]: TicketStatus.ON_HOLD,
+  });
+  const master = {
+    inReview: MasterInReview,
+    approved: MasterApproved,
+    rejected: MasterRejected,
+    returned: MasterReturned,
+    onHold: MasterOnHold,
+  };
+
+  ///// Admin
+  const AdminApproved = await Ticket.countDocuments({
+    status: TicketStatus.APPROVED,
+    department: UserRole.ADMIN,
+  });
+  const AdminOpen = await Ticket.countDocuments({
+    status: TicketStatus.OPEN,
+    department: UserRole.ADMIN,
+  });
+  const AdminResolved = await Ticket.countDocuments({
+    status: TicketStatus.RESOLVED,
+    department: UserRole.ADMIN,
+  });
+  const AdminReturned = await Ticket.countDocuments({
+    status: TicketStatus.RETURNED,
+    department: UserRole.ADMIN,
+  });
+
+  const AdminOnHold = await Ticket.countDocuments({
+    status: TicketStatus.ON_HOLD,
+    department: UserRole.ADMIN,
+  });
+  const admin = {
+    approved: AdminApproved,
+    onHold: AdminOnHold,
+    resolved: AdminResolved,
+    returned: AdminReturned,
+    open: AdminOpen,
+  };
+
+  const HRApproved = await Ticket.countDocuments({
+    status: TicketStatus.APPROVED,
+    department: UserRole.HR,
+  });
+  const HROpen = await Ticket.countDocuments({
+    status: TicketStatus.OPEN,
+    department: UserRole.HR,
+  });
+  const HRResolved = await Ticket.countDocuments({
+    status: TicketStatus.RESOLVED,
+    department: UserRole.HR,
+  });
+  const HRReturned = await Ticket.countDocuments({
+    status: TicketStatus.RETURNED,
+    department: UserRole.HR,
+  });
+
+  const HROnHold = await Ticket.countDocuments({
+    status: TicketStatus.ON_HOLD,
+    department: UserRole.HR,
+  });
+  const hr = {
+    approved: HRApproved,
+    onHold: HROnHold,
+    resolved: HRResolved,
+    returned: HRReturned,
+    open: HROpen,
+  };
+
+  const ISApproved = await Ticket.countDocuments({
+    status: TicketStatus.APPROVED,
+    department: UserRole.IS,
+  });
+  const ISOpen = await Ticket.countDocuments({
+    status: TicketStatus.OPEN,
+    department: UserRole.IS,
+  });
+  const ISResolved = await Ticket.countDocuments({
+    status: TicketStatus.RESOLVED,
+    department: UserRole.IS,
+  });
+  const ISReturned = await Ticket.countDocuments({
+    status: TicketStatus.RETURNED,
+    department: UserRole.IS,
+  });
+
+  const ISOnHold = await Ticket.countDocuments({
+    status: TicketStatus.ON_HOLD,
+    department: UserRole.IS,
+  });
+  const is = {
+    approved: ISApproved,
+    onHold: ISOnHold,
+    resolved: ISResolved,
+    returned: ISReturned,
+    open: ISOpen,
+  };
+
+  const FinanceApproved = await Ticket.countDocuments({
+    status: TicketStatus.APPROVED,
+    department: UserRole.FINANCE,
+  });
+  const FinanceOpen = await Ticket.countDocuments({
+    status: TicketStatus.OPEN,
+    department: UserRole.FINANCE,
+  });
+  const FinanceResolved = await Ticket.countDocuments({
+    status: TicketStatus.RESOLVED,
+    department: UserRole.FINANCE,
+  });
+  const FinanceReturned = await Ticket.countDocuments({
+    status: TicketStatus.RETURNED,
+    department: UserRole.FINANCE,
+  });
+
+  const FinanceOnHold = await Ticket.countDocuments({
+    status: TicketStatus.ON_HOLD,
+    department: UserRole.FINANCE,
+  });
+  const finance = {
+    approved: FinanceApproved,
+    onHold: FinanceOnHold,
+    resolved: FinanceResolved,
+    returned: FinanceReturned,
+    open: FinanceOpen,
+  };
+
+  const ticketStat = {
+    overAll: {
+      inReview,
+      approved,
+      rejected,
+      returned,
+      onHold,
+      open,
+    },
+    master,
+    department: {
+      admin,
+      hr,
+      is,
+      finance,
+    },
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ticketResponse(200, ticketStat, "Ticket data fetched successfully.")
     );
-    const [in_review, approved, rejected, returned] = statusCounts;
-
-    // Count tickets by status and department
-    const departmentCounts = await Promise.all(
-      departments.map((department) =>
-        Promise.all(
-          statuses.map((status) =>
-            Ticket.countDocuments({ status, department })
-          )
-        )
-      )
-    );
-
-    const admin = departmentCounts[0].reduce((sum, count) => sum + count, 0);
-    const is = departmentCounts[1].reduce((sum, count) => sum + count, 0);
-    const hr = departmentCounts[2].reduce((sum, count) => sum + count, 0);
-    const finance = departmentCounts[3].reduce((sum, count) => sum + count, 0);
-
-    const ticketStat = {
-      ticket_status: {
-        in_review,
-        approved,
-        rejected,
-        returned,
-      },
-      ticket_owner: {
-        admin,
-        is,
-        hr,
-        finance,
-      },
-    };
-
-    return res
-      .status(200)
-      .json(
-        new ticketResponse(
-          200,
-          ticketStat,
-          "All ticket data is fetched successfully"
-        )
-      );
-  } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
-  }
 });
 
 const getTicketFile = asyncHandler(async (req, res) => {
@@ -409,7 +525,10 @@ const getTicketFile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, file, "File fetched successfully."));
 });
 export {
-  createTicket, getAllTickets, getTicket, getTicketDetails,
-  getTicketFile, updateTicketStatus
+  createTicket,
+  getAllTickets,
+  getTicket,
+  getTicketDetails,
+  getTicketFile,
+  updateTicketStatus,
 };
-

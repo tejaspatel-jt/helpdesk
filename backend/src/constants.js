@@ -28,14 +28,14 @@ export const UserRole = {
   HR: "hr",
   ADMIN: "admin",
   IS: "is",
-  FINANCE:"finance"
+  FINANCE: "finance",
 };
 
-export const UserRoleList = {
-  EMPLOYEE: "Employee",
-  MASTER: "Master",
-  HR: "HR",
-  ADMIN: "Admin",
-  IS: "IS",
-  FINANCE:"Finance"
-}
+export const UserRoleList = [
+  UserRole.EMPLOYEE,
+  UserRole.MASTER,
+  UserRole.HR,
+  UserRole.ADMIN,
+  UserRole.IS,
+  UserRole.FINANCE,
+];
