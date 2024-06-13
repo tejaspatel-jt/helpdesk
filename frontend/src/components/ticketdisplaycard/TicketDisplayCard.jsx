@@ -46,7 +46,7 @@ const TicketDisplayCard = ({
             ticket.statusFlow?.fromUser?.updatedBy?.avatar ? (
               <img
                 className="border rounded-full h-10 w-10 smallMobile:w-7 smallMobile:h-7"
-                src={ticket.statusFlow.fromUser.updatedBy.avatar}
+                src={ticket.statusFlow.fromUser.updatedBy.avatar.base64File}
                 alt="photo"
               />
             ) : userRole !== UserRole.EMPLOYEE &&

@@ -11,3 +11,5 @@ export const FETCH_ALL_USER_TICKETS = "/user/ticket/get/all";
 export const USER_TICKET_APPROVE_REJECT = "/user/ticket/update/status";
 export const GET_ALL_USERNAMES = "/user/get/all";
 export const USER_LOGOUT_ENDPOINT = "/user/logout";
+export const GET_ADMIN_DASHBOARD_DATA_ENDPOINT = "/user/ticket/dashboard";
+export const GET_ATTACHED_FILE = "/";

@@ -12,7 +12,7 @@ function Step({ details, last }) {
           <div>
             {details.avatar ? (
               <img
-                src={details.avatar}
+                src={details.avatar.base64File}
                 alt="User Avatar"
                 className="w-10 h-10 rounded-full border border-gray-200 "
               />

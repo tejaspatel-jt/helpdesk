@@ -19,16 +19,25 @@ const FilterDropdown = ({
   const [search, setSearch] = useState([]);
   const apiService = new ApiService(setLoading);
 
-  const statusOptions = [
-    { value: "", label: "All" },
-    { value: "in_review", label: "In Review" },
-    { value: `approved`, label: "Approved" },
-    { value: `rejected`, label: "Rejected" },
-    { value: `open`, label: "Open" },
-    { value: `resolved`, label: "Resolved" },
-    { value: `returned`, label: "Returned" },
-    { value: `on_hold`, label: "On Hold" },
-  ];
+  const statusOptions =
+    userDetails.role === "master"
+      ? [
+          { value: "", label: "All" },
+          { value: "in_review", label: "In Review" },
+          { value: `rejected`, label: "Rejected" },
+          { value: `open`, label: "Open" },
+          { value: `approved`, label: "Approved" },
+          { value: `resolved`, label: "Resolved" },
+          { value: `returned`, label: "Returned" },
+          { value: `on_hold`, label: "On Hold" },
+        ]
+      : [
+          { value: "", label: "All" },
+          { value: `approved`, label: "Approved" },
+          { value: `resolved`, label: "Resolved" },
+          { value: `returned`, label: "Returned" },
+          { value: `on_hold`, label: "On Hold" },
+        ];
 
   const departmentOptions = [
     { value: "", label: "All" },
