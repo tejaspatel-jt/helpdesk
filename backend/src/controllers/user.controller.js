@@ -349,27 +349,10 @@ const updateUserDetails = asyncHandler(async (req, res) => {
   });
 });
 
-const getProfilePicture = asyncHandler(async (req, res) => {
-  const { fileId } = req.query;
-
-  if (!fileId) {
-    throw new ApiError(400, "Please provide id of file.");
-  }
-  const file = await File.findById(fileId);
-
-  if (!file) {
-    throw new ApiError(404, "File not found.");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, file, "Profile picture fetched successfully."));
-});
 
 export {
   getAllUser,
   getCurrentUser,
-  getProfilePicture,
   // registerUser,
   loginUser,
   logoutUser,
