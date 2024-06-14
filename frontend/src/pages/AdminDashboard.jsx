@@ -31,7 +31,11 @@ const AdminDashboard = () => {
       try {
         const apiService = new ApiService(setLoading);
         const response = await apiService.getAdminDashboardData();
-        setDashboardData(response.data.data.tickets);
+        if (response.status === 200) {
+          setDashboardData(response.data.data.tickets);
+        } else {
+          console.log("Error fetching dashboard data", response);
+        }
       } catch (error) {
         console.error("Error fetching tickets:", error);
       }

@@ -1,24 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
   faUserCog,
   faBuilding,
   faArrowRight,
-  faSignInAlt,
-  faTicketAlt,
   faPlusCircle,
-  faPencilAlt,
-  faPaperPlane,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  ArrowRightIcon,
-  QuestionMarkCircleIcon,
-} from "@heroicons/react/20/solid";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaLine } from "react-icons/fa";
 import Navbar from "../components/navbar/Navbar";
 import { UserContext } from "../components/contexts/UserContextProvider";
+import { FAQItem } from "../components/faq/FAQitem";
 
 const HelpPage = () => {
   const { userDetails } = useContext(UserContext);
@@ -82,68 +75,43 @@ const HelpPage = () => {
             </div>
           </div>
         </section>
-
         <div>
           <h2 className="text-2xl font-semibold mb-4">FAQs :</h2>
-          <div className="border rounded-md shadow-md p-2 mb-4">
-            <details>
-              <summary className="cursor-pointer flex items-center text-2xl font-semibold ">
-                <FaArrowRight className="mr-2" /> How to create a ticket ?
-              </summary>
-              <p className="flex items-start space-x-2 mb-2">
-                <FontAwesomeIcon
-                  icon={faPlusCircle}
-                  className="text-gray-700 mt-1"
-                />{" "}
-                <span>
-                  <strong>Create New Ticket:</strong> Click on the "Create New
-                  Ticket" button. Enter all the required details such as title,
-                  description, attach any relevant files, and choose the
-                  appropriate department. Click on the "Submit" button to create
-                  the ticket.
-                </span>
-              </p>
-            </details>
-          </div>
-          <div className="border rounded-md shadow-md p-2 mb-4">
-            <details>
-              <summary className="cursor-pointer flex items-center text-2xl font-semibold ">
-                {/* Steps to Create a Ticket :- */}
-                <FaArrowRight className="mr-2" /> How to track status of the
-                ticket ?
-              </summary>
-              <p className="flex items-start space-x-2 mb-2">
-                <FontAwesomeIcon icon={faEye} className="text-gray-700 mt-1" />
-                <span>
-                  <strong>Track Ticket:</strong> You can track the status of
-                  your ticket on the Tickets Details Page.
-                </span>
-              </p>
-            </details>
-          </div>
-          <div className="border rounded-md shadow-md p-2 mb-4">
-            <details>
-              <summary className="cursor-pointer flex items-center text-2xl font-semibold ">
-                {/* Steps to Create a Ticket :- */}
-                <FaArrowRight className="mr-2" /> What will be the flow of the
-                ticket ?
-              </summary>
-              <p className="flex items-start space-x-2 mb-2">
-                <FontAwesomeIcon icon={faEye} className="text-gray-700 mt-1" />
-                <span>
-                  <strong>Track Ticket:</strong> The ticket will go through the
-                  following stages: User, Master, Department. Initially the user
-                  will create the ticket. Then it will go to the master (Piyush
-                  sir). Then it will go the related department.
-                </span>
-              </p>
-            </details>
-            {/* <details>
-            <summary>More details</summary>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-            Reiciendis, exercitationem.
-          </details> */}
-          </div>{" "}
+          <FAQItem
+            question="How to create a ticket?"
+            answer={
+              <>
+                <strong>Create New Ticket:</strong> Click on the "Create New
+                Ticket" button. Enter all the required details such as title,
+                description, attach any relevant files, and choose the
+                appropriate department. Click on the "Submit" button to create
+                the ticket.
+              </>
+            }
+            icon={faPlusCircle}
+          />
+          <FAQItem
+            question="How to track status of the ticket?"
+            answer={
+              <>
+                <strong>Track Ticket:</strong> You can track the status of your
+                ticket on the Tickets Details Page.
+              </>
+            }
+            icon={faEye}
+          />
+          <FAQItem
+            question="What will be the flow of the ticket?"
+            answer={
+              <>
+                <strong>Track Ticket:</strong> The ticket will go through the
+                following stages: User, Master, Department. Initially the user
+                will create the ticket. Then it will go to the master (Piyush
+                sir). Then it will go the related department.
+              </>
+            }
+            icon={faEye}
+          />
         </div>
       </div>
     </>
