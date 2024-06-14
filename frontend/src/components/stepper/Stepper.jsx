@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/stepper.css";
 import { GoTriangleRight } from "react-icons/go";
+import ApiService from "../../ApiUtils/Api";
 
 function Step({ details, last }) {
   console.log("details in step -- ", details);
+  const [avtar, setAvtar] = useState("");
+  const [loading, setLoading] = useState(false);
+  const apiService = new ApiService(setLoading);
+  const getUserImage = async (attachedFileId) => {
+    try {
+      const response = await apiService.getAttachedFile(attachedFileId);
+      if (response.status == 200) {
+        setAvtar(response.data.data.base64File);
+        console.log("this is avtar in stepper:", response.data.data.base64File);
+      } else {
+        console.log("error:", response);
+      }
+    } catch (error) {
+      console.log("error getting the attachment: ", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserImage(details.avatar);
+  }, []);
+
   return (
     <>
       <div className="flex items-center gap-5">
@@ -12,7 +34,7 @@ function Step({ details, last }) {
           <div>
             {details.avatar ? (
               <img
-                src={details.avatar.base64File}
+                src={avtar}
                 alt="User Avatar"
                 className="w-10 h-10 rounded-full border border-gray-200 "
               />
@@ -61,7 +83,7 @@ function Step({ details, last }) {
 }
 
 export default function Stepper({ steps }) {
-  console.log("Stepper steps -- ", steps);
+  // console.log("Stepper steps -- ", steps);
   return (
     <div className="flex flex-col  rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.3)]">
       <div className="text-2xl font-semibold pl-4 py-2">

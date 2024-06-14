@@ -74,7 +74,10 @@ const createTicket = asyncHandler(async (req, res) => {
   await ticket.save();
 
   ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar"
+    )
     .populate(
       "statusFlow.fromMaster.updatedBy",
       "username fullname email role avatar"
@@ -225,7 +228,10 @@ const getTicket = async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role  ")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar "
+    )
     .populate(
       "statusFlow.fromMaster.updatedBy",
       "username fullname email role avatar"
@@ -290,7 +296,10 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar "
+    )
     .populate(
       "statusFlow.fromMaster.updatedBy",
       "username fullname email role avatar"

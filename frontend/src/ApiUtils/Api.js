@@ -16,6 +16,7 @@ import {
   GET_ALL_USERNAMES,
   USER_LOGOUT_ENDPOINT,
   GET_ADMIN_DASHBOARD_DATA_ENDPOINT,
+  GET_ATTACHED_FILE,
 } from "./ApiEndpoints";
 
 export default class ApiService {
@@ -335,6 +336,29 @@ export default class ApiService {
         headers,
       });
       console.log(response.data.data);
+      return response;
+    } catch (error) {
+      this.setLoading(false);
+      console.error("Error fetching tickets:", error);
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  getAttachedFile = async (fileId) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const response = await BaseApi.get(GET_ATTACHED_FILE, {
+        headers,
+        params: {
+          fileId,
+        },
+      });
+      console.log("this is from api.js:", response);
       return response;
     } catch (error) {
       this.setLoading(false);

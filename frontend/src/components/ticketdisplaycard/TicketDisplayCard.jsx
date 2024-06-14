@@ -3,6 +3,7 @@ import { MyRoutes, TicketStatus, UserRole } from "../../common/common.config";
 import { Routes } from "react-router-dom";
 import DialogModal from "../modal/DialogModal";
 import { getStatus } from "../utils/dataProcessing";
+import ApiService from "../../ApiUtils/Api";
 
 const TicketDisplayCard = ({
   ticket,
@@ -19,7 +20,11 @@ const TicketDisplayCard = ({
   const [isAccepted, setIsAccepted] = useState(false);
   const [isReturned, setIsReturned] = useState(false);
   const [isResolved, setIsResolved] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [onHold, setOnHold] = useState(false);
+  const [avtar, setAvtar] = useState("");
+  const apiService = new ApiService(setLoading);
+
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
@@ -30,6 +35,23 @@ const TicketDisplayCard = ({
     setIsReturned(ticket.status === TicketStatus.RETURNED);
     setOnHold(ticket.status === TicketStatus.ON_HOLD);
   }, [ticket.status]);
+
+  const getUserImage = async (attachedFileId) => {
+    try {
+      const response = await apiService.getAttachedFile(attachedFileId);
+      if (response.status == 200) {
+        setAvtar(response.data.data.base64File);
+      } else {
+        console.log("error:", response);
+      }
+    } catch (error) {
+      console.log("error getting the attachment: ", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserImage(ticket.statusFlow?.fromUser?.updatedBy?.avatar);
+  }, []);
 
   return (
     <div
@@ -49,7 +71,7 @@ const TicketDisplayCard = ({
             ticket.statusFlow?.fromUser?.updatedBy?.avatar ? (
               <img
                 className="border rounded-full h-10 w-10 smallMobile:w-7 smallMobile:h-7"
-                src={ticket.statusFlow.fromUser.updatedBy.avatar.base64File}
+                src={avtar}
                 alt="photo"
               />
             ) : userRole !== UserRole.EMPLOYEE &&
@@ -177,7 +199,8 @@ const TicketDisplayCard = ({
                 } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleReturn(ticket._id, setIsReturned);
+                  setOpenModal(true);
+                  // handleReturn(ticket._id, setIsReturned);
                 }}
               >
                 {isReturned

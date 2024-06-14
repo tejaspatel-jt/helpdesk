@@ -114,7 +114,7 @@ const AdminTickets = () => {
         // setStatus("open");
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
-            ticket._id === ticketId ? { ...ticket, status: "approved" } : ticket
+            ticket._id === ticketId ? { ...ticket, status: "open" } : ticket
           )
         );
         SuccessToastMessage("Ticket accepted successfully!");
