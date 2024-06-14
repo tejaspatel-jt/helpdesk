@@ -6,7 +6,7 @@ import { File } from "../models/files.model.js";
 
 // const mongoose = require("mongoose");
 
-const saveBase64Data = async (base64String) => {
+const saveBase64Data = async (base64String,fileType) => {
   // Decode base64 string
   try {
     const decodedData = Buffer.from(base64String, "base64");
@@ -23,7 +23,7 @@ const saveBase64Data = async (base64String) => {
     // Create a new instance of the File model
     const file = await File.create({
       fileName: filename,
-      fileType: "txt", // Example file type, you can change it accordingly
+      fileType: fileType, // Example file type, you can change it accordingly
       base64File: base64String, // We're not saving the Base64 string directly
     });
 

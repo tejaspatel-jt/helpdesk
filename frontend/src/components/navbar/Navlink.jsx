@@ -58,7 +58,7 @@ const NavLinks = ({ userRole }) => {
                 : "text-white"
             }`}
           >
-            Admin Dashboard
+            Dashboard
           </NavLink>
         ) : (
           ""

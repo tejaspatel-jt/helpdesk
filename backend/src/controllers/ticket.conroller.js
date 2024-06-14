@@ -33,11 +33,17 @@ const createTicket = asyncHandler(async (req, res) => {
   let file_id;
   if (attachmentLocalPath) {
     const attachFile = await fileToBase64(attachmentLocalPath);
-    file_id = await saveBase64Data(attachFile);
+    const fileType = attachmentLocalPath.split(".").pop();
+    file_id = await saveBase64Data(attachFile, fileType);
     fs.unlinkSync(attachmentLocalPath);
   }
   if (attachment) {
-    file_id = await saveBase64Data(attachment);
+    const fileType = attachment
+      .split(",")[0]
+      .split(";")[0]
+      .split(":")[1]
+      .split("/")[1];
+    file_id = await saveBase64Data(attachment, fileType);
   }
 
   const existingTicketCount = await Ticket.countDocuments();
@@ -68,7 +74,10 @@ const createTicket = asyncHandler(async (req, res) => {
   await ticket.save();
 
   ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar"
+    )
     .populate(
       "statusFlow.fromMaster.updatedBy",
       "username fullname email role avatar"
@@ -219,7 +228,10 @@ const getTicket = async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role  ")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar "
+    )
     .populate(
       "statusFlow.fromMaster.updatedBy",
       "username fullname email role avatar"
@@ -284,7 +296,10 @@ const getAllTickets = asyncHandler(async (req, res) => {
 
   const currentPage = parseInt(page) || 1;
   const ticket = await Ticket.find(filter)
-    .populate("statusFlow.fromUser.updatedBy", "username fullname email role ")
+    .populate(
+      "statusFlow.fromUser.updatedBy",
+      "username fullname email role avatar "
+    )
     .populate(
       "statusFlow.fromMaster.updatedBy",
       "username fullname email role avatar"
@@ -365,7 +380,6 @@ const getTicketDetails = asyncHandler(async (req, res) => {
     onHold: MasterOnHold,
   };
 
-  ///// Admin
   const AdminApproved = await Ticket.countDocuments({
     status: TicketStatus.APPROVED,
     department: UserRole.ADMIN,
@@ -524,7 +538,6 @@ const getTicketFile = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, file, "File fetched successfully."));
 });
-
 export {
   createTicket,
   getAllTickets,

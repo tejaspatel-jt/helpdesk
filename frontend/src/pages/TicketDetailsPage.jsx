@@ -22,6 +22,7 @@ const TicketDetailsPage = () => {
   const [isAccepted, setIsAccepted] = useState(false);
   const [isReturned, setIsReturned] = useState(false);
   const [isResolved, setIsResolved] = useState(false);
+  const [fileAttachment, setFileAttachment] = useState("");
   const [onHold, setOnHold] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -43,6 +44,13 @@ const TicketDetailsPage = () => {
     setOnHold(ticketDetail.status === TicketStatus.ON_HOLD);
   }, [ticketDetail.status]);
 
+  useEffect(() => {
+    getAttachedFile(
+      ticketDetail.attachFile ||
+        ticketDetail.statusFlow?.fromMaster?.updatedBy?.avatar
+    );
+    console.log("this is file ka photo id--", ticketDetail);
+  }, []);
   const goBack = () => {
     navigate(-1);
   };
@@ -207,26 +215,40 @@ const TicketDetailsPage = () => {
   };
 
   const renderAttachmentPreview = (attachment) => {
-    const fileType = attachment.split(".").pop().toLowerCase();
-    const isImage = ["jpg", "jpeg", "png"].includes(fileType);
+    const fileType = attachment.fileType;
+    const isImage = ["jpg", "jpeg", "png", "image"].includes(fileType);
 
     return isImage ? (
       <img
-        src={attachment}
+        src={attachment.base64File}
         alt="attachment"
         className="w-24 h-24 object-cover cursor-pointer"
-        onClick={() => handleOpenDialog(attachment)}
+        onClick={() => handleOpenDialog(attachment.base64File)}
       />
     ) : (
       <div
         className="w-24 h-24 bg-gray-200 flex items-center justify-center cursor-pointer"
-        onClick={() => handleOpenDialog(attachment)}
+        onClick={() => handleOpenDialog(attachment.base64File)}
       >
         <span className="text-lg font-semibold text-gray-600">PDF</span>
       </div>
     );
   };
 
+  const getAttachedFile = async (attachedFileId) => {
+    try {
+      console.log("ye hei file id---", attachedFileId);
+      const response = await apiService.getAttachedFile(attachedFileId);
+      if (response.status == 200) {
+        console.log("ye hei resonse.data.data---", response.data.data);
+        setFileAttachment(response.data.data);
+      } else {
+        console.log("error:", response);
+      }
+    } catch (error) {
+      console.log("error getting the attachment: ", error);
+    }
+  };
   return (
     <>
       <Navbar screen={MyRoutes.TICKET_DETAILS} />
@@ -338,7 +360,8 @@ const TicketDetailsPage = () => {
                   } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
                   onClick={(event) => {
                     event.stopPropagation();
-                    handleReturn(ticketDetail._id, setIsReturned);
+                    setOpenModal(true);
+                    // handleReturn(ticketDetail._id, setIsReturned);
                   }}
                 >
                   {isReturned
@@ -396,21 +419,21 @@ const TicketDetailsPage = () => {
           </ul>
         </div>
 
-        {ticketDetail.attachFile && ticketDetail.attachFile.length > 0 && (
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2">Attachments:</h2>
-            <div className="flex space-x-4 ">
-              {ticketDetail.attachFile.map((attachment, index) => (
-                <div
-                  key={index}
-                  className="w-26 h-26 border-2 border-gray-500 rounded-sm"
-                >
-                  {renderAttachmentPreview(attachment)}
-                </div>
-              ))}
+        {/* {ticketDetail.attachFile && ticketDetail.attachFile.length > 0 && ( */}
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold mb-2">Attachments:</h2>
+          <div className="flex space-x-4 ">
+            {/* {ticketDetail.attachFile.map((attachment, index) => ( */}
+            <div
+              // key={index}
+              className="w-26 h-26 border-2 border-gray-500 rounded-sm"
+            >
+              {renderAttachmentPreview(fileAttachment)}
             </div>
+            {/* ))}  */}
           </div>
-        )}
+        </div>
+        {/* )} */}
       </div>
 
       {isDialogOpen && (
@@ -434,7 +457,7 @@ const TicketDetailsPage = () => {
             </div>
             <div className="p-4">
               {selectedAttachment &&
-              /\.(jpg|jpeg|png)$/i.test(selectedAttachment) ? (
+              /\.(jpg|jpeg|png)$/i.test(selectedAttachment.fileType) ? (
                 <img
                   src={selectedAttachment}
                   alt="attachment"
@@ -452,21 +475,40 @@ const TicketDetailsPage = () => {
         </div>
       )}
 
-      {openModal && (
-        <DialogModal
-          title={"Confirmation"}
-          message={"Are you Sure you want to Reject ?"}
-          closeButtonOnClick={() => {
-            setOpenModal(false);
-          }}
-          button1Name={"Reject"}
-          button1StyleExtra={"btn"}
-          button1Click={() => {
-            handleReject(ticketDetail._id, setIsRejected);
-            setOpenModal(false);
-          }}
-        />
-      )}
+      {openModal &&
+        (userDetails.role === UserRole.MASTER ? (
+          <DialogModal
+            title={"Confirmation"}
+            message={"Are you Sure you want to Reject ?"}
+            closeButtonOnClick={(event) => {
+              event.stopPropagation();
+              setOpenModal(false);
+            }}
+            button1Name={"Reject"}
+            button1StyleExtra={"btn"}
+            button1Click={(event) => {
+              event.stopPropagation();
+              handleReject(ticketDetail._id, setIsRejected);
+              setOpenModal(false);
+            }}
+          />
+        ) : (
+          <DialogModal
+            title={"Confirmation"}
+            message={"Are you Sure you want to Return ?"}
+            closeButtonOnClick={(event) => {
+              event.stopPropagation();
+              setOpenModal(false);
+            }}
+            button1Name={"Return"}
+            button1StyleExtra={"btn"}
+            button1Click={(event) => {
+              event.stopPropagation();
+              handleReturn(ticketDetail._id, setIsReturned);
+              setOpenModal(false);
+            }}
+          />
+        ))}
 
       <ToastContainer />
     </>

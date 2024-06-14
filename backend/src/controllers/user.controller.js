@@ -329,11 +329,19 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     await File.findByIdAndDelete(user.avatar);
     if (avatarLocalPath) {
       const attachFile = await fileToBase64(avatarLocalPath);
-      img_id = await saveBase64Data(attachFile);
+      const fileType = avatarLocalPath.split(".").pop();
+
+      img_id = await saveBase64Data(attachFile, fileType);
       fs.unlinkSync(avatarLocalPath);
     }
     if (avatar) {
-      img_id = await saveBase64Data(avatar);
+      const fileType = avatar
+        .split(",")[0]
+        .split(";")[0]
+        .split(":")[1]
+        .split("/")[1];
+
+      img_id = await saveBase64Data(avatar, fileType);
     }
     user = await User.findByIdAndUpdate(
       req.user._id,
@@ -348,7 +356,6 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     user,
   });
 });
-
 
 export {
   getAllUser,

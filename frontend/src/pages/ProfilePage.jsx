@@ -60,7 +60,13 @@ const MyProfile = () => {
 
   // Fetch user details when the component mounts
   useEffect(() => {
-    fetchUserDetails();
+    fetchUserDetails()
+      .then((val) => {
+        console.log("val");
+      })
+      .catch((err) => {
+        console.log("Errr", err);
+      });
   }, []);
 
   const formData = new FormData();
@@ -93,7 +99,6 @@ const MyProfile = () => {
   function formatDate(inputDateString) {
     // Parse the input date string into a Date object
     const date = new Date(inputDateString);
-    console.log("this is my input date---", inputDateString);
 
     // Extract day, month, and year from the Date object
     const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with leading zero if necessary
@@ -102,10 +107,10 @@ const MyProfile = () => {
 
     // Form the desired date format in dd-mm-yyyy
     const formattedDate = `${year}-${month}-${day}`;
-    console.log("this is my formatted date---", formattedDate);
 
     return formattedDate;
   }
+  // const maroPhoto = userDetails.avatar.base64File;
 
   return (
     <>
@@ -125,7 +130,7 @@ const MyProfile = () => {
               <img
                 className="w-96 h-96 rounded-full object-cover border-2 border-gray-700"
                 src={userDetails.avatar}
-                alt="User Photo"
+                alt="User Profile"
               />
             </div>
           </div>
@@ -143,7 +148,9 @@ const MyProfile = () => {
             onClick={() => setImagePreview(true)}
           >
             <img
-              src={userDetails.avatar.base64File}
+              // src={maroPhoto}
+              src={userDetails.avatar}
+              // src={maroPhoto}
               alt="User Profile"
               className="w-32 h-32 rounded-full object-cover border-2 border-gray-700"
             />
@@ -210,7 +217,7 @@ const MyProfile = () => {
 
             <div className="mb-8 relative w-fit m-auto ">
               <img
-                src={userDetails.avatar}
+                src={userDetails.avatar.base64File}
                 alt="User Profile"
                 className="w-24 h-24 rounded-full object-cover z-10 border-2 border-gray-500 outline-black"
               />
