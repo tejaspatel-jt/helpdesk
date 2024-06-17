@@ -122,8 +122,8 @@ export default class ApiService {
         formData,
         {
           headers: headers,
-          maxBodyLength: Infinity,
-          maxContentLength: Infinity,
+          maxContentLength: 50 * 1024 * 1024,
+          maxBodyLength: 50 * 1024 * 1024,
         }
       );
       return response;
@@ -167,7 +167,7 @@ export default class ApiService {
       const response = await BaseApi.get(USER_CURRENT_USER_DETAILS, {
         headers,
       });
-      console.log(response.data.data);
+
       return response;
     } catch (error) {
       this.setLoading(false);
@@ -177,7 +177,6 @@ export default class ApiService {
     }
   };
 
-  // updateUserDetails = async (fullname, contactNo, dob,avatar) => {
   updateUserDetails = async (formData) => {
     try {
       const accessToken = localStorage.getItem("accessToken");

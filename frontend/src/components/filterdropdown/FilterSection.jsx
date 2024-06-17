@@ -25,7 +25,6 @@ const FilterDropdown = ({
           { value: "", label: "All" },
           { value: "in_review", label: "In Review" },
           { value: `rejected`, label: "Rejected" },
-          { value: `open`, label: "Open" },
           { value: `approved`, label: "Approved" },
           { value: `resolved`, label: "Resolved" },
           { value: `returned`, label: "Returned" },
@@ -101,10 +100,9 @@ const FilterDropdown = ({
           className="w-[200px]"
           items={search}
           onSearch={debouncedSetUsername}
-          // onSearch={handleOnSearch}
           onSelect={handleOnSelect}
           autoFocus
-          debounce={400}
+          debounce={300}
           styling={{ zIndex: 4, height: "35px", border: "2px solid gray" }} // To ensure the suggestions dropdown is above other elements
         />
       </div>

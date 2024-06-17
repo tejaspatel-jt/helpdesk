@@ -111,10 +111,15 @@ const LoginPage = () => {
         )}
 
         <FormLayout>
-          <div
-            className="flex mx-[30%] h-32 w-32 bg-center bg-cover place-content-center"
-            style={{ backgroundImage: `url(${jtlogo})`, opacity: 1 }}
-          ></div>
+          <div className="flex mx-[30%] h-32 w-32 bg-center bg-cover place-content-center">
+            <img
+              src={jtlogo}
+              alt="jtlogo"
+              style={{
+                opacity: 1,
+              }}
+            />
+          </div>
           <FormBody handleSubmit={handleSubmit}>
             <FormHeader label={"Login to HelpDesk"} />
             <div>
@@ -149,12 +154,6 @@ const LoginPage = () => {
               {errors.form && <FormValidation>{errors.form}</FormValidation>}
             </div>
           </FormBody>
-
-          {/* <AuthenticationLinks
-            message={"Don't have an account?"}
-            pagename={"Sign up now!"}
-            route={"/register"}
-          /> */}
 
           <AuthenticationLinks
             pagename={"Forgot Password ?"}

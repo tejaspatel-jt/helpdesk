@@ -12,7 +12,6 @@ import ApiService from "../ApiUtils/Api";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import { CloseButtonWhite } from "../components/button/CloseButton";
 import { FaFileDownload } from "react-icons/fa";
-import axios from "axios";
 import DialogModal from "../components/modal/DialogModal";
 import Navbar from "../components/navbar/Navbar";
 
@@ -27,7 +26,8 @@ const TicketDetailsPage = () => {
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedAttachment, setSelectedAttachment] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
+  const [rejectModal, setRejectModal] = useState(false);
+  const [returnModal, setReturnModal] = useState(false);
   const { userDetails } = useContext(UserContext);
   const location = useLocation();
   const ticketDetail = location.state.ticketDetail;
@@ -49,8 +49,8 @@ const TicketDetailsPage = () => {
       ticketDetail.attachFile ||
         ticketDetail.statusFlow?.fromMaster?.updatedBy?.avatar
     );
-    console.log("this is file ka photo id--", ticketDetail);
   }, []);
+
   const goBack = () => {
     navigate(-1);
   };
@@ -85,7 +85,7 @@ const TicketDetailsPage = () => {
   const handleReject = async (ticketId, setIsRejected) => {
     const body = {
       ticketId: ticketId,
-      ticketStatus: TicketStatus.REJECTED,
+      ticketStatus: TicketStatus.REJECTED_MASTER,
     };
     try {
       const response = await apiService.handleApproveOrReject(body);
@@ -266,11 +266,11 @@ const TicketDetailsPage = () => {
           {userDetails.role === UserRole.MASTER &&
             userDetails.role !== UserRole.EMPLOYEE &&
             cameFrom == MyRoutes.RAISED_TICKETS && (
-              <div className="mt-2 ml-auto flex justify-center space-x-8">
+              <div className="mt-2 ml-auto flex justify-center space-x-2">
                 <button
-                  disabled={isApproved || isRejected}
+                  disabled={isApproved || isRejected || isReturned}
                   className={`text-white px-3 py-1 ${
-                    isApproved || isRejected
+                    isApproved || isRejected || isReturned
                       ? "bg-gray-300 hover:bg-gray-300"
                       : "bg-green-500 hover:bg-green-600"
                   } rounded-md shadow-md mr-2 focus:outline-none focus:ring-2 focus:ring-green-500`}
@@ -285,20 +285,54 @@ const TicketDetailsPage = () => {
                 </button>
 
                 <button
-                  disabled={isApproved || isRejected}
+                  disabled={isApproved || isRejected || isReturned}
                   className={`text-white px-3 py-1 ${
-                    isRejected || isApproved
+                    isRejected || isApproved || isReturned
                       ? "bg-gray-300 hover:bg-gray-300"
                       : "bg-red-500 hover:bg-red-600"
                   } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
                   onClick={(event) => {
                     event.stopPropagation();
-                    setOpenModal(true);
+                    setRejectModal(true);
                   }}
                 >
                   {isRejected
                     ? TicketStatus.BUTTON_REJECTED
                     : TicketStatus.BUTTON_REJECT}
+                </button>
+
+                <button
+                  disabled={isReturned || isRejected || isApproved || onHold}
+                  className={`text-white px-3 py-1 ${
+                    onHold
+                      ? "bg-yellow-300 hover:bg-yellow-300"
+                      : "bg-black text-white "
+                  } rounded-md shadow-md mr-2 focus:outline-none focus:ring-2 focus:ring-yellow-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleOnHold(ticketDetail._id, setOnHold);
+                  }}
+                >
+                  {onHold
+                    ? TicketStatus.BUTTON_ON_HOLD
+                    : TicketStatus.BUTTON_ON_HOLD}
+                </button>
+
+                <button
+                  disabled={isReturned || isRejected || isApproved}
+                  className={` text-white px-3 py-1 ${
+                    isReturned || isRejected || isApproved
+                      ? "bg-gray-300 hover:bg-gray-300"
+                      : "bg-red-500 hover:bg-red-600"
+                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setReturnModal(true);
+                  }}
+                >
+                  {isReturned
+                    ? TicketStatus.BUTTON_RETURNED
+                    : TicketStatus.BUTTON_RETURN}
                 </button>
               </div>
             )}
@@ -360,8 +394,7 @@ const TicketDetailsPage = () => {
                   } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
                   onClick={(event) => {
                     event.stopPropagation();
-                    setOpenModal(true);
-                    // handleReturn(ticketDetail._id, setIsReturned);
+                    setReturnModal(true);
                   }}
                 >
                   {isReturned
@@ -419,21 +452,14 @@ const TicketDetailsPage = () => {
           </ul>
         </div>
 
-        {/* {ticketDetail.attachFile && ticketDetail.attachFile.length > 0 && ( */}
         <div className="mt-4">
           <h2 className="text-xl font-semibold mb-2">Attachments:</h2>
           <div className="flex space-x-4 ">
-            {/* {ticketDetail.attachFile.map((attachment, index) => ( */}
-            <div
-              // key={index}
-              className="w-26 h-26 border-2 border-gray-500 rounded-sm"
-            >
+            <div className="w-26 h-26 border-2 border-gray-500 rounded-sm">
               {renderAttachmentPreview(fileAttachment)}
             </div>
-            {/* ))}  */}
           </div>
         </div>
-        {/* )} */}
       </div>
 
       {isDialogOpen && (
@@ -457,7 +483,7 @@ const TicketDetailsPage = () => {
             </div>
             <div className="p-4">
               {selectedAttachment &&
-              /\.(jpg|jpeg|png)$/i.test(selectedAttachment.fileType) ? (
+              /\.(jpg|jpeg|png|pdf)$/i.test(selectedAttachment.fileType) ? (
                 <img
                   src={selectedAttachment}
                   alt="attachment"
@@ -475,40 +501,41 @@ const TicketDetailsPage = () => {
         </div>
       )}
 
-      {openModal &&
-        (userDetails.role === UserRole.MASTER ? (
-          <DialogModal
-            title={"Confirmation"}
-            message={"Are you Sure you want to Reject ?"}
-            closeButtonOnClick={(event) => {
-              event.stopPropagation();
-              setOpenModal(false);
-            }}
-            button1Name={"Reject"}
-            button1StyleExtra={"btn"}
-            button1Click={(event) => {
-              event.stopPropagation();
-              handleReject(ticketDetail._id, setIsRejected);
-              setOpenModal(false);
-            }}
-          />
-        ) : (
-          <DialogModal
-            title={"Confirmation"}
-            message={"Are you Sure you want to Return ?"}
-            closeButtonOnClick={(event) => {
-              event.stopPropagation();
-              setOpenModal(false);
-            }}
-            button1Name={"Return"}
-            button1StyleExtra={"btn"}
-            button1Click={(event) => {
-              event.stopPropagation();
-              handleReturn(ticketDetail._id, setIsReturned);
-              setOpenModal(false);
-            }}
-          />
-        ))}
+      {rejectModal && (
+        <DialogModal
+          title={"Confirmation"}
+          message={"Are you Sure you want to Reject ?"}
+          closeButtonOnClick={(event) => {
+            event.stopPropagation();
+            setRejectModal(false);
+          }}
+          button1Name={"Reject"}
+          button1StyleExtra={"btn"}
+          button1Click={(event) => {
+            event.stopPropagation();
+            handleReject(ticketDetail._id, setIsRejected);
+            setRejectModal(false);
+          }}
+        />
+      )}
+
+      {returnModal && (
+        <DialogModal
+          title={"Confirmation"}
+          message={"Are you Sure you want to Return ?"}
+          closeButtonOnClick={(event) => {
+            event.stopPropagation();
+            setReturnModal(false);
+          }}
+          button1Name={"Return"}
+          button1StyleExtra={"btn"}
+          button1Click={(event) => {
+            event.stopPropagation();
+            handleReturn(ticketDetail._id, setIsReturned);
+            setReturnModal(false);
+          }}
+        />
+      )}
 
       <ToastContainer />
     </>

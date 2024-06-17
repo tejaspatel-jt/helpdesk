@@ -10,7 +10,9 @@ export function getSteps(apiRes) {
   if (
     // fromMaster.status == TicketStatus.PENDING_MASTER ||
     fromMaster.status == "pending_With" ||
-    fromMaster.status == TicketStatus.REJECTED_MASTER
+    fromMaster.status == TicketStatus.REJECTED_MASTER ||
+    fromMaster.status == TicketStatus.RETURNED ||
+    fromMaster.status == TicketStatus.ON_HOLD
   ) {
     return [
       {
@@ -18,14 +20,14 @@ export function getSteps(apiRes) {
         status: getStatus(fromUser.status),
         // updatedAt: fromUser.updatedBy.updatedAt.substring(0, 10),
         updatedAt: getSubstringedDate(fromUser.updatedAt),
-        avatar: fromUser.updatedBy.avatar,
+        // avatar: fromUser.updatedBy.avatar,
       },
       {
         username: fromMaster.updatedBy.username.toUpperCase(),
         status: getStatus(fromMaster.status),
         // updatedAt: fromMaster.updatedBy.updatedAt.substring(0, 10),
         updatedAt: fromMaster.updatedAt,
-        avatar: fromMaster.updatedBy.avatar,
+        // avatar: fromMaster.updatedBy.avatar,
       },
     ];
   }
@@ -35,19 +37,19 @@ export function getSteps(apiRes) {
       username: fromUser.updatedBy.username.toUpperCase(),
       status: getStatus(fromUser.status),
       updatedAt: getSubstringedDate(fromUser.updatedAt),
-      avatar: fromUser.updatedBy.avatar,
+      // avatar: fromUser.updatedBy.avatar,
     },
     {
       username: fromMaster.updatedBy.username.toUpperCase(),
       status: getStatus(fromMaster.status),
       updatedAt: getSubstringedDate(fromMaster.updatedAt),
-      avatar: fromMaster.updatedBy.avatar,
+      // avatar: fromMaster.updatedBy.avatar,
     },
     {
       username: fromDepartment.updatedBy.username.toUpperCase(),
       status: getStatus(fromDepartment.status),
       updatedAt: fromDepartment.updatedAt,
-      avatar: fromDepartment.updatedBy.avatar,
+      // avatar: fromDepartment.updatedBy.avatar,
     },
   ];
 }
@@ -62,6 +64,7 @@ export function getTicketDetails(ticketData) {
 
 export function getStatus(status) {
   return status
+    .replace("With", "")
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");

@@ -101,7 +101,6 @@ function MyTickets() {
       }
     } catch (error) {
       ErrorToastMessage("Error creating ticket");
-      console.error("Error submitting ticket:", error);
       if (!error.response) {
         setErrors({ form: error.message });
       } else {
@@ -129,10 +128,19 @@ function MyTickets() {
 
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (file && file.size > maxSize) {
+      alert("File size exceeds 2MB. Please select a smaller file.");
+      event.target.value = ""; // Clear the input field
+      setFiles(false); // Reset the file state
+      setAttachments([]); // Clear the attachments state
+    }
     if (file) {
       setFiles(true);
       const reader = new FileReader();
       reader.onload = () => {
+        // console.log("this is base64 converted str:===", reader.result);
         setAttachments(reader.result);
       };
       reader.readAsDataURL(file);
@@ -143,13 +151,7 @@ function MyTickets() {
     <>
       {loading && <Loader />}
       <Navbar userRole={userDetails.role} screen={MyRoutes.MY_TICKETS} />
-      <div
-        className="container mx-auto p-4"
-        // style={{
-        //   background:
-        //     "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(0,74,124,0.5357595919227065) 100%)",
-        // }}
-      >
+      <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 gap-4">
           <InfiniteScroll
             dataLength={tickets.length}
@@ -386,7 +388,6 @@ function MyTickets() {
         </div>
       </div>
       <button
-        // className="btn fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow"
         className="btn fixed bottom-4 right-4 bg-jtBlue hover:bg-jtBlue text-white font-bold py-2 px-4 rounded shadow"
         onClick={() => setShowForm(true)}
       >

@@ -8,6 +8,7 @@ function Step({ details, last }) {
   const [avtar, setAvtar] = useState("");
   const [loading, setLoading] = useState(false);
   const apiService = new ApiService(setLoading);
+
   const getUserImage = async (attachedFileId) => {
     try {
       const response = await apiService.getAttachedFile(attachedFileId);
@@ -22,9 +23,9 @@ function Step({ details, last }) {
     }
   };
 
-  useEffect(() => {
-    getUserImage(details.avatar);
-  }, []);
+  // useEffect(() => {
+  //   getUserImage(details.avatar);
+  // }, []);
 
   return (
     <>
@@ -83,7 +84,6 @@ function Step({ details, last }) {
 }
 
 export default function Stepper({ steps }) {
-  // console.log("Stepper steps -- ", steps);
   return (
     <div className="flex flex-col  rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.3)]">
       <div className="text-2xl font-semibold pl-4 py-2">

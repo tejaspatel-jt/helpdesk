@@ -15,7 +15,7 @@ import Loader from "../components/loader/Loader";
 const MyProfile = () => {
   // State variables to hold user information and dialog visibility
   const [userDetails, setUserDetails] = useState({
-    avatar: null,
+    avatar: "",
     username: "",
     email: "",
     contactNo: "",
@@ -73,7 +73,6 @@ const MyProfile = () => {
   formData.append("fullname", userDetails.fullname);
   formData.append("contactNo", userDetails.contactNo);
   formData.append("dob", formatDate(userDetails.dob));
-  //if (changePhoto && userDetails == "")
   if (changePhoto) formData.append("avatar", userDetails.avatar);
 
   const handleSubmit = async (e) => {
@@ -129,7 +128,7 @@ const MyProfile = () => {
             <div>
               <img
                 className="w-96 h-96 rounded-full object-cover border-2 border-gray-700"
-                src={userDetails.avatar}
+                src={userDetails.avatar.base64File}
                 alt="User Profile"
               />
             </div>
@@ -148,9 +147,7 @@ const MyProfile = () => {
             onClick={() => setImagePreview(true)}
           >
             <img
-              // src={maroPhoto}
-              src={userDetails.avatar}
-              // src={maroPhoto}
+              src={userDetails.avatar.base64File}
               alt="User Profile"
               className="w-32 h-32 rounded-full object-cover border-2 border-gray-700"
             />
@@ -188,13 +185,16 @@ const MyProfile = () => {
           </div>
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Date of Birth:</label>
-            <p>
-              {new Date(userDetails.dob)
-                .toLocaleString()
-                .substring(0, 10)
-                .replace(",", "")}{" "}
-            </p>
+            {userDetails.dob && (
+              <p>
+                {new Date(userDetails.dob)
+                  .toLocaleString()
+                  .substring(0, 10)
+                  .replace(",", "")}{" "}
+              </p>
+            )}
           </div>
+
           <div className="flex items-center">
             <label className="w-1/4 font-semibold">Role:</label>
             <p>{userDetails.role}</p>

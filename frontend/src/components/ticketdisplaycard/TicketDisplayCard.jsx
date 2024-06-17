@@ -36,23 +36,6 @@ const TicketDisplayCard = ({
     setOnHold(ticket.status === TicketStatus.ON_HOLD);
   }, [ticket.status]);
 
-  const getUserImage = async (attachedFileId) => {
-    try {
-      const response = await apiService.getAttachedFile(attachedFileId);
-      if (response.status == 200) {
-        setAvtar(response.data.data.base64File);
-      } else {
-        console.log("error:", response);
-      }
-    } catch (error) {
-      console.log("error getting the attachment: ", error);
-    }
-  };
-
-  useEffect(() => {
-    getUserImage(ticket.statusFlow?.fromUser?.updatedBy?.avatar);
-  }, []);
-
   return (
     <div
       className={
@@ -68,7 +51,7 @@ const TicketDisplayCard = ({
           <div className="ticket-heading flex items-center gap-2 max-w-full md:max-w-[1000px]">
             {userRole !== UserRole.EMPLOYEE &&
             screen !== MyRoutes.MY_TICKETS &&
-            ticket.statusFlow?.fromUser?.updatedBy?.avatar ? (
+            ticket.statusFlow?.fromUser?.updatedBy?.yourimg?.avatar ? (
               <img
                 className="border rounded-full h-10 w-10 smallMobile:w-7 smallMobile:h-7"
                 src={avtar}
@@ -115,9 +98,11 @@ const TicketDisplayCard = ({
             <span
               className={`text-sm font-semibold mr-2 px-2 py-1 border ring-1 ring-gray-300 min-w-[120px] text-center rounded-badge ${
                 ticket.status === TicketStatus.IN_REVIEW ||
-                ticket.status === TicketStatus.OPEN
+                ticket.status === TicketStatus.OPEN ||
+                ticket.status === TicketStatus.ON_HOLD
                   ? "text-yellow-500"
-                  : ticket.status.includes(TicketStatus.APPROVED)
+                  : ticket.status === TicketStatus.APPROVED ||
+                    ticket.status === TicketStatus.RESOLVED
                   ? "text-jtGreen"
                   : "text-red-500"
               }`}
@@ -134,79 +119,97 @@ const TicketDisplayCard = ({
             screen !== MyRoutes.MY_TICKETS &&
             userRole === UserRole.MASTER && (
               <div className="flex smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
-                <button
-                  disabled={isApproved || isRejected}
-                  className={`w-[90px] text-white px-3 py-1 ${
-                    isApproved || isRejected
-                      ? "bg-gray-300 hover:bg-gray-300"
-                      : "bg-jtGreen hover:bg-green-600"
-                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleApprove(ticket._id, setIsApproved);
-                  }}
-                >
-                  {isApproved
-                    ? TicketStatus.BUTTON_APPROVED
-                    : TicketStatus.BUTTON_APPROVE}
-                </button>
-                <button
-                  disabled={isApproved || isRejected}
-                  className={`w-[90px] text-white px-3 py-1 ${
-                    isRejected || isApproved
-                      ? "bg-gray-300 hover:bg-gray-300"
-                      : "bg-red-500 hover:bg-red-600"
-                  } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setOpenModal(true);
-                  }}
-                >
-                  {isRejected
-                    ? TicketStatus.BUTTON_REJECTED
-                    : TicketStatus.BUTTON_REJECT}
-                </button>
+                {!isApproved && !isRejected && !isReturned && (
+                  <>
+                    {" "}
+                    <button
+                      disabled={isApproved || isRejected}
+                      className={`w-[90px] text-white px-3 py-1 ${
+                        isApproved || isRejected
+                          ? "bg-gray-300 hover:bg-gray-300"
+                          : "bg-jtGreen hover:bg-green-600"
+                      } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleApprove(ticket._id, setIsApproved);
+                      }}
+                    >
+                      {isApproved
+                        ? TicketStatus.BUTTON_APPROVED
+                        : TicketStatus.BUTTON_APPROVE}
+                    </button>
+                    <button
+                      disabled={isApproved || isRejected}
+                      className={`w-[90px] text-white px-3 py-1 ${
+                        isRejected || isApproved
+                          ? "bg-gray-300 hover:bg-gray-300"
+                          : "bg-red-500 hover:bg-red-600"
+                      } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setOpenModal(true);
+                      }}
+                    >
+                      {isRejected
+                        ? TicketStatus.BUTTON_REJECTED
+                        : TicketStatus.BUTTON_REJECT}
+                    </button>
+                  </>
+                )}
               </div>
             )}
 
           {/* //FOR DEPARTMENT VIEW */}
           {userRole !== UserRole.EMPLOYEE && userRole !== UserRole.MASTER && (
             <div className="flex smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
-              <button
-                disabled={
-                  isAccepted || isReturned || isResolved || isRejected || onHold
-                }
-                className={`w-[90px] text-white px-3 py-1 ${
-                  isAccepted || isReturned || isResolved || isRejected || onHold
-                    ? "bg-gray-300 hover:bg-gray-300"
-                    : "bg-jtGreen hover:bg-green-600"
-                } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleAccept(ticket._id, setIsAccepted);
-                }}
-              >
-                {isAccepted
-                  ? TicketStatus.BUTTON_ACCEPTED
-                  : TicketStatus.BUTTON_ACCEPT}
-              </button>
-              <button
-                disabled={isAccepted || isReturned || isResolved || isRejected}
-                className={`w-[90px] text-white px-3 py-1 ${
-                  isReturned || isAccepted || isResolved || isReturned
-                    ? "bg-gray-300 hover:bg-gray-300"
-                    : "bg-red-500 hover:bg-red-600"
-                } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setOpenModal(true);
-                  // handleReturn(ticket._id, setIsReturned);
-                }}
-              >
-                {isReturned
-                  ? TicketStatus.BUTTON_RETURNED
-                  : TicketStatus.BUTTON_RETURN}
-              </button>
+              {!isAccepted && !isReturned && !isResolved && !onHold && (
+                <>
+                  <button
+                    disabled={
+                      isAccepted ||
+                      isReturned ||
+                      isResolved ||
+                      isRejected ||
+                      onHold
+                    }
+                    className={`w-[90px] text-white px-3 py-1 ${
+                      isAccepted ||
+                      isReturned ||
+                      isResolved ||
+                      isRejected ||
+                      onHold
+                        ? "bg-gray-300 hover:bg-gray-300"
+                        : "bg-jtGreen hover:bg-green-600"
+                    } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleAccept(ticket._id, setIsAccepted);
+                    }}
+                  >
+                    {isAccepted
+                      ? TicketStatus.BUTTON_ACCEPTED
+                      : TicketStatus.BUTTON_ACCEPT}
+                  </button>
+                  <button
+                    disabled={
+                      isAccepted || isReturned || isResolved || isRejected
+                    }
+                    className={`w-[90px] text-white px-3 py-1 ${
+                      isReturned || isAccepted || isResolved || isReturned
+                        ? "bg-gray-300 hover:bg-gray-300"
+                        : "bg-red-500 hover:bg-red-600"
+                    } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setOpenModal(true);
+                    }}
+                  >
+                    {isReturned
+                      ? TicketStatus.BUTTON_RETURNED
+                      : TicketStatus.BUTTON_RETURN}
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

@@ -12,12 +12,13 @@ import { FaArrowRight, FaLine } from "react-icons/fa";
 import Navbar from "../components/navbar/Navbar";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import { FAQItem } from "../components/faq/FAQitem";
+import { MyRoutes } from "../common/common.config";
 
 const HelpPage = () => {
   const { userDetails } = useContext(UserContext);
   return (
     <>
-      <Navbar userRole={userDetails.role} />
+      <Navbar userRole={userDetails.role} screen={MyRoutes.HELP_PAGE} />
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold mb-6">Help</h1>
 
