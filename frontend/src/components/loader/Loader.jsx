@@ -1,11 +1,24 @@
+// import React from "react";
+
+// const Loader = () => {
+//   return (
+//     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-50">
+//       <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-400 h-16 w-16">
+//         {/* Loading... */}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Loader;
+// ------ABOVE CODE IS WORKING 17JUNE--------
+
 import React from "react";
 
 const Loader = () => {
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-50">
-      <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-400 h-16 w-16">
-        {/* Loading... */}
-      </div>
+    <div className="flex justify-center items-center h-screen">
+      <div className="w-[74px] h-[74px] border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
     </div>
   );
 };
