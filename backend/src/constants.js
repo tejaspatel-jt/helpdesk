@@ -39,3 +39,8 @@ export const UserRoleList = [
   UserRole.IS,
   UserRole.FINANCE,
 ];
+
+export const CategoryListForBypassingMaster = [
+  "desk change",
+  "internet access request for specific web",
+];

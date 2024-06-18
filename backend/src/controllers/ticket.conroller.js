@@ -1,5 +1,10 @@
 import fs from "fs";
-import { TicketStatus, TicketStatuses, UserRole } from "../constants.js";
+import {
+  CategoryListForBypassingMaster,
+  TicketStatus,
+  TicketStatuses,
+  UserRole,
+} from "../constants.js";
 import { File } from "../models/files.model.js";
 import { Ticket } from "../models/ticket.model.js";
 import { User } from "../models/user.model.js";
@@ -71,6 +76,21 @@ const createTicket = asyncHandler(async (req, res) => {
     updatedBy: master[0]._id,
   };
 
+  if (!CategoryListForBypassingMaster.includes(ticket.category)) {
+    ticket.status = TicketStatus.APPROVED
+    ticket.statusFlow.fromMaster = {
+      updatedBy: master[0]._id,
+      updatedAt: new Date(),
+      status: TicketStatus.APPROVED,
+    };
+    const department = await User.find({ role: ticket.department });
+    ticket.statusFlow.fromDepartment = {
+      status: TicketStatus.PENDING_WITH,
+      updatedAt: new Date(),
+      updatedBy: department[0]._id,
+    };
+  }
+
   await ticket.save();
 
   ticket = await Ticket.findOne({ number: existingTicketCount + 1 })
@@ -80,6 +100,9 @@ const createTicket = asyncHandler(async (req, res) => {
     )
     .populate(
       "statusFlow.fromMaster.updatedBy",
+      "username fullname email role avatar"
+    ).populate(
+      "statusFlow.fromDepartment.updatedBy",
       "username fullname email role avatar"
     );
 
@@ -126,6 +149,7 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
       const department = await User.find({ role: ticket.department });
       ticket.statusFlow.fromDepartment = {
         status: TicketStatus.PENDING_WITH,
+        updatedAt: new Date(),
         updatedBy: department[0]._id,
       };
     } else {
