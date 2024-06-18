@@ -265,7 +265,8 @@ const TicketDetailsPage = () => {
           {/* //FOR MASTER VIEW  */}
           {userDetails.role === UserRole.MASTER &&
             userDetails.role !== UserRole.EMPLOYEE &&
-            cameFrom == MyRoutes.RAISED_TICKETS && (
+            cameFrom == MyRoutes.RAISED_TICKETS &&
+            ticketDetail.status === TicketStatus.IN_REVIEW && (
               <div className="mt-2 ml-auto flex justify-center space-x-2">
                 <button
                   disabled={isApproved || isRejected || isReturned}

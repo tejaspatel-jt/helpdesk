@@ -56,12 +56,11 @@ const AdminTickets = () => {
       if (department) params.department = department;
       if (username) params.username = username;
       const response = await apiService.fetchAllUserTicketsPerPage(params);
+
       if (response.data.data === null) {
         setHasMore(false);
       }
       const newTickets = response.data.data.tickets;
-
-      console.log("new tickets ni length: ", newTickets.length);
       if (newTickets && newTickets.length < 10) {
         setTickets((prev) => [...prev, ...newTickets]);
         setHasMore(false);

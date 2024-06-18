@@ -119,43 +119,46 @@ const TicketDisplayCard = ({
             screen !== MyRoutes.MY_TICKETS &&
             userRole === UserRole.MASTER && (
               <div className="flex smallMobile:mt-2 smallMobile:justify-between sm:w-10 gap-2 w-full md:w-auto">
-                {!isApproved && !isRejected && !isReturned && (
-                  <>
-                    {" "}
-                    <button
-                      disabled={isApproved || isRejected}
-                      className={`w-[90px] text-white px-3 py-1 ${
-                        isApproved || isRejected
-                          ? "bg-gray-300 hover:bg-gray-300"
-                          : "bg-jtGreen hover:bg-green-600"
-                      } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleApprove(ticket._id, setIsApproved);
-                      }}
-                    >
-                      {isApproved
-                        ? TicketStatus.BUTTON_APPROVED
-                        : TicketStatus.BUTTON_APPROVE}
-                    </button>
-                    <button
-                      disabled={isApproved || isRejected}
-                      className={`w-[90px] text-white px-3 py-1 ${
-                        isRejected || isApproved
-                          ? "bg-gray-300 hover:bg-gray-300"
-                          : "bg-red-500 hover:bg-red-600"
-                      } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setOpenModal(true);
-                      }}
-                    >
-                      {isRejected
-                        ? TicketStatus.BUTTON_REJECTED
-                        : TicketStatus.BUTTON_REJECT}
-                    </button>
-                  </>
-                )}
+                {!isApproved &&
+                  !isRejected &&
+                  !isReturned &&
+                  ticket.status === TicketStatus.IN_REVIEW && (
+                    <>
+                      {" "}
+                      <button
+                        disabled={isApproved || isRejected}
+                        className={`w-[90px] text-white px-3 py-1 ${
+                          isApproved || isRejected
+                            ? "bg-gray-300 hover:bg-gray-300"
+                            : "bg-jtGreen hover:bg-green-600"
+                        } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleApprove(ticket._id, setIsApproved);
+                        }}
+                      >
+                        {isApproved
+                          ? TicketStatus.BUTTON_APPROVED
+                          : TicketStatus.BUTTON_APPROVE}
+                      </button>
+                      <button
+                        disabled={isApproved || isRejected}
+                        className={`w-[90px] text-white px-3 py-1 ${
+                          isRejected || isApproved
+                            ? "bg-gray-300 hover:bg-gray-300"
+                            : "bg-red-500 hover:bg-red-600"
+                        } rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setOpenModal(true);
+                        }}
+                      >
+                        {isRejected
+                          ? TicketStatus.BUTTON_REJECTED
+                          : TicketStatus.BUTTON_REJECT}
+                      </button>
+                    </>
+                  )}
               </div>
             )}
 
