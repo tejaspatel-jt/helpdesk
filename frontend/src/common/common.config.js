@@ -41,3 +41,33 @@ export const MyRoutes = {
   HELP_PAGE: "/help",
   ADMIN_DASHBOARD: "/admindashboard",
 };
+
+export const hrCategory = {
+  ATTENDENCE_LOGS: "attendance logs",
+  LEAVE_REQUESTS: "leave request",
+  DOCUMENTS: "documents",
+  JIGNECT_POLICY: "jignect policy",
+  OTHER: "other",
+};
+
+export const isCategory = {
+  SOFTWARE_INSTALLATION_REQUEST: "software installation request",
+  PC_MOUSE_KEYBOARD_RELATED_QUERIES: "pc/keyboard/mouse related query",
+  INTERNET_ACCESS_REQUEST_FOR_SPECIFIC_WEB:
+    "internet access request for specific web",
+  DESK_CHANGE: "desk change",
+  OTHER: "other",
+};
+
+export const adminCategory = {
+  STATIONARY: "stationary",
+  DESK_CLEANUP: "desk clean up",
+  DESK_CHAIR_RELATED: "desk / chair",
+  OTHER: "other",
+};
+
+export const financeCategory = {
+  PAYROLL: "payroll",
+  PF: "pf",
+  OTHER: "other",
+};

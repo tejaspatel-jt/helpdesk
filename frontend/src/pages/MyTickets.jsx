@@ -14,7 +14,13 @@ import { ToastContainer } from "react-toastify";
 import Card from "../components/card/Card";
 import { validateCreateNewTicketFields } from "../Validation/Validation";
 import TicketDisplayCard from "../components/ticketdisplaycard/TicketDisplayCard";
-import { MyRoutes } from "../common/common.config";
+import {
+  MyRoutes,
+  adminCategory,
+  financeCategory,
+  hrCategory,
+  isCategory,
+} from "../common/common.config";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loader from "../components/loader/Loader";
 
@@ -255,15 +261,21 @@ function MyTickets() {
                           onChange={(e) => setCategory(e.target.value)}
                         >
                           <option disabled value="">
-                            SELECT CATEGORY
+                            Select Category
                           </option>
                           <option value="Attendance Logs">
                             Attendance Logs
                           </option>
-                          <option value="Leave Request">Leave Request</option>
-                          <option value="Documents">Documents</option>
-                          <option value="JigNect Policy">JigNect Policy</option>
-                          <option value="Other">Other</option>
+                          <option value={hrCategory.LEAVE_REQUESTS}>
+                            Leave Request
+                          </option>
+                          <option value={hrCategory.DOCUMENTS}>
+                            Documents
+                          </option>
+                          <option value={hrCategory.JIGNECT_POLICY}>
+                            JigNect Policy
+                          </option>
+                          <option value={hrCategory.OTHER}>Other</option>
                         </select>
                       </div>
                     )}
@@ -285,17 +297,27 @@ function MyTickets() {
                           <option disabled value="">
                             Select Category
                           </option>
-                          <option value="Software Installation Request">
+                          <option
+                            value={isCategory.SOFTWARE_INSTALLATION_REQUEST}
+                          >
                             Software Installation Request
                           </option>
-                          <option value="PC/Keyboard/Mouse related query">
+                          <option
+                            value={isCategory.PC_MOUSE_KEYBOARD_RELATED_QUERIES}
+                          >
                             PC/Keyboard/Mouse related query
                           </option>
-                          <option value="Internet Access Request for specific web">
+                          <option
+                            value={
+                              isCategory.INTERNET_ACCESS_REQUEST_FOR_SPECIFIC_WEB
+                            }
+                          >
                             Internet Access Request for specific web
                           </option>
-                          <option value="Desk Change">Desk Change</option>
-                          <option value="Other">Other</option>
+                          <option value={isCategory.DESK_CHANGE}>
+                            Desk Change
+                          </option>
+                          <option value={isCategory.OTHER}>Other</option>
                         </select>
                       </div>
                     )}
@@ -317,10 +339,16 @@ function MyTickets() {
                           <option disabled value="">
                             SELECT CATEGORY
                           </option>
-                          <option value="Stationary">Stationary</option>
-                          <option value="Desk Clean Up">Desk Clean Up</option>
-                          <option value="Desk / Chair">Desk / Chair</option>
-                          <option value="Other">Other</option>
+                          <option value={adminCategory.STATIONARY}>
+                            Stationary
+                          </option>
+                          <option value={adminCategory.DESK_CLEANUP}>
+                            Desk Clean Up
+                          </option>
+                          <option value={adminCategory.DESK_CHAIR_RELATED}>
+                            Desk / Chair
+                          </option>
+                          <option value={adminCategory.OTHER}>Other</option>
                         </select>
                       </div>
                     )}
@@ -342,9 +370,11 @@ function MyTickets() {
                           <option disabled value="">
                             SELECT CATEGORY
                           </option>
-                          <option value="Payroll">Payroll</option>
-                          <option value="PF">PF</option>
-                          <option value="Other">Other</option>
+                          <option value={financeCategory.PAYROLL}>
+                            Payroll
+                          </option>
+                          <option value={financeCategory.PFL}>PF</option>
+                          <option value={financeCategory.OTHER}>Other</option>
                         </select>
                       </div>
                     )}
