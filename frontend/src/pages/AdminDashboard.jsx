@@ -58,7 +58,7 @@ const AdminDashboard = () => {
     <div className="font-sans bg-gray-100 min-h-screen">
       <Navbar userRole={userDetails.role} />
       <header className="p-5 text-white text-center rounded">
-        <h1 className="text-3xl text-jtBlue">Admin Dashboard</h1>
+        <h1 className="text-3xl text-jtBlue">Dashboard</h1>
       </header>
       <main className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
         {departments.map((department) => {

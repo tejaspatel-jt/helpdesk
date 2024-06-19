@@ -41,6 +41,7 @@ function MyTickets() {
   const { userDetails } = useContext(UserContext);
   const [page, setPage] = useState(1);
   const perPage = 10;
+  const [totalTicketsCount, setTotalTicketsCount] = useState(0);
 
   useEffect(() => {
     fetchTickets();
@@ -50,20 +51,29 @@ function MyTickets() {
     try {
       setLoading(true);
       const response = await apiService.fetchUserTickets({ page, perPage });
-      if (response.data.data === null) {
+      const { data } = response.data;
+
+      if (data === null || data.tickets.length === 0) {
         setHasMore(false);
+        if (page === 1) {
+          setTickets([]);
+        }
+        return;
       }
-      const sortedTickets = response.data.data.tickets.sort((a, b) => {
+
+      const sortedTickets = data.tickets.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
-      if (sortedTickets && sortedTickets.length < 10) {
-        setTickets((prev) => [...prev, ...sortedTickets]);
-        setHasMore(false);
-      }
+
       if (page === 1) {
         setTickets(sortedTickets);
+        setTotalTicketsCount(data.total);
       } else {
-        setTickets((pre) => [...pre, ...sortedTickets]);
+        setTickets((prev) => [...prev, ...sortedTickets]);
+      }
+
+      if (tickets.length + sortedTickets.length >= data.total) {
+        setHasMore(false);
       }
     } catch (error) {
       console.error("Error fetching tickets:", error);
@@ -146,7 +156,6 @@ function MyTickets() {
       setFiles(true);
       const reader = new FileReader();
       reader.onload = () => {
-        // console.log("this is base64 converted str:===", reader.result);
         setAttachments(reader.result);
       };
       reader.readAsDataURL(file);
@@ -165,9 +174,11 @@ function MyTickets() {
             next={() => setPage((prevPage) => prevPage + 1)}
             hasMore={hasMore}
             endMessage={
-              <p className="text-center">
-                There are no tickets matching your search.
-              </p>
+              tickets.length === 0 ? (
+                <p className="text-center">No Tickets Found.</p>
+              ) : (
+                <p className="text-center">All Tickets Fetched.</p>
+              )
             }
           >
             {tickets.map((ticket) => (
@@ -183,7 +194,7 @@ function MyTickets() {
           {showForm && (
             <Card>
               <div className="flex justify-between items-center">
-                <h2 className=" text-2xl font-semibold text-center  text-zinc-800">
+                <h2 className="text-2xl font-semibold text-center text-zinc-800">
                   Create New Ticket
                 </h2>
                 <CloseButton onclick={() => setShowForm(false)} />

@@ -37,13 +37,11 @@ const AdminTickets = () => {
   );
 
   useEffect(() => {
-    console.log("debounce all fields dependency UE called-----");
     debouncedFetchTickets();
   }, [username, status, department, debouncedFetchTickets]);
 
   useEffect(() => {
     if (page > 1) {
-      console.log("page dependency UE called-----");
       fetchTickets(page, false);
     }
   }, [page]);
@@ -59,16 +57,26 @@ const AdminTickets = () => {
 
       if (response.data.data === null) {
         setHasMore(false);
+        if (pageToFetch === 1) {
+          setTickets([]);
+        }
+        return;
       }
+
       const newTickets = response.data.data.tickets;
-      if (newTickets && newTickets.length < 10) {
-        setTickets((prev) => [...prev, ...newTickets]);
+      if (newTickets.length === 0 && pageToFetch === 1) {
         setHasMore(false);
-      } else {
-        setTickets((prevTickets) =>
-          reset ? newTickets : [...prevTickets, ...newTickets]
-        );
+        setTickets([]);
+        return;
       }
+
+      if (newTickets.length < 10) {
+        setHasMore(false);
+      }
+
+      setTickets((prevTickets) =>
+        reset ? newTickets : [...prevTickets, ...newTickets]
+      );
     } catch (error) {
       console.error("Error fetching tickets:", error);
     } finally {
@@ -110,7 +118,6 @@ const AdminTickets = () => {
       const response = await apiService.handleApproveOrReject(body);
       if (response.status === 200) {
         setIsAccepted(true);
-        // setStatus("open");
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
             ticket._id === ticketId ? { ...ticket, status: "open" } : ticket
@@ -118,7 +125,7 @@ const AdminTickets = () => {
         );
         SuccessToastMessage("Ticket accepted successfully!");
       } else {
-        ErrorToastMessage("Failed to accepted ticket. Please try again.");
+        ErrorToastMessage("Failed to accept ticket. Please try again.");
       }
     } catch (error) {
       console.error("Error accepting ticket:", error);
@@ -148,6 +155,7 @@ const AdminTickets = () => {
       alert("An error occurred while rejecting the ticket.");
     }
   };
+
   const handleReturn = async (ticketId, setIsReturned) => {
     const body = {
       ticketId: ticketId,
@@ -199,7 +207,15 @@ const AdminTickets = () => {
             loader={loading ? <p className="text-center">Loading...</p> : ""}
             next={() => setPage((prevPage) => prevPage + 1)}
             hasMore={hasMore}
-            endMessage={<p className="text-center">No more tickets to load.</p>}
+            endMessage={
+              tickets.length === 0 ? (
+                <p className="text-center">
+                  No Tickets Found matching this criteria.
+                </p>
+              ) : (
+                <p className="text-center">All Tickets Displayed.</p>
+              )
+            }
           >
             {tickets.map((ticket) => (
               <TicketDisplayCard
