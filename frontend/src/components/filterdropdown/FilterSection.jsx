@@ -91,7 +91,10 @@ const FilterDropdown = ({
   };
 
   return (
-    <div className=" smallDesktop:flex-row justify-end filter-dropdowns mb-4 flex sticky top-16 gap-4 py-2 z-10 bg-white smallMobile:flex-col">
+    <div
+      style={{ boxShadow: "0px 2px 7px 0px gray" }}
+      className=" smallDesktop:flex-row justify-end filter-dropdowns mb-4 flex sticky top-16 gap-4 py-2 z-10 bg-white smallMobile:flex-col"
+    >
       <div className="search-bar flex items-center smallMobile:ml-[20px]">
         <label htmlFor="username" className="mr-2">
           Username:

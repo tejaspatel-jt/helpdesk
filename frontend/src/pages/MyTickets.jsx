@@ -164,7 +164,11 @@ function MyTickets() {
             loader={loading ? <p className="text-center">Loading...</p> : ""}
             next={() => setPage((prevPage) => prevPage + 1)}
             hasMore={hasMore}
-            endMessage={<p className="text-center">No more tickets to load.</p>}
+            endMessage={
+              <p className="text-center">
+                There are no tickets matching your search.
+              </p>
+            }
           >
             {tickets.map((ticket) => (
               <TicketDisplayCard
