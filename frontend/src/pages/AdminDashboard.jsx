@@ -3,6 +3,7 @@ import { PieChart } from "react-minimal-pie-chart";
 import Navbar from "../components/navbar/Navbar";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import ApiService from "../ApiUtils/Api";
+import Loader from "../components/loader/Loader";
 
 const colors = {
   Approved: "#F3DE0C",
@@ -46,9 +47,10 @@ const AdminDashboard = () => {
 
   if (!dashboardData) {
     return (
-      <div className=" flex h-screen justify-center items-center">
-        <span className="font-2xl font-bold">Loading...</span>
-      </div>
+      // <div className=" flex h-screen justify-center items-center">
+      //   <span className="font-2xl font-bold">Loading...</span>
+      // </div>
+      <Loader/>
     );
   }
 

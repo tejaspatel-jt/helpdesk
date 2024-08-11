@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -7,8 +7,8 @@ import {
   faArrowRight,
   faPlusCircle,
   faEye,
+  faArrowDown,
 } from "@fortawesome/free-solid-svg-icons";
-import { FaArrowRight, FaLine } from "react-icons/fa";
 import Navbar from "../components/navbar/Navbar";
 import { UserContext } from "../components/contexts/UserContextProvider";
 import { FAQItem } from "../components/faq/FAQitem";
@@ -24,7 +24,7 @@ const HelpPage = () => {
 
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">Ticket Flow :</h2>
-          <div className="flex justify-center items-center mb-6 space-x-8">
+          <div className="flex flex-col md:flex-row justify-center items-center mb-6 space-y-6 md:space-y-0 md:space-x-8">
             <div className="flex flex-col items-center">
               <div className="text-center mb-2 font-bold">User</div>
               <div className="p-4 bg-gray-200 rounded-full mb-2">
@@ -41,7 +41,12 @@ const HelpPage = () => {
             <FontAwesomeIcon
               icon={faArrowRight}
               size="3x"
-              className="text-gray-700"
+              className="text-gray-700 hidden md:block"
+            />
+            <FontAwesomeIcon
+              icon={faArrowDown}
+              size="3x"
+              className="text-gray-700 md:hidden"
             />
             <div className="flex flex-col items-center">
               <div className="text-center mb-2 font-bold">Master</div>
@@ -59,7 +64,12 @@ const HelpPage = () => {
             <FontAwesomeIcon
               icon={faArrowRight}
               size="3x"
-              className="text-gray-700"
+              className="text-gray-700 hidden md:block"
+            />
+            <FontAwesomeIcon
+              icon={faArrowDown}
+              size="3x"
+              className="text-gray-700 md:hidden"
             />
             <div className="flex flex-col items-center">
               <div className="text-center mb-2 font-bold">Department</div>

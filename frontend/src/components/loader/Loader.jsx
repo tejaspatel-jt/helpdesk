@@ -13,17 +13,33 @@
 // export default Loader;
 // ------ABOVE CODE IS WORKING 17JUNE--------
 
+// import React from "react";
+
+// const Loader = () => {
+//   return (
+//     <div className="flex justify-center items-center h-screen">
+//       <div className="w-[74px] h-[74px] border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+//     </div>
+//   );
+// };
+
+// export default Loader;
+
+
+// trying now for testing the loader 3/8/24 saturday
 import React from "react";
 
 const Loader = () => {
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
       <div className="w-[74px] h-[74px] border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
     </div>
   );
 };
 
 export default Loader;
+
+
 
 // <------------- Loader with blur background -------------->
 
