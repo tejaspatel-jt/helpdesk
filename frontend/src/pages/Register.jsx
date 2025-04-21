@@ -10,7 +10,7 @@ import FormField from "../components/form/FormField";
 import FormValidation from "../components/form/FormValidation";
 import AuthenticationLinks from "../components/form/AuthenticationLinks";
 import PasswordField from "../components/form/PasswordField";
-import Layout from "../components/authentication/Layout";
+// import Layout from "../components/authentication/Layout";
 import Loader from "../components/loader/Loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -103,7 +103,7 @@ function Register() {
   return (
     <>
       {loading && <Loader />}
-      <Layout>
+      {/* <Layout> */}
         <FormLayout>
           {!otpSent && (
             <FormBody handleSubmit={handleRegister}>
@@ -188,7 +188,7 @@ function Register() {
           route={"/"}
         />
         <ToastContainer />
-      </Layout>
+      {/* </Layout> */}
     </>
   );
 }

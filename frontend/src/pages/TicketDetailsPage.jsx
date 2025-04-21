@@ -46,8 +46,8 @@ const TicketDetailsPage = () => {
 
   useEffect(() => {
     getAttachedFile(
-      ticketDetail.attachFile ||
-        ticketDetail.statusFlow?.fromMaster?.updatedBy?.avatar
+      ticketDetail.attachFile
+       || ticketDetail.statusFlow?.fromMaster?.updatedBy?.avatar
     );
   }, []);
 

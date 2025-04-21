@@ -50,7 +50,7 @@ const LoginPage = () => {
     window.addEventListener("resize", handleResize);
 
     setEmail("master@gmail.com");
-    setPassword("Test@1234");
+    setPassword("master_key");
 
     // Cleanup event listener on unmount
     return () => {

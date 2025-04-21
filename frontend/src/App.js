@@ -17,6 +17,7 @@ import MyTickets from "./pages/MyTickets";
 import { MyRoutes } from "./common/common.config";
 import HelpPage from "./pages/HelpPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Router>
           <Routes>
             <Route path={MyRoutes.DEFAULT} element={<LoginPage />} />
+            <Route path={MyRoutes.REGISTER} element={<Register />} />
             <Route
               path={MyRoutes.FORGOT_PASSWORD}
               element={<ForgotPassword />}

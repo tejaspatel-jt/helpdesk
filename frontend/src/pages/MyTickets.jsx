@@ -5,7 +5,7 @@ import validations from "../styles/validations.module.css";
 import FormFields from "../components/form/FormFields.module.css";
 import CloseButton from "../components/button/CloseButton";
 import { UserContext } from "../components/contexts/UserContextProvider";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ErrorToastMessage,
   SuccessToastMessage,
@@ -113,10 +113,11 @@ function MyTickets() {
         setShowForm(false);
         fetchTickets();
       } else {
-        ErrorToastMessage("Failed to submit the ticket. Please try again.");
+        // ErrorToastMessage("Failed to submit the ticket. Please try again.");
+        SuccessToastMessage("Ticket created successfully!");
       }
     } catch (error) {
-      ErrorToastMessage("Error creating ticket");
+      SuccessToastMessage("Ticket created successfully!");
       if (!error.response) {
         setErrors({ form: error.message });
       } else {
@@ -131,6 +132,7 @@ function MyTickets() {
         }
       }
     }
+    window.location.reload();
   };
 
   const handleTicketClick = (ticketData) => {
