@@ -64,12 +64,12 @@ const TicketDisplayCard = ({
                   {ticket.statusFlow?.fromUser?.updatedBy?.username
                     .charAt(0)
                     .toUpperCase()}
-                  {ticket.statusFlow.fromUser.updatedBy.username.indexOf(
+                  {ticket.statusFlow?.fromUser?.updatedBy?.username.indexOf(
                     " "
                   ) !== -1
-                    ? ticket.statusFlow.fromUser.updatedBy.username
+                    ? ticket.statusFlow?.fromUser?.updatedBy?.username
                         .charAt(
-                          ticket.statusFlow.fromUser.updatedBy.username.indexOf(
+                          ticket.statusFlow?.fromUser?.updatedBy?.username.indexOf(
                             " "
                           ) + 1
                         )

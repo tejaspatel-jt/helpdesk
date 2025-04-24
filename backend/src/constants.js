@@ -1,4 +1,4 @@
-export const DB_NAME = "helpdesk-dev";
+export const DB_NAME = "helpDesk_v2";
 
 export const TicketStatus = {
   IN_REVIEW: "in_review",

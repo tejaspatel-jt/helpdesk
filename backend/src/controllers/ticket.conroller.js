@@ -139,6 +139,11 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
   }
 
   if (req.user.role === UserRole.MASTER) {
+
+    if (!ticket.statusFlow) {
+      ticket.statusFlow = {};
+    }    
+
     if (TicketStatus.APPROVED === ticketStatus) {
       ticket.status = ticketStatus;
       ticket.statusFlow.fromMaster = {
@@ -146,6 +151,7 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
         updatedAt: new Date(),
         status: ticketStatus,
       };
+
       const department = await User.find({ role: ticket.department });
       ticket.statusFlow.fromDepartment = {
         status: TicketStatus.PENDING_WITH,
