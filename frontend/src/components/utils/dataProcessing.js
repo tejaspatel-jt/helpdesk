@@ -1,7 +1,28 @@
 import { TicketStatus } from "../../common/common.config";
 
 export function getSteps(apiRes) {
+  console.log(`rj_ getSteps > apiRes -- ${JSON.stringify(apiRes)}`);
+
   const step = [];
+
+  if(apiRes.status == "in_review") {
+    return [
+      {
+        username: "user",
+        status: "Created",
+        // updatedAt: fromUser.updatedBy.updatedAt.substring(0, 10),
+        updatedAt: getSubstringedDate(apiRes.updatedAt),
+        // avatar: fromUser.updatedBy.avatar,
+      },
+      {
+        username: "Master",
+        status: "in review",
+        // updatedAt: fromMaster.updatedBy.updatedAt.substring(0, 10),
+        updatedAt: "-",
+        // avatar: fromMaster.updatedBy.avatar,
+      },
+    ];
+  }
 
   var fromMaster = apiRes.statusFlow.fromMaster;
   var fromUser = apiRes.statusFlow.fromUser;
@@ -16,14 +37,14 @@ export function getSteps(apiRes) {
   ) {
     return [
       {
-        username: fromUser.updatedBy.username.toUpperCase(),
+        username: fromUser.updatedBy.username?.toUpperCase(),
         status: getStatus(fromUser.status),
         // updatedAt: fromUser.updatedBy.updatedAt.substring(0, 10),
         updatedAt: getSubstringedDate(fromUser.updatedAt),
         // avatar: fromUser.updatedBy.avatar,
       },
       {
-        username: fromMaster.updatedBy.username.toUpperCase(),
+        username: fromMaster.updatedBy.username?.toUpperCase(),
         status: getStatus(fromMaster.status),
         // updatedAt: fromMaster.updatedBy.updatedAt.substring(0, 10),
         updatedAt: fromMaster.updatedAt,
@@ -34,19 +55,19 @@ export function getSteps(apiRes) {
 
   return [
     {
-      username: fromUser.updatedBy.username.toUpperCase(),
+      username: fromUser.updatedBy.username?.toUpperCase(),
       status: getStatus(fromUser.status),
       updatedAt: getSubstringedDate(fromUser.updatedAt),
       // avatar: fromUser.updatedBy.avatar,
     },
     {
-      username: fromMaster.updatedBy.username.toUpperCase(),
+      username: fromMaster.updatedBy.username?.toUpperCase(),
       status: getStatus(fromMaster.status),
       updatedAt: getSubstringedDate(fromMaster.updatedAt),
       // avatar: fromMaster.updatedBy.avatar,
     },
     {
-      username: fromDepartment.updatedBy.username.toUpperCase(),
+      username: fromDepartment.updatedBy.username?.toUpperCase(),
       status: getStatus(fromDepartment.status),
       updatedAt: fromDepartment.updatedAt,
       // avatar: fromDepartment.updatedBy.avatar,
@@ -58,7 +79,7 @@ export function getTicketDetails(ticketData) {
   return {
     ticketNo: ticketData.number,
     title: ticketData.title,
-    username: ticketData.statusFlow.fromUser.updatedBy.username,
+    username: ticketData.statusFlow?.fromUser?.updatedBy.username,
   };
 }
 
@@ -66,7 +87,7 @@ export function getStatus(status) {
   return status
     .replace("With", "")
     .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word?.charAt(0)?.toUpperCase() + word.slice(1))
     .join(" ");
 }
 

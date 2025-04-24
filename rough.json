@@ -1,0 +1,183 @@
+{
+  "statusCode": 200,
+  "data": {
+    "total": 11,
+    "tickets": [
+      {
+        "_id": "6805c6b3c566a3ad5ea315b4",
+        "number": 156,
+        "title": "This is a ticket for the attendence request",
+        "description": "Hello mam, Please correct my attencence as is forgot to punch out yesterday.",
+        "status": "approved",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "hr",
+        "category": "Attendance Logs",
+        "comments": [],
+        "createdAt": "2025-04-21T04:16:51.442Z",
+        "updatedAt": "2025-04-21T04:16:51.821Z",
+        "__v": 0,
+        "statusFlow": {
+          "fromUser": {
+            "updatedBy": {
+              "_id": "67f752af1c87fe87399e7322",
+              "role": "employee"
+            },
+            "updatedAt": "2025-04-22T11:02:28.331Z",
+            "status": "in_review"
+          },
+          "fromMaster": {
+            "updatedAt": "2025-04-21T04:16:51.729Z",
+            "updatedBy": {
+              "_id": "67f8aa424f33d531de1e6f95",
+              "fullname": "test1 tester",
+              "username": "test1",
+              "email": "test1@gmail.com",
+              "role": "master"
+            },
+            "status": "approved"
+          },
+          "fromDepartment": {
+            "updatedAt": "2025-04-21T04:16:51.811Z",
+            "updatedBy": {
+              "_id": "66323b20e7fee792d590b282",
+              "username": "hr",
+              "email": "hr@gmail.com",
+              "role": "hr",
+              "fullname": "Smith Johnson"
+            },
+            "status": "pending_With"
+          },
+          "_id": "6805c6b3c566a3ad5ea315b6"
+        }
+      },
+      {
+        "_id": "67f924ec18923f46ea6cc4b0",
+        "number": 10,
+        "title": "Thus us",
+        "description": "Thus usThus usThus usThus usThus usThus usThus usThus usThus usThus us",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "is",
+        "category": "software installation request",
+        "comments": [],
+        "createdAt": "2025-04-11T14:19:24.384Z",
+        "updatedAt": "2025-04-11T14:19:24.384Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f924b118923f46ea6cc496",
+        "number": 9,
+        "title": "Game is good",
+        "description": "Game is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is goodGame is good",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "is",
+        "category": "pc/keyboard/mouse related query",
+        "comments": [],
+        "createdAt": "2025-04-11T14:18:25.198Z",
+        "updatedAt": "2025-04-11T14:18:25.198Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f9245a18923f46ea6cc472",
+        "number": 8,
+        "title": "Test99",
+        "description": "Test99Test99Test99Test99Test99Test99Test99Test99",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "is",
+        "category": "pc/keyboard/mouse related query",
+        "comments": [],
+        "createdAt": "2025-04-11T14:16:58.469Z",
+        "updatedAt": "2025-04-11T14:16:58.469Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f9235318923f46ea6cc461",
+        "number": 7,
+        "title": "Test 69",
+        "description": "Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69Test 69",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "is",
+        "category": "software installation request",
+        "comments": [],
+        "createdAt": "2025-04-11T14:12:35.192Z",
+        "updatedAt": "2025-04-11T14:12:35.192Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f9233818923f46ea6cc454",
+        "number": 6,
+        "title": "Test 5",
+        "description": "TestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTest",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "hr",
+        "category": "jignect policy",
+        "comments": [],
+        "createdAt": "2025-04-11T14:12:08.985Z",
+        "updatedAt": "2025-04-11T14:12:08.985Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f91e7f18923f46ea6cc42c",
+        "number": 5,
+        "title": "Test 3",
+        "description": "Test 3Test 3Test 3Test 3Test 3Test 3Test 3",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "is",
+        "category": "software installation request",
+        "comments": [],
+        "createdAt": "2025-04-11T13:51:59.380Z",
+        "updatedAt": "2025-04-11T13:51:59.380Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f91e7c18923f46ea6cc426",
+        "number": 4,
+        "title": "Test 3",
+        "description": "Test 3Test 3Test 3Test 3Test 3Test 3Test 3",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "is",
+        "category": "software installation request",
+        "comments": [],
+        "createdAt": "2025-04-11T13:51:56.655Z",
+        "updatedAt": "2025-04-11T13:51:56.655Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f8da5488b95b48dc902469",
+        "number": 3,
+        "title": "desk chanfgwe",
+        "description": "vsdjgalkrjgdivhgdjgbsdhjvsuh",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "hr",
+        "category": "Attendance Logs",
+        "comments": [],
+        "createdAt": "2025-04-11T09:01:08.092Z",
+        "updatedAt": "2025-04-11T09:01:08.092Z",
+        "__v": 0
+      },
+      {
+        "_id": "67f8d89c88b95b48dc90240c",
+        "number": 2,
+        "title": "ticket4",
+        "description": "ticket4ticket4ticket4ticket4ticket4ticket4ticket4ticket4ticket4ticket4",
+        "status": "in_review",
+        "user": "67f752af1c87fe87399e7322",
+        "department": "is",
+        "category": "pc/keyboard/mouse related query",
+        "comments": [],
+        "createdAt": "2025-04-11T08:53:48.660Z",
+        "updatedAt": "2025-04-11T08:53:48.660Z",
+        "__v": 0
+      }
+    ]
+  },
+  "message": "Successfully fetched ticket",
+  "success": true
+}

@@ -42,10 +42,10 @@ function Step({ details, last }) {
             ) : (
               <div className="border rounded-full h-10 w-10 flex items-center justify-center bg-gray-200 text-gray-600">
                 <span className="text-xl font-semibold">
-                  {details.username.charAt(0).toUpperCase()}
-                  {details.username.indexOf(" ") !== -1
+                  {details.username?.charAt(0).toUpperCase()}
+                  {details.username?.indexOf(" ") !== -1
                     ? details.username
-                        .charAt(details.username.indexOf(" ") + 1)
+                        ?.charAt(details.username?.indexOf(" ") + 1)
                         .toUpperCase()
                     : ""}
                 </span>

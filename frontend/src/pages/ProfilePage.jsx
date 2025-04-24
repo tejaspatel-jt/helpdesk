@@ -128,7 +128,7 @@ const MyProfile = () => {
             <div>
               <img
                 className="w-96 h-96 rounded-full object-cover border-2 border-gray-700"
-                src={userDetails.avatar.base64File}
+                src={userDetails.avatar?.base64File}
                 alt="User Profile"
               />
             </div>
@@ -147,7 +147,7 @@ const MyProfile = () => {
             onClick={() => setImagePreview(true)}
           >
             <img
-              src={userDetails.avatar.base64File}
+              src={userDetails.avatar?.base64File}
               alt="User Profile"
               className="w-32 h-32 rounded-full object-cover border-2 border-gray-700"
             />

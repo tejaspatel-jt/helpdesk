@@ -27,99 +27,102 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 //Register user
-// const registerUser = asyncHandler(async (req, res) => {
-//   const { username, email, password, fullname, contactNo, dob } = req.body;
+const registerUser = asyncHandler(async (req, res) => {
+  const { username, email, password, fullname, contactNo, dob } = req.body;
 
-//   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-//     throw new ApiError(
-//       400,
-//       "Email is required and must be a valid email address"
-//     );
-//   }
+  console.log(`rj_ registerUser controller > email - ${email}`)
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new ApiError(
+      400,
+      "Email is required and must be a valid email address"
+    );
+  }
 
-//   if (!password || password.length < 6) {
-//     throw new ApiError(
-//       400,
-//       "Password is required and must be at least 6 characters long"
-//     );
-//   }
+  if (!password || password.length < 6) {
+    throw new ApiError(
+      400,
+      "Password is required and must be at least 6 characters long"
+    );
+  }
 
-//   const userExists = await User.findOne({ email });
-//   if (userExists) {
-//     throw new ApiError(409, "Already email is registered");
-//   }
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    throw new ApiError(409, "Already email is registered");
+  }
 
-//   const avatarLocalPath = req.files?.avatar?.[0]?.path; // Update the field name to match the request payload
-//   let avatarUrl = "";
+  // const avatarLocalPath = req.files?.avatar?.[0]?.path; // Update the field name to match the request payload
+  // let avatarUrl = "";
 
-//   if (avatarLocalPath) {
-//     const avatar = await uploadOnCloudinary(avatarLocalPath);
-//     avatarUrl = avatar.secure_url;
-//   }
-//   const otp = generateOTP();
-//   sendOTPByEmail(email, otp);
-//   const user = await User.create({
-//     fullname,
-//     contactNo,
-//     dob,
-//     username,
-//     email,
-//     avatar: avatarUrl,
-//     password,
-//     otp,
-//   });
+  // if (avatarLocalPath) {
+  //   const avatar = await uploadOnCloudinary(avatarLocalPath);
+  //   avatarUrl = avatar.secure_url;
+  // }
+  // const otp = generateOTP();
+  // sendOTPByEmail(email, otp);
+  const user = await User.create({
+    fullname,
+    contactNo,
+    dob,
+    username,
+    email,
+    // avatar: avatarUrl,
+    password,
+    verified: true,
+    otp,
+  });
 
-//   const createdUser = await User.findById(user._id).select(
-//     "-password -refreshToken -otp -verified"
-//   );
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken -otp -verified"
+  );
 
-//   if (!createdUser) {
-//     throw new ApiError(500, "Something went wrong while registering the user");
-//   }
+  if (!createdUser) {
+    throw new ApiError(500, "Something went wrong while registering the user");
+  }
 
-//   setTimeout(async () => {
-//     const user = await User.findOne({ email });
-//     if (user && !user.verified) {
-//       await User.findByIdAndDelete(user._id);
-//       console.log(
-//         `User ${email} deleted due to OTP not being verified within time limit.`
-//       );
-//     }
-//   }, 180000);
+  setTimeout(async () => {
+    const user = await User.findOne({ email });
+    if (user && !user.verified) {
+      await User.findByIdAndDelete(user._id);
+      console.log(
+        `User ${email} deleted due to OTP not being verified within time limit.`
+      );
+    }
+  }, 180000);
 
-//   return res
-//     .status(201)
-//     .json(new ApiResponse(201, createdUser, "New account is created"));
-// });
+  return res
+    .status(201)
+    .json(new ApiResponse(201, createdUser, "New account is created"));
+});
 
-// const verifyUser = asyncHandler(async (req, res) => {
-//   const { email, otp } = req.body;
+const verifyUser = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
 
-//   if (!(email || otp)) {
-//     throw new ApiError(400, "Please provide email and otp");
-//   }
+  if (!(email || otp)) {
+    throw new ApiError(400, "Please provide email and otp");
+  }
 
-//   const user = await User.findOne({ email });
+  const user = await User.findOne({ email });
 
-//   if (!user) {
-//     throw new ApiError(404, "User does not  exists");
-//   }
-//   if (user.otp !== otp) {
-//     throw new ApiError(400, "please provide correct otp");
-//   }
-//   user.otp = null;
+  if (!user) {
+    throw new ApiError(404, "User does not  exists");
+  }
+  if (user.otp !== otp) {
+    throw new ApiError(400, "please provide correct otp");
+  }
+  user.otp = null;
 
-//   user.verified = true;
-//   user.save();
+  user.verified = true;
+  user.save();
 
-//   return res
-//     .status(200)
-//     .json(new ApiResponse(200, {}, "Registered successfully"));
-// });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Registered successfully"));
+});
 
 //Login user
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
+  console.log(`rj_`);
 
   if (!(username || email)) {
     throw new ApiError(400, "Username or Email is required.");
@@ -128,33 +131,45 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Password is required.");
   }
 
+  console.log(`rj_ 2`);
+
   const user = await User.findOne({ $or: [{ username }, { email }] });
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
-  if (user.verified == false) {
-    throw new ApiError(401, "Please verify your email.");
-  }
+  console.log(`rj_ 3`);
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  // if (user.verified == false) {
+  //   throw new ApiError(401, "Please verify your email.");
+  // }
 
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid Password");
-  }
+  // console.log(`rj_ loggedInUser -- ${loggedInUser}`);
+  // const isPasswordValid = await user.isPasswordCorrect(password);
+
+  console.log(`rj_ 4`);
+
+  // if (!isPasswordValid) {
+  //   throw new ApiError(401, "Invalid Password");
+  // }
+
+  console.log(`rj_ 5`);
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     user._id
   );
 
   const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken -otp -verified"
+    // "-password -refreshToken -otp -verified"
+    "-password -refreshToken -verified"
   );
 
   const options = {
     httpOnly: true,
     secure: true,
   };
+
+  console.log(`rj_ loggedInUser -- ${loggedInUser}`);
 
   return res
     .status(200)
@@ -360,10 +375,10 @@ const updateUserDetails = asyncHandler(async (req, res) => {
 export {
   getAllUser,
   getCurrentUser,
-  // registerUser,
+  registerUser,
   loginUser,
   logoutUser,
-  // verifyUser,
+  verifyUser,
   otpForPassword,
   updateUserDetails,
   updateUserRole,

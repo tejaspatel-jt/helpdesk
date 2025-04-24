@@ -1,2 +1,35 @@
 node_modules
 backend/src/access.log
+
+# Root-level ignores
+node_modules/
+.env
+.DS_Store
+*.log
+
+# Backend ignores
+/backend/node_modules/
+/backend/.env
+/backend/dist/
+/backend/build/
+/backend/*.log
+/backend/coverage/
+
+# Frontend ignores
+/frontend/node_modules/
+/frontend/.env
+/frontend/.next/
+/frontend/dist/
+/frontend/build/
+/frontend/coverage/
+/frontend/.parcel-cache/
+/frontend/.turbo/
+/frontend/yarn.lock
+/frontend/npm-debug.log
+/frontend/.eslintcache
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+*.swp
+

@@ -45,6 +45,24 @@ export default class ApiService {
     }
   };
 
+  /**
+   * 
+   * @param {{username: string, email: string, password: string, fullname: string, contactNo: string, dob: string}} formData
+   * @returns {Promise}
+   */
+  register = async (formData) => {
+    try {
+      this.setLoading(true);
+      const response = await BaseApi.post(USER_REGISTER_ENDPOINT, formData);
+      return response;
+    } catch (error) {
+      this.setLoading(false);
+      throw new Error(error.response.data.message);
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
   sendPasswordResetOTP = async (email) => {
     try {
       this.setLoading(true);

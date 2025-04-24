@@ -33,6 +33,7 @@ export const UserRole = {
 
 export const MyRoutes = {
   DEFAULT: "/",
+  REGISTER: "/register",
   MY_TICKETS: "/mytickets",
   FORGOT_PASSWORD: "/forgotpassword",
   PROFILE: "/profile",
