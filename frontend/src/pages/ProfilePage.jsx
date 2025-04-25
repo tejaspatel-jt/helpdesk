@@ -217,7 +217,7 @@ const MyProfile = () => {
 
             <div className="mb-8 relative w-fit m-auto ">
               <img
-                src={userDetails.avatar.base64File}
+                src={userDetails.avatar?.base64File}
                 alt="User Profile"
                 className="w-24 h-24 rounded-full object-cover z-10 border-2 border-gray-500 outline-black"
               />
